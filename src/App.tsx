@@ -1,7 +1,8 @@
-import React from "react";
 import "./App.css";
 
 function App() {
+  const number = 1;
+  console.log(number);
   return (
     <div className="App">
       <header className="App-header">

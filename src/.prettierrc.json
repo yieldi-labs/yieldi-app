@@ -1,0 +1,13 @@
+{
+    "tailwindFunctions": [
+      "cnMerge",
+      "cn",
+      "cva",
+      "tw"
+    ],
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ],
+    "singleQuote": true,
+    "jsxSingleQuote": true
+  }
