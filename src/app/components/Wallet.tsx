@@ -108,9 +108,6 @@ export default function Wallet() {
               <span>Balance: {btcWalletBalanceSat} sats</span>
             </div>
             <div className="flex items-center justify-center">
-              <span>Network: {btcWalletNetwork?.name}</span>
-            </div>
-            <div className="flex items-center justify-center">
               <span>Public Key: {publicKeyNoCoord}</span>
             </div>
           </div>
