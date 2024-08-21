@@ -1,5 +1,3 @@
-import { log } from "console";
-
 import { Delegation } from "@/app/types/delegations";
 import { getTxInfo } from "@/app/utils/mempool_api";
 
@@ -48,7 +46,7 @@ export const filterDelegationsLocalStorage = async (
           throw new Error("Transaction not found in the mempool");
         }
       } catch (_error) {
-        log(_error);
+        console.error(_error);
         isInMempool = false;
       }
 
