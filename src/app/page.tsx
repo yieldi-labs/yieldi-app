@@ -14,7 +14,7 @@ export default function Home() {
   };
 
   return (
-    <Theme>
+    <Theme accentColor="gray" grayColor="gray" radius="large">
       <Accordion.Root type="single" defaultValue="item-1" collapsible>
         <Accordion.Item value="item-1">
           <Accordion.Header>
