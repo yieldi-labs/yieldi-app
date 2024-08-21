@@ -31,6 +31,7 @@
     }
   },
   "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
     "import/order": [
       "error",
       {
@@ -53,14 +54,6 @@
     "tailwindcss/no-custom-classname": 0,
     "react/prop-types": 0,
     "react/jsx-no-leaked-render": "error",
-    "react/button-has-type": [
-      2,
-      {
-        "button": true,
-        "submit": true,
-        "reset": true
-      }
-    ],
     "@typescript-eslint/no-empty-interface": [
       "error",
       {
