@@ -17,7 +17,7 @@ export const durationTillNow = (time: string, currentTime: number) => {
     end: currentTime,
     start: new Date(time),
   });
-  let format: (keyof Duration)[] = ["days", "hours", "minutes"];
+  const format: (keyof Duration)[] = ["days", "hours", "minutes"];
 
   if (!duration.days && !duration.hours && !duration.minutes) {
     format.push("seconds");

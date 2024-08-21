@@ -1,7 +1,7 @@
 import { StakingScriptData, StakingScripts } from "btc-staking-ts";
 
 import { GlobalParamsVersion } from "@/app/types/globalParams";
-import { getPublicKeyNoCoord } from "@/utils/wallet/index";
+import { getPublicKeyNoCoord } from "@/app/utils/wallet/index";
 
 // Used to recreate scripts from the data received from the API
 export const apiDataToStakingScripts = (
