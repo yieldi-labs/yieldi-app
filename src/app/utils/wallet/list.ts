@@ -8,7 +8,7 @@ import { OneKeyWallet, oneKeyProvider } from "./providers/onekey_wallet";
 import { TomoWallet, tomoProvider } from "./providers/tomo_wallet";
 import { Network } from "./wallet_provider";
 
-interface IntegratedWallet {
+export interface IntegratedWallet {
   name: string;
   icon: string;
   wallet: any;

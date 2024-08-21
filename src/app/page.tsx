@@ -3,6 +3,7 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import { Theme, Button } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
+
 import Wallet from "@/app/components/Wallet";
 
 export default function Home() {

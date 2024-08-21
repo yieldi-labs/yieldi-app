@@ -1,7 +1,6 @@
 import { Psbt } from "bitcoinjs-lib";
 
 import { getNetworkConfig } from "@/app/config/network.config";
-
 import {
   getAddressBalance,
   getFundingUTXOs,
@@ -9,6 +8,7 @@ import {
   getTipHeight,
   pushTx,
 } from "@/app/utils/mempool_api";
+
 import { Fees, Network, UTXO, WalletProvider } from "../wallet_provider";
 
 // window object for Bitget Wallet extension
@@ -70,7 +70,7 @@ export class BitgetWallet extends WalletProvider {
   };
 
   getAddress = async (): Promise<string> => {
-    let accounts = (await this.bitcoinNetworkProvider.getAccounts()) || [];
+    const accounts = (await this.bitcoinNetworkProvider.getAccounts()) || [];
     if (!accounts?.[0]) {
       throw new Error("Bitget Wallet not connected");
     }
@@ -78,7 +78,7 @@ export class BitgetWallet extends WalletProvider {
   };
 
   getPublicKeyHex = async (): Promise<string> => {
-    let publicKey = await this.bitcoinNetworkProvider.getPublicKey();
+    const publicKey = await this.bitcoinNetworkProvider.getPublicKey();
     if (!publicKey) {
       throw new Error("Bitget Wallet not connected");
     }
@@ -98,11 +98,11 @@ export class BitgetWallet extends WalletProvider {
       },
     };
 
-    let signedPsbt = await this.bitcoinNetworkProvider.request(
+    const signedPsbt = await this.bitcoinNetworkProvider.request(
       "dappsSign",
       data,
     );
-    let psbt = Psbt.fromHex(signedPsbt);
+    const psbt = Psbt.fromHex(signedPsbt);
 
     const allFinalized = psbt.data.inputs.every(
       (input) => input.finalScriptWitness || input.finalScriptSig,
@@ -141,7 +141,7 @@ export class BitgetWallet extends WalletProvider {
       );
       signedPsbts = signedPsbts.split(",");
       return signedPsbts.map((tx: string) => {
-        let psbt = Psbt.fromHex(tx);
+        const psbt = Psbt.fromHex(tx);
 
         const allFinalized = psbt.data.inputs.every(
           (input) => input.finalScriptWitness || input.finalScriptSig,

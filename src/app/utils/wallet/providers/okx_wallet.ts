@@ -3,7 +3,6 @@ import {
   network,
   validateAddress,
 } from "@/app/config/network.config";
-
 import {
   getAddressBalance,
   getFundingUTXOs,
@@ -11,6 +10,7 @@ import {
   getTipHeight,
   pushTx,
 } from "@/app/utils/mempool_api";
+
 import {
   Fees,
   Network,
@@ -70,6 +70,7 @@ export class OKXWallet extends WalletProvider {
       // this will not throw an error even if user has no network enabled
       result = await this.bitcoinNetworkProvider.connect();
     } catch (error) {
+      console.error(error);
       throw new Error(`BTC ${this.networkEnv} is not enabled in OKX Wallet`);
     }
 

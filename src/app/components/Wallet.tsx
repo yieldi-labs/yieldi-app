@@ -1,21 +1,22 @@
 "use client";
 
-import { ConnectModal } from "@/app/components/Modals/ConnectModal";
-import { useCallback, useState } from "react";
-import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import { networks } from "bitcoinjs-lib";
-import { useError } from "@/app/context/Error/ErrorContext";
-import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
-import { WalletError, WalletErrorType } from "@/app/utils/errors";
-import { ErrorState } from "@/app/types/errors";
+import { useCallback, useState } from "react";
+
+import { ConnectModal } from "@/app/components/Modals/ConnectModal";
 import { ErrorModal } from "@/app/components/Modals/ErrorModal";
+import { useError } from "@/app/context/Error/ErrorContext";
+import { ErrorState } from "@/app/types/errors";
+import { WalletError, WalletErrorType } from "@/app/utils/errors";
+import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
+import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 
 export default function Wallet() {
 
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
   const [btcWalletBalanceSat, setBTCWalletBalanceSat] = useState(0);
-  const [btcWalletNetwork, setBTCWalletNetwork] = useState<networks.Network>();
+  const [_btcWalletNetwork, setBTCWalletNetwork] = useState<networks.Network>();
   const [publicKeyNoCoord, setPublicKeyNoCoord] = useState("");
 
   const [address, setAddress] = useState("");
@@ -95,8 +96,7 @@ export default function Wallet() {
         <button onClick={() => setConnectModalOpen(true)}>
           Connect Wallet
         </button>
-        {btcWallet && (
-          <div className="flex flex-col items-center justify-center">
+        {btcWallet ? <div className="flex flex-col items-center justify-center">
             <div className="flex items-center justify-center">
               <span className="ml-2">Bitcoin</span>
             </div>
@@ -110,8 +110,7 @@ export default function Wallet() {
             <div className="flex items-center justify-center">
               <span>Public Key: {publicKeyNoCoord}</span>
             </div>
-          </div>
-        )}
+          </div> : null}
       </div>
       <ConnectModal
         open={connectModalOpen}

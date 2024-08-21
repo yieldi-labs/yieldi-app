@@ -158,8 +158,9 @@ export async function getFundingUTXOs(
   // contains just enough UTXOs to satisfy the `amount` requirement.
   let sliced = confirmedUTXOs;
   if (amount) {
-    var sum = 0;
-    for (var i = 0; i < confirmedUTXOs.length; ++i) {
+    let sum = 0;
+    let i = 0;
+    for (; i < confirmedUTXOs.length; ++i) {
       sum += confirmedUTXOs[i].value;
       if (sum > amount) {
         break;

@@ -103,14 +103,12 @@ export const ErrorModal: React.FC<ErrorModalProps> = ({
           >
             Cancel
           </button>
-          {onRetry && (
-            <button
+          {onRetry ? <button
               className="btn-primary btn flex-1 rounded-lg px-2 text-white"
               onClick={handleRetry}
             >
               Try Again
-            </button>
-          )}
+            </button> : null}
         </div>
       </div>
     </GeneralModal>

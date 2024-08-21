@@ -70,6 +70,7 @@ export class TomoWallet extends WalletProvider {
         throw new Error("BTC is not enabled in Tomo Wallet");
       }
     } catch (error) {
+      console.error(error);
       throw new Error("BTC is not enabled in Tomo Wallet");
     }
 

@@ -7,7 +7,7 @@ import { PiWalletBold } from "react-icons/pi";
 import { Tooltip } from "react-tooltip";
 
 import { getNetworkConfig } from "@/app/config/network.config";
-import { BROWSER_INJECTED_WALLET_NAME, walletList } from "@/app/utils/wallet/list";
+import { BROWSER_INJECTED_WALLET_NAME, IntegratedWallet, walletList } from "@/app/utils/wallet/list";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 
 import { GeneralModal } from "./GeneralModal";
@@ -49,8 +49,12 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           window[BROWSER].getWalletProviderIcon &&
           (await window[BROWSER].getWalletProviderIcon());
         // Set the name and icon of the injected wallet if they exist
-        name && setInjectedWalletProviderName(`${name} (Browser)`);
-        icon && setInjectedWalletProviderIcon(icon);
+        if (name) {
+          setInjectedWalletProviderName(`${name} (Browser)`);
+        }
+        if (icon) {
+          setInjectedWalletProviderIcon(icon);
+        }
       }
     };
 
@@ -101,7 +105,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
         className={`flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary ${selectedWallet === BROWSER ? "border-primary" : "border-base-100"}`}
         onClick={() => setSelectedWallet(BROWSER)}
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border bg-white p-2 text-black">
+        <div className="flex size-10 items-center justify-center rounded-full border bg-white p-2 text-black">
           {injectedWalletProviderIcon ? (
             <Image
               src={injectedWalletProviderIcon}
@@ -132,7 +136,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       <div className="flex flex-col justify-center gap-4">
         <div className="my-4 flex flex-col gap-4">
           <h3 className="text-center font-semibold">Choose wallet</h3>
-          <div className="grid max-h-[20rem] grid-cols-1 gap-4 overflow-y-auto">
+          <div className="grid max-h-80 grid-cols-1 gap-4 overflow-y-auto">
             {walletList.map(
               ({
                 provider,
@@ -141,7 +145,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                 icon,
                 isQRWallet,
                 supportedNetworks,
-              }) => {
+              }: IntegratedWallet) => {
                 if (name === BROWSER_INJECTED_WALLET_NAME) {
                   return buildInjectableWallet(isInjectable, name);
                 }
@@ -165,12 +169,11 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                     rel="noopener noreferrer"
                   >
                     <div className="flex flex-1 items-center gap-2">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full border bg-white p-2">
+                      <div className="flex size-10 items-center justify-center rounded-full border bg-white p-2">
                         <Image src={icon} alt={name} width={26} height={26} />
                       </div>
                       <p>{name}</p>
-                      {isQRWallet && (
-                        <div>
+                      {isQRWallet ? <div>
                           <span
                             className="cursor-pointer text-xs"
                             data-tooltip-id={name}
@@ -180,8 +183,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                             <AiOutlineInfoCircle />
                           </span>
                           <Tooltip id={name} />
-                        </div>
-                      )}
+                        </div> : null}
                     </div>
                   </a>
                 );
@@ -190,7 +192,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           </div>
         </div>
         <button
-          className="btn-primary btn h-[2.5rem] min-h-[2.5rem] rounded-lg px-2 text-white"
+          className="btn-primary btn h-10 min-h-10 rounded-lg px-2 text-white"
           onClick={handleConnect}
           disabled={connectDisabled || !selectedWallet}
         >

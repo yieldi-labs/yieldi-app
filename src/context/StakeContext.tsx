@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { ErrorProvider } from '@/app/context/Error/ErrorContext';
 import { createContext, useContext, useState, ReactNode } from 'react';
+
+import { ErrorProvider } from '@/app/context/Error/ErrorContext';
 
 interface StakeContextType {
   selectedDelegation: any;
