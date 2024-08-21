@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
+import { ErrorProvider } from '@/app/context/Error/ErrorContext';
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface StakeContextType {
@@ -15,7 +16,9 @@ export const StakeProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <StakeContext.Provider value={{ selectedDelegation, setSelectedDelegation }}>
-      {children}
+      <ErrorProvider>
+        {children}
+      </ErrorProvider>
     </StakeContext.Provider>
   );
 };
