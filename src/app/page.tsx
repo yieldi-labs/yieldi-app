@@ -14,7 +14,12 @@ export default function Home() {
   };
 
   return (
-    <Theme>
+    <Theme
+      accentColor="yellow"
+      grayColor="gray"
+      panelBackground="translucent"
+      radius="full"
+    >
       <Accordion.Root type="single" defaultValue="item-1" collapsible>
         <Accordion.Item value="item-1">
           <Accordion.Header>
@@ -22,11 +27,9 @@ export default function Home() {
           </Accordion.Header>
         </Accordion.Item>
       </Accordion.Root>
-
       <div style={{ marginTop: "2rem" }}>
         <Wallet />
       </div>
-
       <div style={{ marginTop: "3rem", textAlign: "center" }}>
         <Button
           onClick={navigateToStakeBTC}
