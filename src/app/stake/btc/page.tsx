@@ -1,7 +1,7 @@
 "use client";
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import { Table, Theme } from "@radix-ui/themes";
+import { Table } from "@radix-ui/themes";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -124,12 +124,6 @@ const StakeBTCPage = () => {
   }
 
   return (
-    <Theme
-      accentColor="yellow"
-      grayColor="gray"
-      panelBackground="translucent"
-      radius="full"
-    >
       <div className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-8">
         <h1 className="text-4xl font-bold mb-8 text-center">
           Select Finality Provider
@@ -198,7 +192,6 @@ const StakeBTCPage = () => {
           </ScrollArea.Root>
         </div>
       </div>
-    </Theme>
   );
 };
 
