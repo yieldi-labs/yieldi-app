@@ -1,7 +1,6 @@
 "use client";
 
-import btcIcon from "@public/icons/btc.svg";
-import { DropdownMenu, Button, Card } from "@radix-ui/themes";
+import { DropdownMenu, Button } from "@radix-ui/themes";
 import { networks } from "bitcoinjs-lib";
 import Image from "next/image";
 import { useCallback, useState } from "react";
@@ -13,6 +12,7 @@ import { ErrorState } from "@/app/types/errors";
 import { WalletError, WalletErrorType } from "@/app/utils/errors";
 import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+import btcIcon from "@public/icons/btc.svg";
 
 
 export default function Wallet() {
@@ -21,7 +21,7 @@ export default function Wallet() {
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
   const [btcWalletBalanceSat, setBTCWalletBalanceSat] = useState(0);
   const [_btcWalletNetwork, setBTCWalletNetwork] = useState<networks.Network>();
-  const [publicKeyNoCoord, setPublicKeyNoCoord] = useState("");
+  const [, setPublicKeyNoCoord] = useState("");
 
   const [address, setAddress] = useState("");
   const { error, isErrorOpen, showError, hideError, retryErrorAction } =
