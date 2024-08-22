@@ -1,5 +1,6 @@
 "use client";
 
+import { Theme } from "@radix-ui/themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -20,8 +21,14 @@ export default function RootLayout({
     <QueryClientProvider client={queryClient}>
       <StakeProvider>
         <html lang="en">
-          <Navbar />
-          <body>{children}</body>
+          <Theme
+            accentColor="yellow"
+            grayColor="gray"
+            panelBackground="translucent"
+            radius="full">
+            <Navbar />
+            <body>{children}</body>
+          </Theme> 
         </html>
       </StakeProvider>
     </QueryClientProvider>

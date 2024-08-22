@@ -1,6 +1,9 @@
 "use client";
 
+import btcIcon from "@public/icons/btc.svg";
+import { DropdownMenu, Button, Card } from "@radix-ui/themes";
 import { networks } from "bitcoinjs-lib";
+import Image from "next/image";
 import { useCallback, useState } from "react";
 
 import { ConnectModal } from "@/app/components/Modals/ConnectModal";
@@ -10,6 +13,7 @@ import { ErrorState } from "@/app/types/errors";
 import { WalletError, WalletErrorType } from "@/app/utils/errors";
 import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+
 
 export default function Wallet() {
 
@@ -90,28 +94,38 @@ export default function Wallet() {
     [showError],
   );
 
+  const truncateMiddle = (str: string, padding: number) => {
+    return str.length <= padding * 2
+      ? str
+      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
+  }
+
   return (
-    <main className="relative">
-      <div className="z-10 text-sm lg:flex">
-        <button onClick={() => setConnectModalOpen(true)}>
-          Connect Wallet
-        </button>
-        {btcWallet ? <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center">
-              <span className="ml-2">Bitcoin</span>
-            </div>
-            <div className="flex items-center justify-center">
-              <span>Address: {address}</span>
-              <button onClick={handleDisconnectBTC}>Disconnect</button>
-            </div>
-            <div className="flex items-center justify-center">
-              <span>Balance: {btcWalletBalanceSat} sats</span>
-            </div>
-            <div className="flex items-center justify-center">
-              <span>Public Key: {publicKeyNoCoord}</span>
-            </div>
-          </div> : null}
-      </div>
+    <div className="z-50 flex">
+    <DropdownMenu.Root>
+      {btcWallet ? 
+        <>
+          <DropdownMenu.Trigger>
+            <Button variant="soft">
+              <span><Image src={btcIcon} width={18} height={18} alt="btc" /></span> {truncateMiddle(address, 5)} | {btcWalletBalanceSat / 1e8 } BTC 
+              <DropdownMenu.TriggerIcon />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content className="z-50">
+            <DropdownMenu.Sub>
+              <DropdownMenu.Item onClick={handleDisconnectBTC}>Disconnect</DropdownMenu.Item>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </> : 
+        <>
+          <DropdownMenu.Trigger>
+            <Button variant="soft" onClick={() => setConnectModalOpen(true)}>
+              Connect Wallet
+            </Button>
+          </DropdownMenu.Trigger>
+        </>
+      }
+
       <ConnectModal
         open={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
@@ -125,6 +139,8 @@ export default function Wallet() {
         onClose={hideError}
         onRetry={retryErrorAction}
       />
-    </main>
+    </DropdownMenu.Root>
+    </div>
+       
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as Accordion from "@radix-ui/react-accordion";
-import { Theme, Button } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 
 import Wallet from "@/app/components/Wallet";
@@ -14,11 +14,7 @@ export default function Home() {
   };
 
   return (
-    <Theme
-      accentColor="yellow"
-      grayColor="gray"
-      panelBackground="translucent"
-      radius="full">
+    <>
       <Accordion.Root type="single" defaultValue="item-1" collapsible>
         <Accordion.Item value="item-1">
           <Accordion.Header>
@@ -44,6 +40,6 @@ export default function Home() {
           Go to Stake BTC
         </Button>
       </div>
-    </Theme>
+    </>
   );
 }

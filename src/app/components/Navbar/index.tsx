@@ -43,12 +43,6 @@ const Navbar = () => {
                     </div>
                     <div className={`flex-1 pb-3 md:pb-0 md:flex ${state ? "" : "hidden"} justify-between align-middle`}>
                         <div className="flex">
-                            <NavLink href="https://discord.gg/8aFPCXPwAd" target="_blank"
-                                className="duration-150 hover:text-[#F5F1EB] hover:bg-[#332b29c9] active:bg-gray-900 h-10 w-[159px] px-5 py-2.5 rounded-[40px] 
-                                    border  border-[#514a47] justify-center items-center gap-2.5 inline-flex bg-[#332b29] text-[#F5F1EB] 
-                                    text-sm font-medium md:inline uppercase">
-                                Stake BTC
-                            </NavLink>
                             <Wallet />
                         </div>
                     </div>
