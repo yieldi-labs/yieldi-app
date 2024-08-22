@@ -100,47 +100,40 @@ export default function Wallet() {
       : str.slice(0, padding) + "…" + str.slice(-1 * padding);
   }
 
-  return (
-    <div className="z-50 flex">
-    <DropdownMenu.Root>
+  return (<>
+    <DropdownMenu.Root modal={false}>
       {btcWallet ? 
         <>
           <DropdownMenu.Trigger>
-            <Button variant="soft">
+            <Button variant="soft" className="cursor-pointer">
               <span><Image src={btcIcon} width={18} height={18} alt="btc" /></span> {truncateMiddle(address, 5)} | {btcWalletBalanceSat / 1e8 } BTC 
               <DropdownMenu.TriggerIcon />
             </Button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content className="z-50">
             <DropdownMenu.Sub>
-              <DropdownMenu.Item onClick={handleDisconnectBTC}>Disconnect</DropdownMenu.Item>
+              <DropdownMenu.Item className="cursor-pointer" onClick={handleDisconnectBTC}>Disconnect</DropdownMenu.Item>
             </DropdownMenu.Sub>
           </DropdownMenu.Content>
         </> : 
         <>
-          <DropdownMenu.Trigger>
-            <Button variant="soft" onClick={() => setConnectModalOpen(true)}>
-              Connect Wallet
-            </Button>
-          </DropdownMenu.Trigger>
+          <Button variant="soft" className="cursor-pointer" onClick={() => setConnectModalOpen(true)}>
+            Connect Wallet
+          </Button>
         </>
       }
-
-      <ConnectModal
-        open={connectModalOpen}
-        onClose={() => setConnectModalOpen(false)}
-        onConnect={handleConnectBTC}
-        connectDisabled={!!address} />
-      <ErrorModal
-        open={isErrorOpen}
-        errorMessage={error.message}
-        errorState={error.errorState}
-        errorTime={error.errorTime}
-        onClose={hideError}
-        onRetry={retryErrorAction}
-      />
     </DropdownMenu.Root>
-    </div>
-       
-  );
+    <ConnectModal
+      open={connectModalOpen}
+      onClose={() => setConnectModalOpen(false)}
+      onConnect={handleConnectBTC}
+      connectDisabled={!!address} />
+    <ErrorModal
+      open={isErrorOpen}
+      errorMessage={error.message}
+      errorState={error.errorState}
+      errorTime={error.errorTime}
+      onClose={hideError}
+      onRetry={retryErrorAction} />
+  </>);
 }
