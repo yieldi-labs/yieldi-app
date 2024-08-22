@@ -7,6 +7,7 @@ import { StakeProvider } from "@/context/StakeContext";
 
 import "./globals.css";
 import "react-responsive-modal/styles.css";
+import Navbar from "./components/Navbar";
 
 export default function RootLayout({
   children,
@@ -19,6 +20,7 @@ export default function RootLayout({
     <QueryClientProvider client={queryClient}>
       <StakeProvider>
         <html lang="en">
+          <Navbar />
           <body>{children}</body>
         </html>
       </StakeProvider>

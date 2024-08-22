@@ -3,9 +3,68 @@
 @import 'tailwindcss/utilities';
 @import '@radix-ui/themes/styles.css';
 
+@font-face {
+  font-family: 'GT America Trial';
+  src: url('/fonts/GT-America-Standard-Regular-Trial.otf') format('opentype');
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'GT America Trial';
+  src: url('/fonts/GT-America-Standard-Medium-Trial.otf') format('opentype');
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'GT America Trial';
+  src: url('/fonts/GT-America-Standard-Bold-Trial.otf') format('opentype');
+  font-style: normal;
+  font-weight: bold;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  font-family: 'GT America Trial', sans-serif;
+}
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.custom-screen {
+  @apply max-w-screen-xl mx-auto px-4 md:px-8;
+}
+
+.gradient-border {
+  border: 1px solid transparent;
+  background: linear-gradient(white, white), linear-gradient(25deg, rgba(209, 213, 219, 1), 
+    rgba(209, 213, 219, 1), rgba(0, 0, 0, 0.63), rgba(209, 213, 219, 1), rgba(209, 213, 219, 1));
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+}
+
+.body {
+  background:#F5F1EB url('/background.png');
+  background-repeat: repeat-x;
+
+  /* Stack the color and image */
+  background-blend-mode: multiply;
+  color: #332b29;
+}
+
+@media (max-width: 1260px) {
+  .body {
+      background-repeat: repeat;
+  }
+}
+
+.text__color--main {
+    color: #332b29;
 }

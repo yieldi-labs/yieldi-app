@@ -192,7 +192,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           </div>
         </div>
         <button
-          className="btn-primary btn h-10 min-h-10 rounded-lg px-2 text-white"
+          className="btn-primary btn h-10 min-h-10 rounded-lg px-2 flex justify-center items-center gap-2.5"
           onClick={handleConnect}
           disabled={connectDisabled || !selectedWallet}
         >

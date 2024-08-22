@@ -18,8 +18,7 @@ export default function Home() {
       accentColor="yellow"
       grayColor="gray"
       panelBackground="translucent"
-      radius="full"
-    >
+      radius="full">
       <Accordion.Root type="single" defaultValue="item-1" collapsible>
         <Accordion.Item value="item-1">
           <Accordion.Header>
