@@ -1,0 +1,57 @@
+name: frontend
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "*/**"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  PR_URL: "${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}"
+# Only run one workflow per branch at any given time
+concurrency:
+  group: "yieldi-app"
+  # Ensure previous PR builds are cancelled, but main builds are not
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  NPM-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/pnpm-lock.yaml') }}-
+
+      - name: Install PNPM Deps
+        run: |
+          pnpm install
+
+      - name: Lint
+        run: |
+          pnpm lint

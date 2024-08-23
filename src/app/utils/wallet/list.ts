@@ -61,5 +61,5 @@ export const walletList: IntegratedWallet[] = [
     provider: bitgetWalletProvider,
     linkToDocs: "https://web3.bitget.com",
     supportedNetworks: [Network.MAINNET, Network.SIGNET],
-  }
+  },
 ];

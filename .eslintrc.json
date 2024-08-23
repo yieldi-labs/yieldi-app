@@ -8,26 +8,14 @@
     "prettier",
     "plugin:tailwindcss/recommended"
   ],
-  "plugins": [
-    "import",
-    "react",
-    "@typescript-eslint",
-    "react-hooks"
-  ],
+  "plugins": ["import", "react", "@typescript-eslint", "react-hooks"],
   "settings": {
     "react": {
       "version": "detect"
     },
     "tailwindcss": {
-      "callees": [
-        "cnMerge",
-        "cn",
-        "cva",
-        "tw"
-      ],
-      "tags": [
-        "tw"
-      ]
+      "callees": ["cnMerge", "cn", "cva", "tw"],
+      "tags": ["tw"]
     }
   },
   "rules": {

@@ -8,7 +8,11 @@ import { Tooltip } from "react-tooltip";
 import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/app/config/network.config";
-import { BROWSER_INJECTED_WALLET_NAME, IntegratedWallet, walletList } from "@/app/utils/wallet/list";
+import {
+  BROWSER_INJECTED_WALLET_NAME,
+  IntegratedWallet,
+  walletList,
+} from "@/app/utils/wallet/list";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 
 import { GeneralModal } from "./GeneralModal";
@@ -163,7 +167,13 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                 return (
                   <a
                     key={name}
-                    className={twMerge('relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary', selectedWallet === name ? "border-primary bg-slate-200" : "border-base-100", !walletAvailable ? "opacity-50" : "")}
+                    className={twMerge(
+                      "relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary",
+                      selectedWallet === name
+                        ? "border-primary bg-slate-200"
+                        : "border-base-100",
+                      !walletAvailable ? "opacity-50" : "",
+                    )}
                     onClick={() => walletAvailable && setSelectedWallet(name)}
                     href={!walletAvailable ? linkToDocs : undefined}
                     target="_blank"
@@ -174,7 +184,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                         <Image src={icon} alt={name} width={26} height={26} />
                       </div>
                       <p>{name}</p>
-                      {isQRWallet ? <div>
+                      {isQRWallet ? (
+                        <div>
                           <span
                             className="cursor-pointer text-xs"
                             data-tooltip-id={name}
@@ -184,7 +195,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                             <AiOutlineInfoCircle />
                           </span>
                           <Tooltip id={name} />
-                        </div> : null}
+                        </div>
+                      ) : null}
                     </div>
                   </a>
                 );

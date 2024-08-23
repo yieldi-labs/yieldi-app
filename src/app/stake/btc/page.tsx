@@ -15,6 +15,7 @@ import {
 import { useError } from "@/app/context/Error/ErrorContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
+import { truncateMiddle } from "@/app/utils/strings";
 import { useStake } from "@/context/StakeContext";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
@@ -48,7 +49,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { finalityProviders: [], pagination: { next_key: "" } }
+        { finalityProviders: [], pagination: { next_key: "" } },
       );
       return flattenedData;
     },
@@ -75,7 +76,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { delegations: [], pagination: { next_key: "" } }
+        { delegations: [], pagination: { next_key: "" } },
       );
 
       return flattenedData;
@@ -101,7 +102,7 @@ const StakeBTCPage = () => {
       const { areDelegationsDifferent, delegations: newDelegations } =
         await calculateDelegationsDiff(
           delegations.delegations,
-          delegationsLocalStorage
+          delegationsLocalStorage,
         );
       if (areDelegationsDifferent) {
         setDelegationsLocalStorage(newDelegations);
@@ -119,79 +120,79 @@ const StakeBTCPage = () => {
       .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
       .reduce(
         (accumulator: number, item) => accumulator + item?.stakingValueSat,
-        0
+        0,
       );
   }
 
   return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">
-          Select Finality Provider
-        </h1>
-        <div>
-          <ScrollArea.Root className="max-h-[80vh] rounded overflow-auto shadow-[0_2px_10px] shadow-blackA4 bg-white">
-            <ScrollArea.Viewport className="size-full rounded">
-              <Table.Root  size="2">
-                <Table.Header>
-                  <Table.Row className="bg-gray-200">
-                    <Table.ColumnHeaderCell className="px-4 py-2">
-                      Name
-                    </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell className="px-4 py-2 hidden lg:table-cell">
-                      BTC PK
-                    </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell className="px-4 py-2">
-                      Total Delegation
-                    </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell className="px-4 py-2">
-                      Commission
-                    </Table.ColumnHeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {finalityProviders?.finalityProviders
-                    ? finalityProviders.finalityProviders.map((item) => (
-                        <Table.Row
-                          key={item.btcPk}
-                          className="cursor-pointer hover:bg-gray-100 transition-colors"
-                          onClick={() => handleRowClick(item)}
-                        >
-                          <Table.Cell className="px-4 py-2">
-                            {item.description.moniker}
-                          </Table.Cell>
-                          <Table.Cell className="px-4 py-2 hidden lg:table-cell">
-                            {item.btcPk}
-                          </Table.Cell>
-                          <Table.Cell className="px-4 py-2">
-                            {item.totalDelegations} BTC
-                          </Table.Cell>
-                          <Table.Cell className="px-4 py-2">
-                            {item.commission
-                              ? `${maxDecimals(Number(item.commission) * 100, 2)}%`
-                              : "-"}
-                          </Table.Cell>
-                        </Table.Row>
-                      ))
-                    : null}
-                </Table.Body>
-              </Table.Root>
-            </ScrollArea.Viewport>
-            <ScrollArea.Scrollbar
-              className="flex select-none touch-none p-0.5 bg-blackA3 transition-colors duration-[160ms] ease-out hover:bg-blackA5 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
-              orientation="vertical"
-            >
-              <ScrollArea.Thumb className="flex-1 bg-mauve10 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[44px] before:min-h-[44px]" />
-            </ScrollArea.Scrollbar>
-            <ScrollArea.Scrollbar
-              className="flex select-none touch-none p-0.5 bg-blackA3 transition-colors duration-[160ms] ease-out hover:bg-blackA5 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
-              orientation="horizontal"
-            >
-              <ScrollArea.Thumb className="flex-1 bg-mauve10 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[44px] before:min-h-[44px]" />
-            </ScrollArea.Scrollbar>
-            <ScrollArea.Corner className="bg-blackA5" />
-          </ScrollArea.Root>
-        </div>
+    <div className="lg:w-1/2 mx-auto px-4 md:px-16 lg:px-0">
+      <h1 className="text-xl font-bold mb-8 text-gray-700">
+        Select Finality Provider
+      </h1>
+      <div>
+        <ScrollArea.Root className="max-h-[80vh] rounded-3xl border overflow-auto bg-white">
+          <ScrollArea.Viewport className="size-full rounded">
+            <Table.Root size="2" className="relative">
+              <Table.Header className="bg-slate-800">
+                <Table.Row>
+                  <Table.ColumnHeaderCell className="whitespace-nowrap align-middle p-6 text-white">
+                    Name
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="whitespace-nowrap p-6 align-middle hidden lg:table-cell text-white">
+                    BTC PK
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="whitespace-nowrap p-6 align-middle text-white">
+                    Total Delegation
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="whitespace-nowrap p-6 align-middle text-white">
+                    Commission
+                  </Table.ColumnHeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {finalityProviders?.finalityProviders
+                  ? finalityProviders.finalityProviders.map((item) => (
+                      <Table.Row
+                        key={item.btcPk}
+                        className="cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleRowClick(item)}
+                      >
+                        <Table.Cell className="p-6 align-middle">
+                          {item.description.moniker}
+                        </Table.Cell>
+                        <Table.Cell className="p-6 align-middle hidden lg:table-cell">
+                          {truncateMiddle(item.btcPk, 10)}
+                        </Table.Cell>
+                        <Table.Cell className="p-6 align-middle">
+                          {item.totalDelegations} BTC
+                        </Table.Cell>
+                        <Table.Cell className="p-6 align-middle">
+                          {item.commission
+                            ? `${maxDecimals(Number(item.commission) * 100, 2)}%`
+                            : "-"}
+                        </Table.Cell>
+                      </Table.Row>
+                    ))
+                  : null}
+              </Table.Body>
+            </Table.Root>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar
+            className="flex select-none touch-none p-0.5 bg-blackA3 transition-colors duration-[160ms] ease-out hover:bg-blackA5 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
+            orientation="vertical"
+          >
+            <ScrollArea.Thumb className="flex-1 bg-mauve10 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[44px] before:min-h-[44px]" />
+          </ScrollArea.Scrollbar>
+          <ScrollArea.Scrollbar
+            className="flex select-none touch-none p-0.5 bg-blackA3 transition-colors duration-[160ms] ease-out hover:bg-blackA5 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
+            orientation="horizontal"
+          >
+            <ScrollArea.Thumb className="flex-1 bg-mauve10 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[44px] before:min-h-[44px]" />
+          </ScrollArea.Scrollbar>
+          <ScrollArea.Corner className="bg-blackA5" />
+        </ScrollArea.Root>
       </div>
+    </div>
   );
 };
 

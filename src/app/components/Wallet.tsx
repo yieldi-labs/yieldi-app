@@ -10,13 +10,17 @@ import { ErrorModal } from "@/app/components/Modals/ErrorModal";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { ErrorState } from "@/app/types/errors";
 import { WalletError, WalletErrorType } from "@/app/utils/errors";
-import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
+import {
+  getPublicKeyNoCoord,
+  isSupportedAddressType,
+  toNetwork,
+} from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import btcIcon from "@public/icons/btc.svg";
 
+import { truncateMiddle } from "../utils/strings";
 
 export default function Wallet() {
-
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
   const [btcWalletBalanceSat, setBTCWalletBalanceSat] = useState(0);
@@ -94,46 +98,55 @@ export default function Wallet() {
     [showError],
   );
 
-  const truncateMiddle = (str: string, padding: number) => {
-    return str.length <= padding * 2
-      ? str
-      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
-  }
-
-  return (<>
-    <DropdownMenu.Root modal={false}>
-      {btcWallet ? 
-        <>
-          <DropdownMenu.Trigger>
-            <Button variant="soft" className="cursor-pointer">
-              <span><Image src={btcIcon} width={18} height={18} alt="btc" /></span> {truncateMiddle(address, 5)} | {btcWalletBalanceSat / 1e8 } BTC 
-              <DropdownMenu.TriggerIcon />
+  return (
+    <>
+      <DropdownMenu.Root modal={false}>
+        {btcWallet ? (
+          <>
+            <DropdownMenu.Trigger>
+              <Button variant="soft" className="cursor-pointer">
+                <span>
+                  <Image src={btcIcon} width={18} height={18} alt="btc" />
+                </span>{" "}
+                {truncateMiddle(address, 5)} | {btcWalletBalanceSat / 1e8} BTC
+                <DropdownMenu.TriggerIcon />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content className="z-50">
+              <DropdownMenu.Sub>
+                <DropdownMenu.Item
+                  className="cursor-pointer"
+                  onClick={handleDisconnectBTC}
+                >
+                  Disconnect
+                </DropdownMenu.Item>
+              </DropdownMenu.Sub>
+            </DropdownMenu.Content>
+          </>
+        ) : (
+          <>
+            <Button asChild size="3" onClick={() => setConnectModalOpen(true)}>
+              <button className="bg-slate-700 hover:bg-slate-800 text-white bg-surface-950 cursor-pointer transition-transform hover:scale-95">
+                Connect Wallet
+              </button>
             </Button>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content className="z-50">
-            <DropdownMenu.Sub>
-              <DropdownMenu.Item className="cursor-pointer" onClick={handleDisconnectBTC}>Disconnect</DropdownMenu.Item>
-            </DropdownMenu.Sub>
-          </DropdownMenu.Content>
-        </> : 
-        <>
-          <Button variant="soft" className="cursor-pointer" onClick={() => setConnectModalOpen(true)}>
-            Connect Wallet
-          </Button>
-        </>
-      }
-    </DropdownMenu.Root>
-    <ConnectModal
-      open={connectModalOpen}
-      onClose={() => setConnectModalOpen(false)}
-      onConnect={handleConnectBTC}
-      connectDisabled={!!address} />
-    <ErrorModal
-      open={isErrorOpen}
-      errorMessage={error.message}
-      errorState={error.errorState}
-      errorTime={error.errorTime}
-      onClose={hideError}
-      onRetry={retryErrorAction} />
-  </>);
+          </>
+        )}
+      </DropdownMenu.Root>
+      <ConnectModal
+        open={connectModalOpen}
+        onClose={() => setConnectModalOpen(false)}
+        onConnect={handleConnectBTC}
+        connectDisabled={!!address}
+      />
+      <ErrorModal
+        open={isErrorOpen}
+        errorMessage={error.message}
+        errorState={error.errorState}
+        errorTime={error.errorTime}
+        onClose={hideError}
+        onRetry={retryErrorAction}
+      />
+    </>
+  );
 }
