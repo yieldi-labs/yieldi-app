@@ -4,7 +4,6 @@ export const apiWrapper = async (
   method: "GET" | "POST",
   url: string,
   generalErrorMessage: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: any,
 ) => {
   let response;
@@ -32,8 +31,7 @@ export const apiWrapper = async (
     );
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const message = (error as any)?.response?.data?.message;
+      const message = error?.response?.data?.message;
       throw new Error(message || generalErrorMessage);
     } else {
       throw new Error(generalErrorMessage);

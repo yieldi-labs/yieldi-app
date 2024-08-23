@@ -5,7 +5,7 @@ import {
   getNetworkFees,
   getTipHeight,
   pushTx,
-} from "@/app/utils/mempool_api";
+} from "@/utils/mempool_api";
 
 import {
   Fees,

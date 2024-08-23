@@ -15,11 +15,11 @@ import {
 import { useError } from "@/app/context/Error/ErrorContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
-import { truncateMiddle } from "@/app/utils/strings";
 import { useStake } from "@/context/StakeContext";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { truncateMiddle } from "@/utils/strings";
 
 const StakeBTCPage = () => {
   const [publicKeyNoCoord] = useState("");

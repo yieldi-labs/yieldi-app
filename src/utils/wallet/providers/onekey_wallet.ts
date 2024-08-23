@@ -4,7 +4,7 @@ import {
   getFundingUTXOs,
   getNetworkFees,
   pushTx,
-} from "@/app/utils/mempool_api";
+} from "@/utils/mempool_api";
 
 import {
   Fees,
