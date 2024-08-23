@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { ReactNode, createContext, useContext, useEffect } from "react";
 
+import { getStats } from "@/app/api/getStats";
 import { ErrorState } from "@/app/types/errors";
 
 import { useError } from "../Error/ErrorContext";
 
-import { getStats } from "@/app/api/getStats";
 
 export interface StakingStats {
   activeTVLSat: number;
