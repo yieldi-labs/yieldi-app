@@ -127,9 +127,13 @@ const StakeBTCPage = () => {
   if (delegations) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     totalStakedSat = delegations.delegations
-      .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
+      .filter(
+        (delegation: { state: string }) =>
+          delegation?.state === DelegationState.ACTIVE
+      )
       .reduce(
-        (accumulator: number, item) => accumulator + item?.stakingValueSat,
+        (accumulator: number, item: { stakingValueSat: number }) =>
+          accumulator + item?.stakingValueSat,
         0
       );
   }

@@ -18,6 +18,8 @@ import {
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import btcIcon from "@public/icons/btc.svg";
 
+import { truncateMiddle } from "../utils/strings";
+
 export default function Wallet() {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
@@ -129,12 +131,10 @@ export default function Wallet() {
           </>
         ) : (
           <>
-            <Button
-              variant="soft"
-              className="cursor-pointer"
-              onClick={() => setConnectModalOpen(true)}
-            >
-              Connect Wallet
+            <Button asChild size="3" onClick={() => setConnectModalOpen(true)}>
+              <button className="bg-slate-700 hover:bg-slate-800 text-white bg-surface-950 cursor-pointer transition-transform hover:scale-95">
+                Connect Wallet
+              </button>
             </Button>
           </>
         )}

@@ -1,13 +1,12 @@
-"use client";
-
-import { Theme } from "@radix-ui/themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
-
-import { StakeProvider } from "@/context/StakeContext";
-
 import "./globals.css";
 import "react-responsive-modal/styles.css";
+
+import { Theme } from "@radix-ui/themes";
+import { StrictMode } from "react";
+
+import { StakeProvider } from "@/context/StakeContext";
+import QueryClientProvider from "@/lib/providers/QueryClientProvider";
+
 import Navbar from "./components/Navbar";
 
 export default function RootLayout({
@@ -15,25 +14,24 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [queryClient] = useState(() => new QueryClient());
-
   return (
     <html lang="en">
-      <body>
-        <QueryClientProvider client={queryClient}>
+      <StrictMode>
+        <QueryClientProvider>
           <StakeProvider>
-            <Theme
-              accentColor="yellow"
-              grayColor="gray"
-              panelBackground="translucent"
-              radius="full"
-            >
-              <Navbar />
-              {children}
-            </Theme>
+            <body>
+              <Theme
+                accentColor="gray"
+                grayColor="gray"
+                panelBackground="translucent"
+                radius="full"
+              >
+                <Navbar>{children}</Navbar>
+              </Theme>
+            </body>
           </StakeProvider>
         </QueryClientProvider>
-      </body>
+      </StrictMode>
     </html>
   );
 }

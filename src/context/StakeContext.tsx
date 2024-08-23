@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from "react";
 
-import { ErrorProvider } from '@/app/context/Error/ErrorContext';
+import { ErrorProvider } from "@/app/context/Error/ErrorContext";
 
 interface StakeContextType {
   selectedDelegation: any;
@@ -16,10 +16,10 @@ export const StakeProvider = ({ children }: { children: ReactNode }) => {
   const [selectedDelegation, setSelectedDelegation] = useState<any>(null);
 
   return (
-    <StakeContext.Provider value={{ selectedDelegation, setSelectedDelegation }}>
-      <ErrorProvider>
-        {children}
-      </ErrorProvider>
+    <StakeContext.Provider
+      value={{ selectedDelegation, setSelectedDelegation }}
+    >
+      <ErrorProvider>{children}</ErrorProvider>
     </StakeContext.Provider>
   );
 };
@@ -27,7 +27,7 @@ export const StakeProvider = ({ children }: { children: ReactNode }) => {
 export const useStake = () => {
   const context = useContext(StakeContext);
   if (!context) {
-    throw new Error('useStake must be used within a StakeProvider');
+    throw new Error("useStake must be used within a StakeProvider");
   }
   return context;
 };
