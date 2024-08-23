@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { ReactNode, createContext, useContext } from "react";
 
+import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
 
-import { getGlobalParams } from "@/app/api/getGlobalParams";
 
 interface GlobalParamsProviderProps {
   children: ReactNode;

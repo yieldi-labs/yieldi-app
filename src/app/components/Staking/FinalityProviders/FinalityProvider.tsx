@@ -2,12 +2,12 @@ import Image from "next/image";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
 
+import { Hash } from "@/app/components/Hash/Hash";
 import { getNetworkConfig } from "@/config/network.config";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { maxDecimals } from "@/utils/maxDecimals";
 
 import blue from "@/app/assets/blue-check.svg";
-import { Hash } from "@/app/components/Hash/Hash";
 
 interface FinalityProviderProps {
   moniker: string;
