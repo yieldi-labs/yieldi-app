@@ -6,7 +6,6 @@ import { ErrorState } from "@/app/types/errors";
 
 import { useError } from "../Error/ErrorContext";
 
-
 export interface StakingStats {
   activeTVLSat: number;
   totalTVLSat: number;

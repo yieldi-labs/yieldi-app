@@ -11,7 +11,6 @@ import { getStakingTerm } from "../getStakingTerm";
 
 import { txFeeSafetyCheck } from "./fee";
 
-
 // Returns:
 // - unsignedStakingPsbt: the unsigned staking transaction
 // - stakingTerm: the staking term
