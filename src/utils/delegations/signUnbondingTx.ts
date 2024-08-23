@@ -28,7 +28,7 @@ export const signUnbondingTx = async (
   delegationsAPI: DelegationInterface[],
   publicKeyNoCoord: string,
   btcWalletNetwork: networks.Network,
-  signPsbtTx: SignPsbtTransaction
+  signPsbtTx: SignPsbtTransaction,
 ): Promise<{ unbondingTxHex: string; delegation: DelegationInterface }> => {
   // Check if the data is available
   if (!delegationsAPI) {
@@ -37,7 +37,7 @@ export const signUnbondingTx = async (
 
   // Find the delegation in the delegations retrieved from the API
   const delegation = delegationsAPI.find(
-    (delegation) => delegation.stakingTxHashHex === id
+    (delegation) => delegation.stakingTxHashHex === id,
   );
   if (!delegation) {
     throw new Error("Delegation not found");
@@ -45,7 +45,7 @@ export const signUnbondingTx = async (
 
   // Check if the unbonding is possible
   const unbondingEligibility = await getUnbondingEligibility(
-    delegation.stakingTxHashHex
+    delegation.stakingTxHashHex,
   );
   if (!unbondingEligibility) {
     throw new Error("Not eligible for unbonding");
@@ -56,7 +56,7 @@ export const signUnbondingTx = async (
   const { currentVersion: globalParamsWhenStaking } =
     getCurrentGlobalParamsVersion(
       delegation.stakingTx.startHeight,
-      paramVersions
+      paramVersions,
     );
 
   if (!globalParamsWhenStaking) {
@@ -68,7 +68,7 @@ export const signUnbondingTx = async (
     delegation.finalityProviderPkHex,
     delegation.stakingTx.timelock,
     globalParamsWhenStaking,
-    publicKeyNoCoord
+    publicKeyNoCoord,
   );
 
   // Create the unbonding transaction
@@ -77,7 +77,7 @@ export const signUnbondingTx = async (
     Transaction.fromHex(delegation.stakingTx.txHex),
     globalParamsWhenStaking.unbondingFeeSat,
     btcWalletNetwork,
-    delegation.stakingTx.outputIndex
+    delegation.stakingTx.outputIndex,
   );
 
   // Sign the unbonding transaction
@@ -100,7 +100,7 @@ export const signUnbondingTx = async (
     stakerSignature,
     delegation.stakingTxHashHex,
     unbondingTx.getId(),
-    unbondingTxHex
+    unbondingTxHex,
   );
 
   return { unbondingTxHex, delegation };

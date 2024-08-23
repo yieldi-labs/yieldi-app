@@ -53,7 +53,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { finalityProviders: [], pagination: { next_key: "" } }
+        { finalityProviders: [], pagination: { next_key: "" } },
       );
       return flattenedData;
     },
@@ -80,7 +80,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { delegations: [], pagination: { next_key: "" }, error: false }
+        { delegations: [], pagination: { next_key: "" }, error: false },
       );
 
       return flattenedData;
@@ -106,7 +106,7 @@ const StakeBTCPage = () => {
       const { areDelegationsDifferent, delegations: newDelegations } =
         await calculateDelegationsDiff(
           delegations.delegations,
-          delegationsLocalStorage
+          delegationsLocalStorage,
         );
       if (areDelegationsDifferent) {
         setDelegationsLocalStorage(newDelegations);
@@ -119,7 +119,7 @@ const StakeBTCPage = () => {
   // Finality providers key-value map { pk: moniker }
   const finalityProvidersKV = finalityProviders?.finalityProviders.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {}
+    {},
   );
 
   let totalStakedSat = 0;
@@ -129,12 +129,12 @@ const StakeBTCPage = () => {
     totalStakedSat = delegations.delegations
       .filter(
         (delegation: { state: string }) =>
-          delegation?.state === DelegationState.ACTIVE
+          delegation?.state === DelegationState.ACTIVE,
       )
       .reduce(
         (accumulator: number, item: { stakingValueSat: number }) =>
           accumulator + item?.stakingValueSat,
-        0
+        0,
       );
   }
 

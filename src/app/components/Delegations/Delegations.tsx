@@ -69,13 +69,13 @@ export const Delegations: React.FC<DelegationsProps> = ({
     setIntermediateDelegationsLocalStorage,
   ] = useLocalStorage<DelegationInterface[]>(
     intermediateDelegationsLocalStorageKey,
-    []
+    [],
   );
 
   // Update the local storage with the new intermediate delegation state
   const updateLocalStorage = (
     delegation: DelegationInterface,
-    newState: string
+    newState: string,
   ) => {
     setIntermediateDelegationsLocalStorage((delegations) => [
       toLocalStorageIntermediateDelegation(
@@ -85,7 +85,7 @@ export const Delegations: React.FC<DelegationsProps> = ({
         delegation.stakingValueSat,
         delegation.stakingTx.txHex,
         delegation.stakingTx.timelock,
-        newState
+        newState,
       ),
       ...delegations,
     ]);
@@ -101,7 +101,7 @@ export const Delegations: React.FC<DelegationsProps> = ({
         delegationsAPI,
         publicKeyNoCoord,
         btcWalletNetwork,
-        signPsbtTx
+        signPsbtTx,
       );
       // Update the local state with the new intermediate delegation
       updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
@@ -134,7 +134,7 @@ export const Delegations: React.FC<DelegationsProps> = ({
         signPsbtTx,
         address,
         getNetworkFees,
-        pushTx
+        pushTx,
       );
       // Update the local state with the new intermediate delegation
       updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
@@ -174,7 +174,7 @@ export const Delegations: React.FC<DelegationsProps> = ({
         const matchingDelegation = delegationsAPI.find(
           (delegation) =>
             delegation?.stakingTxHashHex ===
-            intermediateDelegation?.stakingTxHashHex
+            intermediateDelegation?.stakingTxHashHex,
         );
 
         if (!matchingDelegation) {
@@ -262,7 +262,7 @@ export const Delegations: React.FC<DelegationsProps> = ({
                   finalityProvidersKV[finalityProviderPkHex];
                 const intermediateDelegation =
                   intermediateDelegationsLocalStorage.find(
-                    (item) => item.stakingTxHashHex === stakingTxHashHex
+                    (item) => item.stakingTxHashHex === stakingTxHashHex,
                   );
 
                 return (

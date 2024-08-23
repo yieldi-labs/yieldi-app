@@ -27,7 +27,7 @@ export const signWithdrawalTx = async (
   signPsbtTx: SignPsbtTransaction,
   address: string,
   getNetworkFees: () => Promise<Fees>,
-  pushTx: (txHex: string) => Promise<string>
+  pushTx: (txHex: string) => Promise<string>,
 ): Promise<{
   withdrawalTxHex: string;
   delegation: DelegationInterface;
@@ -39,7 +39,7 @@ export const signWithdrawalTx = async (
 
   // Find the delegation in the delegations retrieved from the API
   const delegation = delegationsAPI.find(
-    (delegation) => delegation.stakingTxHashHex === id
+    (delegation) => delegation.stakingTxHashHex === id,
   );
   if (!delegation) {
     throw new Error("Delegation not found");
@@ -55,7 +55,7 @@ export const signWithdrawalTx = async (
   const { currentVersion: globalParamsWhenStaking } =
     getCurrentGlobalParamsVersion(
       delegation.stakingTx.startHeight,
-      paramVersions
+      paramVersions,
     );
 
   if (!globalParamsWhenStaking) {
@@ -72,7 +72,7 @@ export const signWithdrawalTx = async (
     delegation.finalityProviderPkHex,
     delegation.stakingTx.timelock,
     globalParamsWhenStaking,
-    publicKeyNoCoord
+    publicKeyNoCoord,
   );
 
   const feeRate = getFeeRateFromMempool(fees);
@@ -89,7 +89,7 @@ export const signWithdrawalTx = async (
       Transaction.fromHex(delegation.unbondingTx.txHex),
       address,
       btcWalletNetwork,
-      feeRate.defaultFeeRate
+      feeRate.defaultFeeRate,
     );
   } else {
     // Withdraw funds from a staking transaction in which the timelock naturally expired
@@ -103,7 +103,7 @@ export const signWithdrawalTx = async (
       address,
       btcWalletNetwork,
       feeRate.defaultFeeRate,
-      delegation.stakingTx.outputIndex
+      delegation.stakingTx.outputIndex,
     );
   }
 
@@ -123,7 +123,7 @@ export const signWithdrawalTx = async (
   txFeeSafetyCheck(
     withdrawalTx,
     feeRate.defaultFeeRate,
-    withdrawPsbtTxResult.fee
+    withdrawPsbtTxResult.fee,
   );
 
   // Broadcast withdrawal transaction

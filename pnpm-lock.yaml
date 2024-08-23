@@ -138,13 +138,19 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17 || ^18
 
-  '@bitcoin-js/tiny-secp256k1-asmjs@2.2.3':
-    resolution: {integrity: sha512-arFPdEZi9RIiaG76OZswTnAU0KfuiLwGw2VNfD66LKhzlbfOnX1o1WI/GI3qm9UbjG/0QOzZu/KmTNvL79x/DQ==}
-    engines: {node: '>=14.0.0'}
+  "@bitcoin-js/tiny-secp256k1-asmjs@2.2.3":
+    resolution:
+      {
+        integrity: sha512-arFPdEZi9RIiaG76OZswTnAU0KfuiLwGw2VNfD66LKhzlbfOnX1o1WI/GI3qm9UbjG/0QOzZu/KmTNvL79x/DQ==,
+      }
+    engines: { node: ">=14.0.0" }
 
-  '@eslint-community/eslint-utils@4.4.0':
-    resolution: {integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+  "@eslint-community/eslint-utils@4.4.0":
+    resolution:
+      {
+        integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==,
+      }
+    engines: { node: ^12.22.0 || ^14.17.0 || >=16.0.0 }
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
 
@@ -1620,7 +1626,10 @@ packages:
       }
 
   btc-staking-ts@0.2.10:
-    resolution: {integrity: sha512-VG3n3BGiSs66QlA+QbXayrm0JJViorI9U6LqHssSzyvXEQBVDzkBda0Y5mub3+cTbIZ3u2uBaM4byDAc0MFduA==}
+    resolution:
+      {
+        integrity: sha512-VG3n3BGiSs66QlA+QbXayrm0JJViorI9U6LqHssSzyvXEQBVDzkBda0Y5mub3+cTbIZ3u2uBaM4byDAc0MFduA==,
+      }
 
   busboy@1.6.0:
     resolution:
@@ -3327,9 +3336,12 @@ packages:
       react: "*"
 
   react-infinite-scroll-component@6.1.0:
-    resolution: {integrity: sha512-SQu5nCqy8DxQWpnUVLx7V7b7LcA37aM7tvoWjTLZp1dk6EJibM5/4EJKzOnl07/BsM1Y40sKLuqjCwwH/xV0TQ==}
+    resolution:
+      {
+        integrity: sha512-SQu5nCqy8DxQWpnUVLx7V7b7LcA37aM7tvoWjTLZp1dk6EJibM5/4EJKzOnl07/BsM1Y40sKLuqjCwwH/xV0TQ==,
+      }
     peerDependencies:
-      react: '>=16.0.0'
+      react: ">=16.0.0"
 
   react-is@16.13.1:
     resolution:
@@ -3754,8 +3766,11 @@ packages:
       }
 
   throttle-debounce@2.3.0:
-    resolution: {integrity: sha512-H7oLPV0P7+jgvrk+6mwwwBDmxTaxnu9HMXmloNLXwnNO0ZxZ31Orah2n8lU1eMPvsaowP2CX+USCgyovXfdOFQ==}
-    engines: {node: '>=8'}
+    resolution:
+      {
+        integrity: sha512-H7oLPV0P7+jgvrk+6mwwwBDmxTaxnu9HMXmloNLXwnNO0ZxZ31Orah2n8lU1eMPvsaowP2CX+USCgyovXfdOFQ==,
+      }
+    engines: { node: ">=8" }
 
   to-regex-range@5.0.1:
     resolution:
@@ -3860,8 +3875,11 @@ packages:
     hasBin: true
 
   uint8array-tools@0.0.7:
-    resolution: {integrity: sha512-vrrNZJiusLWoFWBqz5Y5KMCgP9W9hnjZHzZiZRT8oNAkq3d5Z5Oe76jAvVVSRh4U8GGR90N2X1dWtrhvx6L8UQ==}
-    engines: {node: '>=14.0.0'}
+    resolution:
+      {
+        integrity: sha512-vrrNZJiusLWoFWBqz5Y5KMCgP9W9hnjZHzZiZRT8oNAkq3d5Z5Oe76jAvVVSRh4U8GGR90N2X1dWtrhvx6L8UQ==,
+      }
+    engines: { node: ">=14.0.0" }
 
   unbox-primitive@1.0.2:
     resolution:
@@ -4032,11 +4050,11 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@bitcoin-js/tiny-secp256k1-asmjs@2.2.3':
+  "@bitcoin-js/tiny-secp256k1-asmjs@2.2.3":
     dependencies:
       uint8array-tools: 0.0.7
 
-  '@eslint-community/eslint-utils@4.4.0(eslint@8.57.0)':
+  "@eslint-community/eslint-utils@4.4.0(eslint@8.57.0)":
     dependencies:
       eslint: 8.57.0
       eslint-visitor-keys: 3.4.3
@@ -5164,7 +5182,7 @@ snapshots:
 
   btc-staking-ts@0.2.10:
     dependencies:
-      '@bitcoin-js/tiny-secp256k1-asmjs': 2.2.3
+      "@bitcoin-js/tiny-secp256k1-asmjs": 2.2.3
       bitcoinjs-lib: 6.1.6
 
   busboy@1.6.0:
