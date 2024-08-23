@@ -7,7 +7,7 @@ import {
   getNetworkFees,
   getTipHeight,
   pushTx,
-} from "@/app/utils/mempool_api";
+} from "@/utils/mempool_api";
 
 import { Fees, Network, UTXO, WalletProvider } from "../wallet_provider";
 

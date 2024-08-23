@@ -12,8 +12,8 @@ import {
   BROWSER_INJECTED_WALLET_NAME,
   IntegratedWallet,
   walletList,
-} from "@/app/utils/wallet/list";
-import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+} from "@/utils/wallet/list";
+import { WalletProvider } from "@/utils/wallet/wallet_provider";
 
 import { GeneralModal } from "./GeneralModal";
 

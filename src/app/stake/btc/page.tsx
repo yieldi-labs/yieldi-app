@@ -18,13 +18,13 @@ import { useError } from "@/app/context/Error/ErrorContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
-import { signPsbtTransaction } from "@/app/utils/psbt";
-import { truncateMiddle } from "@/app/utils/strings";
-import { Fees, WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import { useStake } from "@/context/StakeContext";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { signPsbtTransaction } from "@/utils/psbt";
+import { truncateMiddle } from "@/utils/strings";
+import { Fees, WalletProvider } from "@/utils/wallet/wallet_provider";
 
 const StakeBTCPage = () => {
   const [btcWallet] = useState<WalletProvider>();

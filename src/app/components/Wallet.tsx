@@ -9,21 +9,23 @@ import { ConnectModal } from "@/app/components/Modals/ConnectModal";
 import { ErrorModal } from "@/app/components/Modals/ErrorModal";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { ErrorState } from "@/app/types/errors";
-import { WalletError, WalletErrorType } from "@/app/utils/errors";
+import { WalletError, WalletErrorType } from "@/utils/errors";
 import {
   getPublicKeyNoCoord,
   isSupportedAddressType,
   toNetwork,
-} from "@/app/utils/wallet";
-import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+} from "@/utils/wallet";
+import { WalletProvider } from "@/utils/wallet/wallet_provider";
 import btcIcon from "@public/icons/btc.svg";
+
+import { truncateMiddle } from "../../utils/strings";
 
 export default function Wallet() {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
   const [btcWalletBalanceSat, setBTCWalletBalanceSat] = useState(0);
   const [_btcWalletNetwork, setBTCWalletNetwork] = useState<networks.Network>();
-  const [, setPublicKeyNoCoord] = useState("");
+  const [_publickKeyNoCoord, setPublicKeyNoCoord] = useState("");
 
   const [address, setAddress] = useState("");
   const { error, isErrorOpen, showError, hideError, retryErrorAction } =
@@ -95,12 +97,6 @@ export default function Wallet() {
     },
     [showError],
   );
-
-  const truncateMiddle = (str: string, padding: number) => {
-    return str.length <= padding * 2
-      ? str
-      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
-  };
 
   return (
     <>

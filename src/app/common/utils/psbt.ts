@@ -1,6 +1,6 @@
 import { Psbt, Transaction } from "bitcoinjs-lib";
 
-import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+import { WalletProvider } from "@/utils/wallet/wallet_provider";
 
 const SIGN_PSBT_NOT_COMPATIBLE_WALLETS = ["OneKey"];
 
@@ -9,11 +9,8 @@ export type SignPsbtTransaction = (psbtHex: string) => Promise<Transaction>;
 // This method is created to accommodate backward compatibility with the
 // old implementation of signPsbt where the wallet.signPsbt method returns
 // the signed transaction in hex
-export const signPsbtTransaction = (wallet: WalletProvider | undefined) => {
+export const signPsbtTransaction = (wallet: WalletProvider) => {
   return async (psbtHex: string) => {
-    if (!wallet) {
-      throw new Error("Wallet not found");
-    }
     const signedHex = await wallet.signPsbt(psbtHex);
     const providerName = await wallet.getWalletProviderName();
     if (SIGN_PSBT_NOT_COMPATIBLE_WALLETS.includes(providerName)) {

@@ -1,15 +1,16 @@
 import { Transaction, networks } from "bitcoinjs-lib";
 import { stakingTransaction } from "btc-staking-ts";
 
+import { signPsbtTransaction } from "@/app/common/utils/psbt";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
-import { apiDataToStakingScripts } from "@/app/utils/apiDataToStakingScripts";
-import { signPsbtTransaction } from "@/app/utils/psbt";
-import { isTaproot } from "@/app/utils/wallet";
-import { UTXO, WalletProvider } from "@/app/utils/wallet/wallet_provider";
+import { apiDataToStakingScripts } from "@/utils/apiDataToStakingScripts";
+import { isTaproot } from "@/utils/wallet";
+import { UTXO, WalletProvider } from "@/utils/wallet/wallet_provider";
 
 import { getStakingTerm } from "../getStakingTerm";
 
 import { txFeeSafetyCheck } from "./fee";
+
 
 // Returns:
 // - unsignedStakingPsbt: the unsigned staking transaction
