@@ -1,6 +1,8 @@
 "use client";
 
+import { DropdownMenu, Button } from "@radix-ui/themes";
 import { networks } from "bitcoinjs-lib";
+import Image from "next/image";
 import { useCallback, useState } from "react";
 
 import { ConnectModal } from "@/app/components/Modals/ConnectModal";
@@ -10,6 +12,8 @@ import { ErrorState } from "@/app/types/errors";
 import { WalletError, WalletErrorType } from "@/app/utils/errors";
 import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+import btcIcon from "@public/icons/btc.svg";
+
 
 export default function Wallet() {
 
@@ -17,7 +21,7 @@ export default function Wallet() {
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
   const [btcWalletBalanceSat, setBTCWalletBalanceSat] = useState(0);
   const [_btcWalletNetwork, setBTCWalletNetwork] = useState<networks.Network>();
-  const [publicKeyNoCoord, setPublicKeyNoCoord] = useState("");
+  const [, setPublicKeyNoCoord] = useState("");
 
   const [address, setAddress] = useState("");
   const { error, isErrorOpen, showError, hideError, retryErrorAction } =
@@ -90,41 +94,46 @@ export default function Wallet() {
     [showError],
   );
 
-  return (
-    <main className="relative">
-      <div className="z-10 text-sm lg:flex">
-        <button onClick={() => setConnectModalOpen(true)}>
-          Connect Wallet
-        </button>
-        {btcWallet ? <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center">
-              <span className="ml-2">Bitcoin</span>
-            </div>
-            <div className="flex items-center justify-center">
-              <span>Address: {address}</span>
-              <button onClick={handleDisconnectBTC}>Disconnect</button>
-            </div>
-            <div className="flex items-center justify-center">
-              <span>Balance: {btcWalletBalanceSat} sats</span>
-            </div>
-            <div className="flex items-center justify-center">
-              <span>Public Key: {publicKeyNoCoord}</span>
-            </div>
-          </div> : null}
-      </div>
-      <ConnectModal
-        open={connectModalOpen}
-        onClose={() => setConnectModalOpen(false)}
-        onConnect={handleConnectBTC}
-        connectDisabled={!!address} />
-      <ErrorModal
-        open={isErrorOpen}
-        errorMessage={error.message}
-        errorState={error.errorState}
-        errorTime={error.errorTime}
-        onClose={hideError}
-        onRetry={retryErrorAction}
-      />
-    </main>
-  );
+  const truncateMiddle = (str: string, padding: number) => {
+    return str.length <= padding * 2
+      ? str
+      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
+  }
+
+  return (<>
+    <DropdownMenu.Root modal={false}>
+      {btcWallet ? 
+        <>
+          <DropdownMenu.Trigger>
+            <Button variant="soft" className="cursor-pointer">
+              <span><Image src={btcIcon} width={18} height={18} alt="btc" /></span> {truncateMiddle(address, 5)} | {btcWalletBalanceSat / 1e8 } BTC 
+              <DropdownMenu.TriggerIcon />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content className="z-50">
+            <DropdownMenu.Sub>
+              <DropdownMenu.Item className="cursor-pointer" onClick={handleDisconnectBTC}>Disconnect</DropdownMenu.Item>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </> : 
+        <>
+          <Button variant="soft" className="cursor-pointer" onClick={() => setConnectModalOpen(true)}>
+            Connect Wallet
+          </Button>
+        </>
+      }
+    </DropdownMenu.Root>
+    <ConnectModal
+      open={connectModalOpen}
+      onClose={() => setConnectModalOpen(false)}
+      onConnect={handleConnectBTC}
+      connectDisabled={!!address} />
+    <ErrorModal
+      open={isErrorOpen}
+      errorMessage={error.message}
+      errorState={error.errorState}
+      errorTime={error.errorTime}
+      onClose={hideError}
+      onRetry={retryErrorAction} />
+  </>);
 }

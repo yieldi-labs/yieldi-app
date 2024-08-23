@@ -5,6 +5,7 @@ import { FaWallet } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { PiWalletBold } from "react-icons/pi";
 import { Tooltip } from "react-tooltip";
+import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/app/config/network.config";
 import { BROWSER_INJECTED_WALLET_NAME, IntegratedWallet, walletList } from "@/app/utils/wallet/list";
@@ -162,7 +163,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                 return (
                   <a
                     key={name}
-                    className={`relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary ${selectedWallet === name ? "border-primary" : "border-base-100"} ${!walletAvailable ? "opacity-50" : ""}`}
+                    className={twMerge('relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary', selectedWallet === name ? "border-primary bg-slate-200" : "border-base-100", !walletAvailable ? "opacity-50" : "")}
                     onClick={() => walletAvailable && setSelectedWallet(name)}
                     href={!walletAvailable ? linkToDocs : undefined}
                     target="_blank"
@@ -192,7 +193,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           </div>
         </div>
         <button
-          className="btn-primary btn h-10 min-h-10 rounded-lg px-2 text-white"
+          className="btn-primary btn h-10 min-h-10 rounded-lg px-2 flex justify-center items-center gap-2.5"
           onClick={handleConnect}
           disabled={connectDisabled || !selectedWallet}
         >
