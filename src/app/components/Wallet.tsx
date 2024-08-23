@@ -1,5 +1,6 @@
 "use client";
 
+import btcIcon from "@public/icons/btc.svg";
 import { DropdownMenu, Button } from "@radix-ui/themes";
 import { networks } from "bitcoinjs-lib";
 import Image from "next/image";
@@ -16,7 +17,6 @@ import {
   toNetwork,
 } from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
-import btcIcon from "@public/icons/btc.svg";
 
 import { truncateMiddle } from "../utils/strings";
 
