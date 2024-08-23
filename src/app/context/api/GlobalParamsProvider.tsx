@@ -4,7 +4,6 @@ import React, { ReactNode, createContext, useContext } from "react";
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
 
-
 interface GlobalParamsProviderProps {
   children: ReactNode;
 }
