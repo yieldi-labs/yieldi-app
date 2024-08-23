@@ -18,19 +18,22 @@ export default function RootLayout({
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <StakeProvider>
-        <html lang="en">
-          <Theme
-            accentColor="yellow"
-            grayColor="gray"
-            panelBackground="translucent"
-            radius="full">
-            <Navbar />
-            <body>{children}</body>
-          </Theme> 
-        </html>
-      </StakeProvider>
-    </QueryClientProvider>
+    <html lang="en">
+      <body>
+        <QueryClientProvider client={queryClient}>
+          <StakeProvider>
+            <Theme
+              accentColor="yellow"
+              grayColor="gray"
+              panelBackground="translucent"
+              radius="full"
+            >
+              <Navbar />
+              {children}
+            </Theme>
+          </StakeProvider>
+        </QueryClientProvider>
+      </body>
+    </html>
   );
 }

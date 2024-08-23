@@ -12,15 +12,20 @@ import {
   getFinalityProviders,
   PaginatedFinalityProviders,
 } from "@/app/api/getFinalityProviders";
+import { Delegations } from "@/app/components/Delegations/Delegations";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
+import { GlobalParamsVersion } from "@/app/types/globalParams";
+import { signPsbtTransaction } from "@/app/utils/psbt";
+import { Fees, WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import { useStake } from "@/context/StakeContext";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { maxDecimals } from "@/utils/maxDecimals";
 
 const StakeBTCPage = () => {
+  const [btcWallet] = useState<WalletProvider>();
   const [publicKeyNoCoord] = useState("");
   const [address] = useState("");
   const { isErrorOpen } = useError();
@@ -57,10 +62,10 @@ const StakeBTCPage = () => {
     },
   });
 
-  const { data: delegations } = useInfiniteQuery({
+  const { data: delegations, error: delegationError } = useInfiniteQuery({
     queryKey: ["delegations", address, publicKeyNoCoord],
     queryFn: ({ pageParam = "" }) =>
-      getDelegations(pageParam, publicKeyNoCoord),
+      getDelegations(pageParam, "publicKeyNoCoord"),
     getNextPageParam: (lastPage: { pagination: { next_key: string } }) =>
       lastPage?.pagination?.next_key !== ""
         ? lastPage?.pagination?.next_key
@@ -75,7 +80,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { delegations: [], pagination: { next_key: "" } }
+        { delegations: [], pagination: { next_key: "" }, error: false }
       );
 
       return flattenedData;
@@ -111,6 +116,12 @@ const StakeBTCPage = () => {
     updateDelegationsLocalStorage();
   }, [delegations, setDelegationsLocalStorage, delegationsLocalStorage]);
 
+  // Finality providers key-value map { pk: moniker }
+  const finalityProvidersKV = finalityProviders?.finalityProviders.reduce(
+    (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
+    {}
+  );
+
   let totalStakedSat = 0;
 
   if (delegations) {
@@ -123,15 +134,55 @@ const StakeBTCPage = () => {
       );
   }
 
+  // currently adding some dummy data to test the Delegations component
+
+  const globalParams: GlobalParamsVersion = {
+    version: 1,
+    activationHeight: 680000,
+    stakingCapSat: 5000000000,
+    stakingCapHeight: 680500,
+    tag: "v1.0",
+    covenantPks: ["pk1", "pk2", "pk3"],
+    covenantQuorum: 3,
+    unbondingTime: 7200,
+    unbondingFeeSat: 10000,
+    maxStakingAmountSat: 1000000000,
+    minStakingAmountSat: 100000,
+    maxStakingTimeBlocks: 10000,
+    minStakingTimeBlocks: 100,
+    confirmationDepth: 6,
+  };
+
+  const btcNetwork = {
+    messagePrefix: "\u0018Bitcoin Signed Message:\n",
+    bech32: "bc",
+    bip32: {
+      public: 76067358,
+      private: 76066276,
+    },
+    pubKeyHash: 0,
+    scriptHash: 5,
+    wif: 128,
+  };
+
+  const queryMeta = {
+    next: () => {
+      // logic to fetch next page
+    },
+    hasMore: true,
+    isFetchingMore: false,
+  };
+
   return (
+    <>
       <div className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-8">
         <h1 className="text-4xl font-bold mb-8 text-center">
           Select Finality Provider
         </h1>
         <div>
-          <ScrollArea.Root className="max-h-[80vh] rounded overflow-auto shadow-[0_2px_10px] shadow-blackA4 bg-white">
+          <ScrollArea.Root className="max-h-[60vh] rounded overflow-auto shadow-[0_2px_10px] shadow-blackA4 bg-white">
             <ScrollArea.Viewport className="size-full rounded">
-              <Table.Root  size="2">
+              <Table.Root size="2">
                 <Table.Header>
                   <Table.Row className="bg-gray-200">
                     <Table.ColumnHeaderCell className="px-4 py-2">
@@ -191,7 +242,35 @@ const StakeBTCPage = () => {
             <ScrollArea.Corner className="bg-blackA5" />
           </ScrollArea.Root>
         </div>
+        <div>
+          {!delegationError && delegations && finalityProvidersKV ? (
+            <div>
+              <br />
+              <h1>This is Mock Data for now</h1>
+            </div>
+          ) : null}
+          {delegations && finalityProvidersKV ? (
+            <Delegations
+              finalityProvidersKV={finalityProvidersKV}
+              delegationsAPI={delegations.delegations}
+              delegationsLocalStorage={delegationsLocalStorage}
+              publicKeyNoCoord={publicKeyNoCoord}
+              address={address}
+              globalParamsVersion={globalParams}
+              btcWalletNetwork={btcNetwork}
+              signPsbtTx={signPsbtTransaction(btcWallet)}
+              pushTx={function (): Promise<string> {
+                throw new Error("Function not implemented.");
+              }}
+              queryMeta={queryMeta}
+              getNetworkFees={function (): Promise<Fees> {
+                throw new Error("Function not implemented.");
+              }}
+            />
+          ) : null}
+        </div>
       </div>
+    </>
   );
 };
 

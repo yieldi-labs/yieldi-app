@@ -1,5 +1,6 @@
 "use client";
 
+import btcIcon from "@public/icons/btc.svg";
 import { DropdownMenu, Button } from "@radix-ui/themes";
 import { networks } from "bitcoinjs-lib";
 import Image from "next/image";
@@ -12,7 +13,6 @@ import { ErrorState } from "@/app/types/errors";
 import { WalletError, WalletErrorType } from "@/app/utils/errors";
 import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
-import btcIcon from "@public/icons/btc.svg";
 
 
 export default function Wallet() {
