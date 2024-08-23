@@ -1,6 +1,5 @@
 "use client";
 
-import btcIcon from "@public/icons/btc.svg";
 import { DropdownMenu, Button } from "@radix-ui/themes";
 import { networks } from "bitcoinjs-lib";
 import Image from "next/image";
@@ -17,8 +16,7 @@ import {
   toNetwork,
 } from "@/app/utils/wallet";
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
-
-import { truncateMiddle } from "../utils/strings";
+import btcIcon from "@public/icons/btc.svg";
 
 export default function Wallet() {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
@@ -51,13 +49,13 @@ export default function Wallet() {
         const supported = isSupportedAddressType(address);
         if (!supported) {
           throw new Error(
-            "Invalid address type. Please use a Native SegWit or Taproot",
+            "Invalid address type. Please use a Native SegWit or Taproot"
           );
         }
 
         const balanceSat = await walletProvider.getBalance();
         const publicKeyNoCoord = getPublicKeyNoCoord(
-          await walletProvider.getPublicKeyHex(),
+          await walletProvider.getPublicKeyHex()
         );
         setBTCWallet(walletProvider);
         setBTCWalletBalanceSat(balanceSat);
@@ -75,7 +73,7 @@ export default function Wallet() {
         let errorMessage;
         switch (true) {
           case /Incorrect address prefix for (Testnet \/ Signet|Mainnet)/.test(
-            error.message,
+            error.message
           ):
             errorMessage =
               "Unsupported address type detected. Please use a Native SegWit or Taproot address.";
@@ -95,8 +93,14 @@ export default function Wallet() {
         console.error(errorMessage);
       }
     },
-    [showError],
+    [showError]
   );
+
+  const truncateMiddle = (str: string, padding: number) => {
+    return str.length <= padding * 2
+      ? str
+      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
+  };
 
   return (
     <>
@@ -125,10 +129,12 @@ export default function Wallet() {
           </>
         ) : (
           <>
-            <Button asChild size="3" onClick={() => setConnectModalOpen(true)}>
-              <button className="bg-slate-700 hover:bg-slate-800 text-white bg-surface-950 cursor-pointer transition-transform hover:scale-95">
-                Connect Wallet
-              </button>
+            <Button
+              variant="soft"
+              className="cursor-pointer"
+              onClick={() => setConnectModalOpen(true)}
+            >
+              Connect Wallet
             </Button>
           </>
         )}
