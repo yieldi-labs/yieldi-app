@@ -9,7 +9,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "npm run lint:prettier && npm run lint:next && npm run lint:tsc",
+    "lint:prettier": "npx prettier --check .",
+    "lint:next": "next lint",
+    "lint:tsc": "tsc --noEmit",
+    "lint:fix": "npm run lint:prettier:fix && npm run lint:next:fix",
+    "lint:prettier:fix": "npm run lint:prettier -- --write",
+    "lint:next:fix": "npm run lint:next -- --fix"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.0",
