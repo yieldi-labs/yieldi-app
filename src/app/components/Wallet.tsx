@@ -49,13 +49,13 @@ export default function Wallet() {
         const supported = isSupportedAddressType(address);
         if (!supported) {
           throw new Error(
-            "Invalid address type. Please use a Native SegWit or Taproot"
+            "Invalid address type. Please use a Native SegWit or Taproot",
           );
         }
 
         const balanceSat = await walletProvider.getBalance();
         const publicKeyNoCoord = getPublicKeyNoCoord(
-          await walletProvider.getPublicKeyHex()
+          await walletProvider.getPublicKeyHex(),
         );
         setBTCWallet(walletProvider);
         setBTCWalletBalanceSat(balanceSat);
@@ -73,7 +73,7 @@ export default function Wallet() {
         let errorMessage;
         switch (true) {
           case /Incorrect address prefix for (Testnet \/ Signet|Mainnet)/.test(
-            error.message
+            error.message,
           ):
             errorMessage =
               "Unsupported address type detected. Please use a Native SegWit or Taproot address.";
@@ -93,7 +93,7 @@ export default function Wallet() {
         console.error(errorMessage);
       }
     },
-    [showError]
+    [showError],
   );
 
   const truncateMiddle = (str: string, padding: number) => {

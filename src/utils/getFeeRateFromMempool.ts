@@ -12,7 +12,7 @@ export const getFeeRateFromMempool = (mempoolFeeRates?: Fees) => {
       defaultFeeRate: mempoolFeeRates.fastestFee,
       maxFeeRate: Math.max(
         LEAST_MAX_FEE_RATE,
-        nextPowerOfTwo(mempoolFeeRates.fastestFee)
+        nextPowerOfTwo(mempoolFeeRates.fastestFee),
       ),
     };
   } else {

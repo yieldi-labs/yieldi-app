@@ -8,7 +8,7 @@ export const apiDataToStakingScripts = (
   finalityProviderPkHex: string,
   stakingTxTimelock: number,
   globalParams: GlobalParamsVersion,
-  publicKeyNoCoord: string
+  publicKeyNoCoord: string,
 ): StakingScripts => {
   if (!globalParams || !publicKeyNoCoord) {
     throw new Error("Invalid data");
@@ -16,7 +16,7 @@ export const apiDataToStakingScripts = (
 
   // Convert covenant PKs to buffers
   const covenantPKsBuffer = globalParams?.covenantPks?.map((pk) =>
-    getPublicKeyNoCoord(pk)
+    getPublicKeyNoCoord(pk),
   );
 
   // Create staking script data
@@ -29,7 +29,7 @@ export const apiDataToStakingScripts = (
       globalParams.covenantQuorum,
       stakingTxTimelock,
       globalParams.unbondingTime,
-      Buffer.from(globalParams.tag, "hex")
+      Buffer.from(globalParams.tag, "hex"),
     );
   } catch (error: Error | any) {
     throw new Error(error?.message || "Cannot build staking script data");

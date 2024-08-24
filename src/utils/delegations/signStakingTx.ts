@@ -24,7 +24,7 @@ export const createStakingTx = (
   address: string,
   publicKeyNoCoord: string,
   feeRate: number,
-  inputUTXOs: UTXO[]
+  inputUTXOs: UTXO[],
 ) => {
   // Get the staking term, it will ignore the `stakingTimeBlocks` and use the value from params
   // if the min and max staking time blocks are the same
@@ -55,7 +55,7 @@ export const createStakingTx = (
       finalityProviderPublicKey,
       stakingTerm,
       globalParamsVersion,
-      publicKeyNoCoord
+      publicKeyNoCoord,
     );
   } catch (error: Error | any) {
     throw new Error(error?.message || "Cannot build staking scripts");
@@ -77,13 +77,13 @@ export const createStakingTx = (
       // For example, if a Bitcoin height of X is provided,
       // the transaction will be included starting from height X+1.
       // https://learnmeabitcoin.com/technical/transaction/locktime/
-      globalParamsVersion.activationHeight - 1
+      globalParamsVersion.activationHeight - 1,
     );
     unsignedStakingPsbt = psbt;
     stakingFeeSat = fee;
   } catch (error: Error | any) {
     throw new Error(
-      error?.message || "Cannot build unsigned staking transaction"
+      error?.message || "Cannot build unsigned staking transaction",
     );
   }
 
@@ -104,7 +104,7 @@ export const signStakingTx = async (
   address: string,
   publicKeyNoCoord: string,
   feeRate: number,
-  inputUTXOs: UTXO[]
+  inputUTXOs: UTXO[],
 ): Promise<{ stakingTxHex: string; stakingTerm: number }> => {
   // Create the staking transaction
   const { unsignedStakingPsbt, stakingTerm, stakingFeeSat } = createStakingTx(
@@ -116,14 +116,14 @@ export const signStakingTx = async (
     address,
     publicKeyNoCoord,
     feeRate,
-    inputUTXOs
+    inputUTXOs,
   );
 
   // Sign the staking transaction
   let stakingTx: Transaction;
   try {
     stakingTx = await signPsbtTransaction(btcWallet)(
-      unsignedStakingPsbt.toHex()
+      unsignedStakingPsbt.toHex(),
     );
   } catch (error: Error | any) {
     throw new Error(error?.message || "Staking transaction signing PSBT error");
