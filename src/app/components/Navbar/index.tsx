@@ -1,18 +1,29 @@
+import { NextPage } from "next";
+
 import Brand from "@/app/components/Brand";
 
-import Wallet from "../Wallet";
+import Wallet, { WalletProps } from "../Wallet";
 
-const Navbar = ({ children }: { children: React.ReactNode }) => {
+const Navbar: NextPage<WalletProps> = ({
+  address,
+  setConnectModalOpen,
+  btcWallet,
+  btcWalletBalanceSat,
+  handleDisconnectBTC,
+}) => {
   return (
-    <div>
-      <header className="fixed inset-x-0 w-full z-10 bg-white">
-        <nav className="flex items-center justify-between p-4 lg:px-8 text-white">
-          <Brand />
-          <Wallet />
-        </nav>
-      </header>
-      <main className="h-screen grow pt-24">{children}</main>
-    </div>
+    <header className="fixed top-0 w-full z-40">
+      <nav className="flex items-center justify-between py-4 px-8 text-white">
+        <Brand />
+        <Wallet
+          address={address}
+          setConnectModalOpen={setConnectModalOpen}
+          btcWallet={btcWallet}
+          btcWalletBalanceSat={btcWalletBalanceSat}
+          handleDisconnectBTC={handleDisconnectBTC}
+        />
+      </nav>
+    </header>
   );
 };
 

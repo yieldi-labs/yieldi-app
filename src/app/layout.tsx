@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/app/globals.css";
 import "react-responsive-modal/styles.css";
 
 import { Theme } from "@radix-ui/themes";
@@ -7,7 +7,7 @@ import { StrictMode } from "react";
 import { StakeProvider } from "@/context/StakeContext";
 import QueryClientProvider from "@/lib/providers/QueryClientProvider";
 
-import Navbar from "./components/Navbar";
+import Main from "./components/Main";
 
 export default function RootLayout({
   children,
@@ -21,12 +21,12 @@ export default function RootLayout({
           <StakeProvider>
             <body>
               <Theme
-                accentColor="gray"
+                accentColor="yellow"
                 grayColor="gray"
                 panelBackground="translucent"
                 radius="full"
               >
-                <Navbar>{children}</Navbar>
+                <Main>{children}</Main>
               </Theme>
             </body>
           </StakeProvider>
