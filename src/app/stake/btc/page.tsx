@@ -18,6 +18,7 @@ import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
 import { signPsbtTransaction } from "@/app/utils/psbt";
+import { truncateMiddle } from "@/app/utils/strings";
 import { Fees, WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import { useStake } from "@/context/StakeContext";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
@@ -180,21 +181,21 @@ const StakeBTCPage = () => {
           Select Finality Provider
         </h1>
         <div>
-          <ScrollArea.Root className="max-h-[60vh] rounded overflow-auto shadow-[0_2px_10px] shadow-blackA4 bg-white">
+          <ScrollArea.Root className="max-h-[80vh] rounded-3xl border overflow-auto bg-white">
             <ScrollArea.Viewport className="size-full rounded">
-              <Table.Root size="2">
-                <Table.Header>
-                  <Table.Row className="bg-gray-200">
-                    <Table.ColumnHeaderCell className="px-4 py-2">
+              <Table.Root size="2" className="relative">
+                <Table.Header className="bg-slate-800">
+                  <Table.Row>
+                    <Table.ColumnHeaderCell className="whitespace-nowrap align-middle p-6 text-white">
                       Name
                     </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell className="px-4 py-2 hidden lg:table-cell">
+                    <Table.ColumnHeaderCell className="whitespace-nowrap p-6 align-middle hidden lg:table-cell text-white">
                       BTC PK
                     </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell className="px-4 py-2">
+                    <Table.ColumnHeaderCell className="whitespace-nowrap p-6 align-middle text-white">
                       Total Delegation
                     </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell className="px-4 py-2">
+                    <Table.ColumnHeaderCell className="whitespace-nowrap p-6 align-middle text-white">
                       Commission
                     </Table.ColumnHeaderCell>
                   </Table.Row>
@@ -207,16 +208,16 @@ const StakeBTCPage = () => {
                           className="cursor-pointer hover:bg-gray-100 transition-colors"
                           onClick={() => handleRowClick(item)}
                         >
-                          <Table.Cell className="px-4 py-2">
+                          <Table.Cell className="p-6 align-middle">
                             {item.description.moniker}
                           </Table.Cell>
-                          <Table.Cell className="px-4 py-2 hidden lg:table-cell">
-                            {item.btcPk}
+                          <Table.Cell className="p-6 align-middle hidden lg:table-cell">
+                            {truncateMiddle(item.btcPk, 10)}
                           </Table.Cell>
-                          <Table.Cell className="px-4 py-2">
+                          <Table.Cell className="p-6 align-middle">
                             {item.totalDelegations} BTC
                           </Table.Cell>
-                          <Table.Cell className="px-4 py-2">
+                          <Table.Cell className="p-6 align-middle">
                             {item.commission
                               ? `${maxDecimals(Number(item.commission) * 100, 2)}%`
                               : "-"}
