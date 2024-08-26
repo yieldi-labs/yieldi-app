@@ -4,29 +4,26 @@ import { DropdownMenu, Button } from "@radix-ui/themes";
 import { NextPage } from "next";
 import Image from "next/image";
 
+import { useWallet } from "@/app/context/WalletContext";
 import { truncateMiddle } from "@/utils/strings";
-import { WalletProvider } from "@/utils/wallet/wallet_provider";
 import btcIcon from "@public/icons/btc.svg";
-
 export interface WalletProps {
-  address: string;
   setConnectModalOpen: (open: boolean) => void;
-  btcWallet: WalletProvider | undefined;
-  btcWalletBalanceSat: number;
-  handleDisconnectBTC: () => void;
 }
 
-const Wallet: NextPage<WalletProps> = ({
-  address,
-  setConnectModalOpen,
-  btcWallet,
-  btcWalletBalanceSat,
-  handleDisconnectBTC,
-}) => {
+const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+  const {
+    address,
+    btcWallet,
+    btcWalletBalanceSat,
+    disconnectWallet,
+    isConnected,
+  } = useWallet();
+
   return (
     <>
       <DropdownMenu.Root modal={false}>
-        {btcWallet ? (
+        {isConnected && btcWallet ? (
           <>
             <DropdownMenu.Trigger>
               <Button variant="soft" className="cursor-pointer">
@@ -41,7 +38,7 @@ const Wallet: NextPage<WalletProps> = ({
               <DropdownMenu.Sub>
                 <DropdownMenu.Item
                   className="cursor-pointer"
-                  onClick={handleDisconnectBTC}
+                  onClick={disconnectWallet}
                 >
                   Disconnect
                 </DropdownMenu.Item>

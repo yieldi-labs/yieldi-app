@@ -4,8 +4,8 @@ import "react-responsive-modal/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { StrictMode } from "react";
 
-import { StakeProvider } from "@/context/StakeContext";
-import QueryClientProvider from "@/lib/providers/QueryClientProvider";
+import { StakeProvider } from "@/app/context/StakeContext";
+import { WalletProvider } from "@/app/context/WalletContext";
 
 import Main from "./components/Main";
 
@@ -17,8 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <StrictMode>
-        <QueryClientProvider>
-          <StakeProvider>
+        <StakeProvider>
+          <WalletProvider>
             <body>
               <Theme
                 accentColor="yellow"
@@ -29,8 +29,8 @@ export default function RootLayout({
                 <Main>{children}</Main>
               </Theme>
             </body>
-          </StakeProvider>
-        </QueryClientProvider>
+          </WalletProvider>
+        </StakeProvider>
       </StrictMode>
     </html>
   );
