@@ -12,11 +12,15 @@ import { useError } from "@/app/context/Error/ErrorContext";
 import { useWallet } from "@/app/context/WalletContext"; // Import the useWallet hook
 import QueryClientProvider from "@/lib/providers/QueryClientProvider";
 
+import { useFetchFinalityProviders } from "../hooks/useFetchFinalityProviders";
+
 export interface MainProps {
   children: ReactNode;
 }
 
 const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
+  useFetchFinalityProviders();
+
   const {
     address: walletAddress,
     connectWallet,

@@ -8,16 +8,14 @@ import { Suspense, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getDelegations, PaginatedDelegations } from "@/app/api/getDelegations";
-import {
-  getFinalityProviders,
-  PaginatedFinalityProviders,
-} from "@/app/api/getFinalityProviders";
 import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import { Delegations } from "@/app/components/Delegations/Delegations";
 import { useError } from "@/app/context/Error/ErrorContext";
+import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
+import { GlobalParamsVersion } from "@/app/types/globalParams";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { maxDecimals } from "@/utils/maxDecimals";
@@ -37,31 +35,7 @@ const StakeBTCPage = () => {
     setSelectedDelegation(delegation);
     router.push(`/stake/btc/${delegation.btcPk}`);
   };
-
-  const { data: finalityProviders } = useInfiniteQuery({
-    queryKey: ["finality providers"],
-    queryFn: ({ pageParam = "" }) => getFinalityProviders(pageParam),
-    getNextPageParam: (lastPage: { pagination: { next_key: string } }) =>
-      lastPage?.pagination?.next_key !== ""
-        ? lastPage?.pagination?.next_key
-        : null,
-    initialPageParam: "",
-    refetchInterval: 120000, // 2 minutes
-    select: (data: { pages: any[] }) => {
-      const flattenedData = data.pages.reduce<PaginatedFinalityProviders>(
-        (acc, page) => {
-          acc.finalityProviders.push(...page.finalityProviders);
-          acc.pagination = page.pagination;
-          return acc;
-        },
-        { finalityProviders: [], pagination: { next_key: "" } },
-      );
-      return flattenedData;
-    },
-    retry: (failureCount: number) => {
-      return !isErrorOpen && failureCount <= 3;
-    },
-  });
+  const { finalityProviders } = useFinalityProviders();
 
   let { data: delegations } = useInfiniteQuery({
     queryKey: ["delegations", address, publicKeyNoCoord],
@@ -123,7 +97,7 @@ const StakeBTCPage = () => {
   }, [delegations, setDelegationsLocalStorage, delegationsLocalStorage]);
 
   // Finality providers key-value map { pk: moniker }
-  const finalityProvidersKV = finalityProviders?.finalityProviders.reduce(
+  const finalityProvidersKV = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
     {},
   );
@@ -206,8 +180,7 @@ const StakeBTCPage = () => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {finalityProviders?.finalityProviders
-                    ? finalityProviders.finalityProviders.map((item) => (
+                  {finalityProviders ? finalityProviders.map((item) => (
                         <Table.Row
                           key={item.btcPk}
                           className="cursor-pointer hover:bg-gray-100 transition-colors"

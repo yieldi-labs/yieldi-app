@@ -70,6 +70,7 @@ export const Staking: React.FC<StakingProps> = ({
   address,
   publicKeyNoCoord,
   setDelegationsLocalStorage,
+  selectedFinalityProvider,
   btcWalletBalanceSat,
 }) => {
   // Staking form state
@@ -95,12 +96,10 @@ export const Staking: React.FC<StakingProps> = ({
     overTheCapRange: false,
     approchingCapRange: false,
   });
-  const {
-    selectedDelegation: finalityProvider,
-    setSelectedDelegation: setFinalityProvider,
-  } = useStake();
+  const { setSelectedDelegation: setFinalityProvider } = useStake();
 
   // const [finalityProviders,] = useState<FinalityProviderInterface[]>([]);
+  const finalityProvider = selectedFinalityProvider;
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
