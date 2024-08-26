@@ -3,7 +3,7 @@
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { Table } from "@radix-ui/themes";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
@@ -12,6 +12,7 @@ import {
   getFinalityProviders,
   PaginatedFinalityProviders,
 } from "@/app/api/getFinalityProviders";
+import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import { Delegations } from "@/app/components/Delegations/Delegations";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
@@ -54,7 +55,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { finalityProviders: [], pagination: { next_key: "" } },
+        { finalityProviders: [], pagination: { next_key: "" } }
       );
       return flattenedData;
     },
@@ -63,10 +64,10 @@ const StakeBTCPage = () => {
     },
   });
 
-  const { data: delegations, error: delegationError } = useInfiniteQuery({
+  let { data: delegations } = useInfiniteQuery({
     queryKey: ["delegations", address, publicKeyNoCoord],
     queryFn: ({ pageParam = "" }) =>
-      getDelegations(pageParam, "publicKeyNoCoord"),
+      getDelegations(pageParam, publicKeyNoCoord),
     getNextPageParam: (lastPage: { pagination: { next_key: string } }) =>
       lastPage?.pagination?.next_key !== ""
         ? lastPage?.pagination?.next_key
@@ -81,7 +82,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { delegations: [], pagination: { next_key: "" }, error: false },
+        { delegations: [], pagination: { next_key: "" } }
       );
 
       return flattenedData;
@@ -90,6 +91,11 @@ const StakeBTCPage = () => {
       return !isErrorOpen && failureCount <= 3;
     },
   });
+
+  const inTestMode = useSearchParams().get("mockData") === "true";
+  if (inTestMode) {
+    delegations = getDelegations_testData;
+  }
 
   const delegationsLocalStorageKey =
     getDelegationsLocalStorageKey(publicKeyNoCoord);
@@ -107,7 +113,7 @@ const StakeBTCPage = () => {
       const { areDelegationsDifferent, delegations: newDelegations } =
         await calculateDelegationsDiff(
           delegations.delegations,
-          delegationsLocalStorage,
+          delegationsLocalStorage
         );
       if (areDelegationsDifferent) {
         setDelegationsLocalStorage(newDelegations);
@@ -120,7 +126,7 @@ const StakeBTCPage = () => {
   // Finality providers key-value map { pk: moniker }
   const finalityProvidersKV = finalityProviders?.finalityProviders.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {},
+    {}
   );
 
   let totalStakedSat = 0;
@@ -131,7 +137,7 @@ const StakeBTCPage = () => {
       .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
       .reduce(
         (accumulator: number, item) => accumulator + item?.stakingValueSat,
-        0,
+        0
       );
   }
 
@@ -244,16 +250,10 @@ const StakeBTCPage = () => {
           </ScrollArea.Root>
         </div>
         <div>
-          {!delegationError && delegations && finalityProvidersKV ? (
-            <div>
-              <br />
-              <h1>This is Mock Data for now</h1>
-            </div>
-          ) : null}
           {delegations && finalityProvidersKV ? (
             <Delegations
               finalityProvidersKV={finalityProvidersKV}
-              delegationsAPI={delegations.delegations}
+              delegationsAPI={delegations?.delegations}
               delegationsLocalStorage={delegationsLocalStorage}
               publicKeyNoCoord={publicKeyNoCoord}
               address={address}
