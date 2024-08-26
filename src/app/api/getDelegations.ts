@@ -41,7 +41,7 @@ interface UnbondingTxAPI {
 
 export const getDelegations = async (
   key: string,
-  publicKeyNoCoord?: string
+  publicKeyNoCoord?: string,
 ): Promise<PaginatedDelegations> => {
   if (!publicKeyNoCoord) {
     throw new Error("No public key provided");
@@ -61,7 +61,7 @@ export const getDelegations = async (
     "GET",
     "/v1/staker/delegations",
     "Error getting delegations",
-    params
+    params,
   );
 
   const delegationsAPIResponse: DelegationsAPIResponse = response.data;
@@ -87,7 +87,7 @@ export const getDelegations = async (
             outputIndex: apiDelegation.unbonding_tx.output_index,
           }
         : undefined,
-    })
+    }),
   );
 
   const pagination: Pagination = {
