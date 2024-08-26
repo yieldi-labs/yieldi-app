@@ -4,9 +4,10 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 import { ErrorProvider } from "@/app/context/Error/ErrorContext";
+import { FinalityProvider } from "@/app/types/finalityProviders";
 
 interface StakeContextType {
-  selectedDelegation: any;
+  selectedDelegation: FinalityProvider;
   setSelectedDelegation: (delegation: any) => void;
 }
 

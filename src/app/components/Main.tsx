@@ -3,7 +3,7 @@
 import "react-responsive-modal/styles.css";
 
 import { NextPage } from "next";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 import { ConnectModal } from "@/app/components/Modals/ConnectModal";
 import { ErrorModal } from "@/app/components/Modals/ErrorModal";
@@ -17,8 +17,12 @@ export interface MainProps {
 }
 
 const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
-  const [connectModalOpen, setConnectModalOpen] = useState(false);
-  const { address: walletAddress, connectWallet } = useWallet();
+  const {
+    address: walletAddress,
+    connectWallet,
+    connectModalOpen,
+    setConnectModalOpen,
+  } = useWallet();
   const { error, isErrorOpen, hideError, retryErrorAction } = useError();
 
   const handleConnectBTC = async (walletProvider: any) => {
@@ -30,9 +34,7 @@ const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
     <div>
       <Navbar setConnectModalOpen={setConnectModalOpen} />
       <QueryClientProvider>
-        <main className="h-screen grow pt-24">
-          {children}
-        </main>
+        <main className="h-screen grow pt-24">{children}</main>
       </QueryClientProvider>
       <ConnectModal
         open={connectModalOpen}

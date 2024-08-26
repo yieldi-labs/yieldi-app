@@ -8,10 +8,11 @@ import {
   OVERFLOW_HEIGHT_WARNING_THRESHOLD,
   OVERFLOW_TVL_WARNING_THRESHOLD,
 } from "@/app/common/constants";
-import { LoadingView } from "@/app/components/Loading/Loading";
+// import { LoadingView } from "@/app/components/Loading/Loading";
 import { FeedbackModal } from "@/app/components/Modals/FeedbackModal";
 import { PreviewModal } from "@/app/components/Modals/PreviewModal";
 import { useError } from "@/app/context/Error/ErrorContext";
+import { useStake } from "@/app/context/StakeContext";
 import { useGlobalParams } from "@/app/context/api/GlobalParamsProvider";
 import { useStakingStats } from "@/app/context/api/StakingStatsProvider";
 import { Delegation } from "@/app/types/delegations";
@@ -31,7 +32,7 @@ import { isStakingSignReady } from "@/utils/isStakingSignReady";
 import { toLocalStorageDelegation } from "@/utils/local_storage/toLocalStorageDelegation";
 import { WalletProvider } from "@/utils/wallet/wallet_provider";
 
-import { FinalityProviders } from "./FinalityProviders/FinalityProviders";
+// import { FinalityProviders } from "./FinalityProviders/FinalityProviders";
 import { StakingAmount } from "./Form/StakingAmount";
 import { StakingFee } from "./Form/StakingFee";
 import { StakingTime } from "./Form/StakingTime";
@@ -47,15 +48,11 @@ interface OverflowProperties {
   approchingCapRange: boolean;
 }
 
-interface StakingProps {
+export interface StakingProps {
   btcHeight: number | undefined;
-  finalityProviders: FinalityProviderInterface[] | undefined;
   isWalletConnected: boolean;
-  isLoading: boolean;
   onConnect: () => void;
-  finalityProvidersFetchNext: () => void;
-  finalityProvidersHasNext: boolean;
-  finalityProvidersIsFetchingMore: boolean;
+  selectedFinalityProvider: FinalityProviderInterface | undefined;
   btcWallet: WalletProvider | undefined;
   btcWalletBalanceSat: number;
   btcWalletNetwork: networks.Network | undefined;
@@ -66,13 +63,8 @@ interface StakingProps {
 
 export const Staking: React.FC<StakingProps> = ({
   btcHeight,
-  finalityProviders,
   isWalletConnected,
   onConnect,
-  finalityProvidersFetchNext,
-  finalityProvidersHasNext,
-  finalityProvidersIsFetchingMore,
-  isLoading,
   btcWallet,
   btcWalletNetwork,
   address,
@@ -83,8 +75,6 @@ export const Staking: React.FC<StakingProps> = ({
   // Staking form state
   const [stakingAmountSat, setStakingAmountSat] = useState(0);
   const [stakingTimeBlocks, setStakingTimeBlocks] = useState(0);
-  const [finalityProvider, setFinalityProvider] =
-    useState<FinalityProviderInterface>();
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
@@ -105,6 +95,12 @@ export const Staking: React.FC<StakingProps> = ({
     overTheCapRange: false,
     approchingCapRange: false,
   });
+  const {
+    selectedDelegation: finalityProvider,
+    setSelectedDelegation: setFinalityProvider,
+  } = useStake();
+
+  // const [finalityProviders,] = useState<FinalityProviderInterface[]>([]);
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -390,7 +386,8 @@ export const Staking: React.FC<StakingProps> = ({
   ]);
 
   // Select the finality provider from the list
-  const handleChooseFinalityProvider = (btcPkHex: string) => {
+  /*
+  const _handleChooseFinalityProvider = (btcPkHex: string) => {
     let found: FinalityProviderInterface | undefined;
     try {
       if (!finalityProviders) {
@@ -421,6 +418,7 @@ export const Staking: React.FC<StakingProps> = ({
 
     setFinalityProvider(found);
   };
+  */
 
   const handleStakingAmountSatChange = (inputAmountSat: number) => {
     setStakingAmountSat(inputAmountSat);
@@ -510,9 +508,9 @@ export const Staking: React.FC<StakingProps> = ({
       return <WalletNotConnected onConnect={onConnect} />;
     }
     // 2. Wallet is connected but we are still loading the staking params
-    else if (isLoading) {
-      return <LoadingView />;
-    }
+    // else if (isLoading) {
+    // return <LoadingView />;
+    // }
     // 3. Staking has not started yet
     else if (isBlockHeightUnderActivation) {
       return (
@@ -641,21 +639,11 @@ export const Staking: React.FC<StakingProps> = ({
   };
 
   return (
-    <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm lg:flex-1">
-      <h3 className="mb-4 font-bold">Staking</h3>
+    <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm lg:flex-1 items-center">
+      <h3 className="mb-4 font-bold">
+        Staking with {finalityProvider?.description.moniker}
+      </h3>
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="flex flex-1 flex-col gap-4 lg:basis-3/5 xl:basis-2/3">
-          <FinalityProviders
-            finalityProviders={finalityProviders}
-            selectedFinalityProvider={finalityProvider}
-            onFinalityProviderChange={handleChooseFinalityProvider}
-            queryMeta={{
-              next: finalityProvidersFetchNext,
-              hasMore: finalityProvidersHasNext,
-              isFetchingMore: finalityProvidersIsFetchingMore,
-            }}
-          />
-        </div>
         <div className="divider m-0 lg:divider-horizontal lg:m-0" />
         <div className="flex flex-1 flex-col gap-4 lg:basis-2/5 xl:basis-1/3">
           {renderStakingForm()}
