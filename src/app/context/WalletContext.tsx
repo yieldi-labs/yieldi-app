@@ -48,7 +48,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
             "Invalid address type. Please use a Native SegWit or Taproot",
           );
         }
-        
+
         const balanceSat = await walletProvider.getBalance();
         const publicKeyNoCoord = getPublicKeyNoCoord(
           await walletProvider.getPublicKeyHex(),
