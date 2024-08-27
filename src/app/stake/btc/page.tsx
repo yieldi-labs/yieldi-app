@@ -182,8 +182,8 @@ const StakeBTCPage = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">
+      <div className="lg:w-1/2 mx-auto px-4 md:px-16 lg:px-0">
+        <h1 className="text-xl font-bold mb-8 text-gray-700">
           Select Finality Provider
         </h1>
         <div>
