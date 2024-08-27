@@ -129,12 +129,10 @@ export default function Wallet() {
           </>
         ) : (
           <>
-            <Button
-              variant="soft"
-              className="cursor-pointer"
-              onClick={() => setConnectModalOpen(true)}
-            >
-              Connect Wallet
+            <Button asChild size="3" onClick={() => setConnectModalOpen(true)}>
+              <button className="bg-slate-700 hover:bg-slate-800 text-white bg-surface-950 cursor-pointer transition-transform hover:scale-95">
+                Connect Wallet
+              </button>
             </Button>
           </>
         )}
