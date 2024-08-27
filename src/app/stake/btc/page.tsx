@@ -180,7 +180,8 @@ const StakeBTCPage = () => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {finalityProviders ? finalityProviders.map((item) => (
+                  {finalityProviders
+                    ? finalityProviders.map((item) => (
                         <Table.Row
                           key={item.btcPk}
                           className="cursor-pointer hover:bg-gray-100 transition-colors"

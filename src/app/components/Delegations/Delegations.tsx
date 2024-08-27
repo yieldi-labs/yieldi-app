@@ -12,12 +12,12 @@ import {
 } from "@/app/types/delegations";
 import { ErrorState } from "@/app/types/errors";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
-import { SignPsbtTransaction } from "@/app/utils/psbt";
-import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import { signUnbondingTx } from "@/utils/delegations/signUnbondingTx";
 import { signWithdrawalTx } from "@/utils/delegations/signWithdrawalTx";
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
+import { SignPsbtTransaction } from "@/utils/psbt";
+import { WalletProvider } from "@/utils/wallet/wallet_provider";
 
 import {
   MODE,

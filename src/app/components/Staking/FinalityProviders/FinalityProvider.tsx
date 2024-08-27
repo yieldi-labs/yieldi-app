@@ -8,7 +8,6 @@ import { getNetworkConfig } from "@/config/network.config";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { maxDecimals } from "@/utils/maxDecimals";
 
-
 interface FinalityProviderProps {
   moniker: string;
   pkHex: string;
