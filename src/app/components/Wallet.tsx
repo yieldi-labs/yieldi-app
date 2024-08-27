@@ -18,8 +18,6 @@ import {
 import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
 import btcIcon from "@public/icons/btc.svg";
 
-import { truncateMiddle } from "../utils/strings";
-
 export default function Wallet() {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [btcWallet, setBTCWallet] = useState<WalletProvider>();
@@ -97,6 +95,12 @@ export default function Wallet() {
     },
     [showError],
   );
+
+  const truncateMiddle = (str: string, padding: number) => {
+    return str.length <= padding * 2
+      ? str
+      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
+  };
 
   return (
     <>

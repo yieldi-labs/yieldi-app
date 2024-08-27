@@ -93,5 +93,5 @@ export const getDelegations = async (
   const pagination: Pagination = {
     next_key: delegationsAPIResponse.pagination.next_key,
   };
-  return { delegations: delegations, pagination };
+  return { delegations: delegations, pagination: pagination };
 };
