@@ -539,7 +539,7 @@ export const Staking: React.FC<StakingProps> = ({
       return showOverflowWarning(overflow);
     }
     // 6. Staking form
-    else {
+    else if (stakingParams) {
       const {
         minStakingAmountSat,
         maxStakingAmountSat,
@@ -633,6 +633,16 @@ export const Staking: React.FC<StakingProps> = ({
             ) : null}
           </div>
         </>
+      );
+    } else {
+      return (
+        <Message
+          title="Staking parameters not loaded"
+          messages={[
+            "The staking parameters are not loaded yet. Please try again later.",
+          ]}
+          icon={stakingNotStarted}
+        />
       );
     }
   };

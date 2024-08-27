@@ -82,6 +82,7 @@ export const createStakingTx = (
     unsignedStakingPsbt = psbt;
     stakingFeeSat = fee;
   } catch (error: Error | any) {
+    console.error(error);
     throw new Error(
       error?.message || "Cannot build unsigned staking transaction",
     );

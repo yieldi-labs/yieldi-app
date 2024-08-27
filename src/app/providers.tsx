@@ -8,19 +8,22 @@ import { ErrorProvider } from "./context/Error/ErrorContext";
 import { FinalityProvidersProvider } from "./context/FinalityProvidersContext";
 import { StakeProvider } from "./context/StakeContext";
 import { WalletProvider } from "./context/WalletContext";
+import { GlobalParamsProvider } from "./context/api/GlobalParamsProvider";
 
 function Providers({ children }: React.PropsWithChildren) {
   const queryClient = new QueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StakeProvider>
-        <WalletProvider>
-          <FinalityProvidersProvider>
-            <ErrorProvider>{children}</ErrorProvider>
-          </FinalityProvidersProvider>
-        </WalletProvider>
-      </StakeProvider>
+      <GlobalParamsProvider>
+        <StakeProvider>
+          <WalletProvider>
+            <FinalityProvidersProvider>
+              <ErrorProvider>{children}</ErrorProvider>
+            </FinalityProvidersProvider>
+          </WalletProvider>
+        </StakeProvider>
+      </GlobalParamsProvider>
     </QueryClientProvider>
   );
 }

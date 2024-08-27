@@ -45,12 +45,6 @@ const StakeBTCDetailPage = ({ params }: { params: { pk: string } }) => {
         },
       );
     }
-
-    console.log({
-      pk,
-      selectedFinalityProvider,
-      finalityProviders: finalityProvidersContext,
-    });
     if (pk && finalityProvidersContext.finalityProviders) {
       const selectedFinalityProvider =
         finalityProvidersContext.finalityProviders.find(
