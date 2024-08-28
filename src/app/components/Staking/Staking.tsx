@@ -1,3 +1,5 @@
+import * as Form from "@radix-ui/react-form";
+import { Flex, Link } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -574,9 +576,33 @@ export const Staking: React.FC<StakingProps> = ({
 
       return (
         <>
-          <p>Set up staking terms</p>
-          <div className="flex flex-1 flex-col">
+          <Form.Root
+            className="flex flex-1 flex-col border-gray-800 border bg-gray-100 
+            md:min-w-[368px] lg:min-w-[472px] lg:py-[42px] py-[24px] lg:px-[8px] px-[4px]"
+          >
             <div className="flex flex-1 flex-col">
+              <Flex
+                direction="column"
+                className="w-full max-w-md bg-gray-100 mb-5"
+              >
+                <h3 className="text-xs font-medium mb-2 pl-2">
+                  FINALITY PROVIDER
+                </h3>
+                <Form.Field
+                  name="finality-provider"
+                  className="w-full bg-gray-200 lg:py-3 px-1 lg:px-2"
+                >
+                  <Flex justify="between" align="center">
+                    <span>{finalityProvider?.description.moniker}</span>
+                    <Link
+                      href="#"
+                      className="text-black text-sm underline decoration-black"
+                    >
+                      Change
+                    </Link>
+                  </Flex>
+                </Form.Field>
+              </Flex>
               <StakingTime
                 minStakingTimeBlocks={minStakingTimeBlocks}
                 maxStakingTimeBlocks={maxStakingTimeBlocks}
@@ -631,7 +657,7 @@ export const Staking: React.FC<StakingProps> = ({
                 unbondingTimeBlocks={unbondingTime}
               />
             ) : null}
-          </div>
+          </Form.Root>
         </>
       );
     } else {
@@ -649,9 +675,32 @@ export const Staking: React.FC<StakingProps> = ({
 
   return (
     <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm lg:flex-1 items-center">
-      <h3 className="mb-4 font-bold">
-        Staking with {finalityProvider?.description.moniker}
-      </h3>
+      <div className="flex items-center justify-between min-w-full px-4 py-2 sm:px-6 md:px-8">
+        <div className="flex items-center">
+          <svg
+            className="size-4 sm:size-5"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6.85355 3.14645C7.04882 3.34171 7.04882 3.65829 6.85355 3.85355L3.70711 7H12.5C12.7761 7 13 7.22386 13 7.5C13 7.77614 12.7761 8 12.5 8H3.70711L6.85355 11.1464C7.04882 11.3417 7.04882 11.6583 6.85355 11.8536C6.65829 12.0488 6.34171 12.0488 6.14645 11.8536L2.14645 7.85355C1.95118 7.65829 1.95118 7.34171 2.14645 7.14645L6.14645 3.14645C6.34171 2.95118 6.65829 2.95118 6.85355 3.14645Z"
+              fill="currentColor"
+              fillRule="evenodd"
+              clipRule="evenodd"
+            />
+          </svg>
+          <button
+            className="btn btn-ghost btn-sm ml-1 sm:ml-2 text-xs sm:text-sm"
+            onClick={() => handleResetState()}
+          >
+            Back
+          </button>
+        </div>
+        <h3 className="font-bold text-sm sm:text-base md:text-lg absolute left-1/2 -translate-x-1/2">
+          Stake
+        </h3>
+      </div>
       <div className="flex flex-col gap-4 lg:flex-row">
         <div className="divider m-0 lg:divider-horizontal lg:m-0" />
         <div className="flex flex-1 flex-col gap-4 lg:basis-2/5 xl:basis-1/3">

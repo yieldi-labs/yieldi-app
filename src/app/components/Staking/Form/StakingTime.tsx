@@ -1,4 +1,7 @@
+import * as Form from "@radix-ui/react-form";
+import { Flex } from "@radix-ui/themes";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/config/network.config";
 import { blocksToDisplayTime } from "@/utils/blocksToDisplayTime";
@@ -122,24 +125,30 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
   }
 
   return (
-    <label className="form-control w-full flex-1">
-      <div className="label">
-        <span className="label-text-alt text-base">Term</span>
-        <span className="label-text-alt">
-          min term is {minStakingTimeBlocks} blocks
-        </span>
-      </div>
-      <input
-        type="string"
-        className={`no-focus input input-bordered w-full ${error && "input-error"}`}
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        placeholder="Blocks"
-      />
-      <div className="mb-2 mt-4 min-h-[20px]">
-        <p className="text-center text-sm text-error">{error}</p>
-      </div>
-    </label>
+    <Flex direction="column" className="w-full max-w-md bg-gray-100 mb-5">
+      <Form.Field name="finality-provider" className="w-full flex flex-col">
+        <Form.Label className="text-xs font-medium mb-2 pl-2">
+          TERM{" "}
+          <span className="font-normal pl-[2px]">
+            in blocks (min {minStakingTimeBlocks})
+          </span>
+        </Form.Label>
+        <Form.Control asChild className="bg-gray-200 lg:py-3 px-1 lg:px-2">
+          <input
+            className={twMerge(
+              "box-border w-full inline-flex appearance-none items-center justify-center",
+              error ? "input-error" : "",
+            )}
+            type="number"
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="150"
+            required
+          />
+        </Form.Control>
+        {error ? <p className="text-sm text-error py-2">*{error}</p> : null}
+      </Form.Field>
+    </Flex>
   );
 };
