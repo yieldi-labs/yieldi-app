@@ -581,10 +581,7 @@ export const Staking: React.FC<StakingProps> = ({
             md:min-w-[368px] lg:min-w-[472px] lg:py-[42px] py-[24px] lg:px-[8px] px-[4px]"
           >
             <div className="flex flex-1 flex-col">
-              <Flex
-                direction="column"
-                className="w-full max-w-md bg-gray-100 mb-5"
-              >
+              <Flex direction="column" className="w-full bg-gray-100 mb-5">
                 <h3 className="text-xs font-medium mb-2 pl-2">
                   FINALITY PROVIDER
                 </h3>
@@ -628,21 +625,21 @@ export const Staking: React.FC<StakingProps> = ({
               ) : null}
             </div>
             {showApproachingCapWarning()}
-            <span
-              className="cursor-pointer text-xs"
+            <div
+              className="cursor-pointer text-xs flex justify-center"
               data-tooltip-id="tooltip-staking-preview"
               data-tooltip-content={signNotReadyReason}
               data-tooltip-place="top"
             >
               <button
-                className="btn-primary btn mt-2 w-full"
+                className="btn-primary btn mt-2 l:w-[340px] w-[260px] l:h-11 h-9 bg-blue-400 font-medium"
                 disabled={!previewReady}
                 onClick={() => setPreviewModalOpen(true)}
               >
-                Preview
+                Stake
               </button>
               <Tooltip id="tooltip-staking-preview" />
-            </span>
+            </div>
             {previewReady ? (
               <PreviewModal
                 open={previewModalOpen}

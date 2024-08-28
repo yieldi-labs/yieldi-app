@@ -123,7 +123,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const maxStakeAmount = maxDecimals(satoshiToBtc(maxStakingAmountSat), 8);
 
   return (
-    <Flex direction="column" className="w-full max-w-md bg-gray-100 mb-5">
+    <Flex direction="column" className="w-full bg-gray-100 mb-5">
       <Form.Field name="amount" className="w-full flex flex-col">
         <div className="flex justify-between items-center mb-2">
           <Form.Label className="text-xs font-medium pl-2">

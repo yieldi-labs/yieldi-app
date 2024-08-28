@@ -48,33 +48,32 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
 
   const defaultModeRender = () => {
     return (
-      <div className="flex flex-col justify-center gap-1 items-center">
-        <div className="min-h-8 flex justify-center flex-col items-center">
-          {mempoolFeeRates ? (
-            <p>
-              Recommended fee rate: <strong>{defaultFeeRate} sats/vB</strong>
-            </p>
-          ) : (
-            <LoadingSmall text="Loading recommended fee rate..." />
-          )}
-          {stakingFeeSat ? (
-            <p>
-              Transaction fee amount:{" "}
-              <strong>
-                {satoshiToBtc(stakingFeeSat)} {coinName}
-              </strong>
-            </p>
-          ) : (
-            <LoadingSmall text="Loading transaction fee amount..." />
-          )}
+      <div className="flex flex-col justify-center gap-1 items-center px">
+        <div className="divider h-px w-11/12 bg-gray-800 mb-4"></div>
+        <div className="flex flex-col items-center px-10 gap-2 mb-4">
+          <div className="flex flex-row justify-between flex-1 mx-10 gap-4 mb-2 w-full">
+            {mempoolFeeRates ? (
+              <>
+                <p>Recommended fee rate:</p>
+                <strong>{defaultFeeRate} sats/vB</strong>
+              </>
+            ) : (
+              <LoadingSmall text="Loading recommended fee rate..." />
+            )}
+          </div>
+          <div className="flex flex-row justify-between w-full mx-10 gap-4 mb-2">
+            {stakingFeeSat ? (
+              <>
+                <p>Transaction fee amount: </p>
+                <strong>
+                  {satoshiToBtc(stakingFeeSat)} {coinName}
+                </strong>
+              </>
+            ) : (
+              <LoadingSmall text="Loading transaction fee amount..." />
+            )}
+          </div>
         </div>
-        <button
-          className="btn btn-sm btn-link no-underline"
-          onClick={() => setCustomMode(true)}
-          disabled={!mempoolFeeRates || !stakingFeeSat}
-        >
-          Use Custom
-        </button>
       </div>
     );
   };
@@ -86,7 +85,7 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
 
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-start">
           <p>
             Selected fee rate:{" "}
             <strong>{selectedFeeRate || defaultFeeRate} sat/vB</strong>

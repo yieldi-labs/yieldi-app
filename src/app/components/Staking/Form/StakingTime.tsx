@@ -125,7 +125,7 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
   }
 
   return (
-    <Flex direction="column" className="w-full max-w-md bg-gray-100 mb-5">
+    <Flex direction="column" className="w-full bg-gray-100 mb-5">
       <Form.Field name="finality-provider" className="w-full flex flex-col">
         <Form.Label className="text-xs font-medium mb-2 pl-2">
           TERM{" "}
