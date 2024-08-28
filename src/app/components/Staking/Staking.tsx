@@ -2,6 +2,7 @@ import * as Form from "@radix-ui/react-form";
 import { Flex, Link } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
+import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { useLocalStorage } from "usehooks-ts";
@@ -102,6 +103,7 @@ export const Staking: React.FC<StakingProps> = ({
 
   // const [finalityProviders,] = useState<FinalityProviderInterface[]>([]);
   const finalityProvider = selectedFinalityProvider;
+  const router = useRouter();
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -578,7 +580,7 @@ export const Staking: React.FC<StakingProps> = ({
         <>
           <Form.Root
             className="flex flex-1 flex-col border-gray-800 border bg-gray-100 
-            md:min-w-[368px] lg:min-w-[472px] lg:py-[42px] py-[24px] lg:px-[8px] px-[4px]"
+            min-w-[368px] md:min-w-[472px] md:py-[42px] py-[24px] md:px-[8px] px-[4px]"
           >
             <div className="flex flex-1 flex-col">
               <Flex direction="column" className="w-full bg-gray-100 mb-5">
@@ -593,6 +595,7 @@ export const Staking: React.FC<StakingProps> = ({
                     <span>{finalityProvider?.description.moniker}</span>
                     <Link
                       href="#"
+                      onClick={() => router.push("/stake/btc")}
                       className="text-black text-sm underline decoration-black"
                     >
                       Change
@@ -671,11 +674,11 @@ export const Staking: React.FC<StakingProps> = ({
   };
 
   return (
-    <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm lg:flex-1 items-center">
-      <div className="flex items-center justify-between min-w-full px-4 py-2 sm:px-6 md:px-8">
-        <div className="flex items-center">
+    <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm items-center">
+      <div className="flex flex-row px-4 py-2 sm:px-6 md:px-8 items-center w-[320px] md:w-[500px] mb-2">
+        <div className="flex items-center cursor-pointer" onClick={() => router.push("/stake/btc")}>
           <svg
-            className="size-4 sm:size-5"
+            className="size-3 sm:size-4"
             viewBox="0 0 15 15"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -687,10 +690,7 @@ export const Staking: React.FC<StakingProps> = ({
               clipRule="evenodd"
             />
           </svg>
-          <button
-            className="btn btn-ghost btn-sm ml-1 sm:ml-2 text-xs sm:text-sm"
-            onClick={() => handleResetState()}
-          >
+          <button className="btn btn-ghost btn-sm ml-1 sm:ml-2 text-xs sm:text-sm">
             Back
           </button>
         </div>
