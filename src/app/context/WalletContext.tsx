@@ -1,5 +1,6 @@
 "use client";
 
+import { networks } from "bitcoinjs-lib";
 import {
   createContext,
   useContext,
@@ -8,7 +9,11 @@ import {
   useCallback,
 } from "react";
 
-import { getPublicKeyNoCoord, isSupportedAddressType } from "@/utils/wallet";
+import {
+  getPublicKeyNoCoord,
+  isSupportedAddressType,
+  toNetwork,
+} from "@/utils/wallet";
 import { WalletProvider as WalletProviderType } from "@/utils/wallet/wallet_provider";
 
 import { getDelegations } from "../api/getDelegations";
@@ -23,6 +28,7 @@ interface WalletContextProps {
   connectModalOpen: boolean;
   setConnectModalOpen: (open: boolean) => void;
   isConnected: boolean;
+  btcWalletNetwork: networks.Network | undefined;
 }
 
 const WalletContext = createContext<WalletContextProps | undefined>(undefined);
@@ -34,6 +40,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [publicKeyNoCoord, setPublicKeyNoCoord] = useState("");
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [btcWalletNetwork, setBtcWalletNetwork] = useState<networks.Network>();
 
   const connectWallet = useCallback(
     async (walletProvider: WalletProviderType) => {
@@ -63,6 +70,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
         setPublicKeyNoCoord(publicKeyNoCoord.toString("hex"));
         setIsConnected(true);
+        walletProvider
+          .getNetwork()
+          .then((network) => setBtcWalletNetwork(toNetwork(network)));
       } catch (error) {
         console.error("Failed to connect wallet:", error);
         throw new Error("Failed to connect wallet");
@@ -90,6 +100,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         publicKeyNoCoord,
         connectModalOpen,
         setConnectModalOpen,
+        btcWalletNetwork,
       }}
     >
       {children}
