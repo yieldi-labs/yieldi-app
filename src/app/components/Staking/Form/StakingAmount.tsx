@@ -1,5 +1,6 @@
 import * as Form from "@radix-ui/react-form";
-import { Flex } from "@radix-ui/themes";
+import { Flex, Link } from "@radix-ui/themes";
+import { max } from "date-fns";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -26,15 +27,14 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
 }) => {
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
-  // Track if the input field has been interacted with
   const [touched, setTouched] = useState(false);
 
+  const minFeeSats = 227;
   const errorLabel = "Staking amount";
   const generalErrorMessage = "You should input staking amount";
 
   const { coinName } = getNetworkConfig();
 
-  // Use effect to reset the state when reset prop changes
   useEffect(() => {
     setValue("");
     setError("");
@@ -43,8 +43,6 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-
-    // Allow the input to be changed freely
     setValue(newValue);
 
     if (touched && newValue === "") {
@@ -56,20 +54,22 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
 
   const handleBlur = (_e: FocusEvent<HTMLInputElement>) => {
     setTouched(true);
+    validateAndSetAmount(value);
+  };
 
-    if (value === "") {
+  const validateAndSetAmount = (amount: string) => {
+    if (amount === "") {
       onStakingAmountSatChange(0);
       setError(generalErrorMessage);
       return;
     }
 
-    const numValue = parseFloat(value);
+    const numValue = parseFloat(amount);
     const satoshis = btcToSatoshi(numValue);
 
-    // Run all validations
     const validations = [
       {
-        valid: !isNaN(Number(value)),
+        valid: !isNaN(Number(amount)),
         message: `${errorLabel} must be a valid number.`,
       },
       {
@@ -89,12 +89,11 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         message: `${errorLabel} must be no more than ${satoshiToBtc(btcWalletBalanceSat)} wallet balance.`,
       },
       {
-        valid: validateDecimalPoints(value),
+        valid: validateDecimalPoints(amount),
         message: `${errorLabel} must have no more than 8 decimal points.`,
       },
     ];
 
-    // Find the first failing validation
     const firstInvalid = validations.find((validation) => !validation.valid);
 
     if (firstInvalid) {
@@ -107,31 +106,58 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
     }
   };
 
+  const handleMaxClick = () => {
+    //TODO: Add fee calculation
+    const minFeeSats = 277;
+    const safeMaxStakingAmountSat = maxStakingAmountSat - minFeeSats;
+    const safeBtcWalletBalanceSat = btcWalletBalanceSat - minFeeSats;
+
+    const maxAmount = Math.min(safeMaxStakingAmountSat, safeBtcWalletBalanceSat);
+    const maxAmountBtc = satoshiToBtc(maxAmount);
+    setValue(maxDecimals(maxAmountBtc, 8).toString());
+    validateAndSetAmount(maxDecimals(maxAmountBtc, 8).toString());
+  };
+
   const minStakeAmount = maxDecimals(satoshiToBtc(minStakingAmountSat), 8);
   const maxStakeAmount = maxDecimals(satoshiToBtc(maxStakingAmountSat), 8);
+  
   return (
     <Flex direction="column" className="w-full max-w-md bg-gray-100 mb-5">
       <Form.Field name="amount" className="w-full flex flex-col">
-        <Form.Label className="text-xs font-medium mb-2 pl-2">
-          AMOUNT
-          <span className="font-normal pl-[2px]">
-            min/max: {minStakeAmount}/{maxStakeAmount} {coinName}
+        <div className="flex justify-between items-center mb-2">
+          <Form.Label className="text-xs font-medium pl-2">
+            AMOUNT
+            <span className="font-normal pl-[2px]">
+              (min: {minStakeAmount}, max: {maxStakeAmount})
+            </span>
+          </Form.Label>
+          <span className="text-xs font-normal pr-2">
+            Balance: {satoshiToBtc(btcWalletBalanceSat)}
           </span>
-        </Form.Label>
-        <Form.Control asChild className="bg-gray-200 lg:py-3 px-1 lg:px-2">
-          <input
-            className={twMerge(
-              "box-border w-full inline-flex appearance-none items-center justify-center",
-              error ? "input-error" : "",
-            )}
-            type="text"
-            value={value}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            placeholder={coinName}
-            required
-          />
-        </Form.Control>
+        </div>
+        <div className="relative">
+          <Form.Control asChild className="bg-gray-200 lg:py-3 px-1 lg:px-2">
+            <input
+              className={twMerge(
+                "box-border w-full inline-flex appearance-none items-center justify-center pr-16",
+                error ? "input-error" : "",
+              )}
+              type="text"
+              value={value}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder={coinName}
+              required
+            />
+          </Form.Control>
+          <Link
+            href="#"
+            onClick={handleMaxClick}
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-sm text-black text-sm underline decoration-black"
+          >
+            Max
+          </Link>
+        </div>
         {error ? <p className="text-sm text-error py-2">*{error}</p> : null}
       </Form.Field>
     </Flex>
