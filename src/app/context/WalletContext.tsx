@@ -43,7 +43,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         const walletAddress = await walletProvider.getAddress();
         const balanceSat = await walletProvider.getBalance();
         const publicKeyNoCoord = getPublicKeyNoCoord(
-          await walletProvider.getPublicKeyHex()
+          await walletProvider.getPublicKeyHex(),
         );
         setBTCWallet(walletProvider);
         setBTCWalletBalanceSat(balanceSat);
@@ -58,7 +58,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Failed to connect wallet");
       }
     },
-    []
+    [],
   );
 
   const disconnectWallet = () => {
