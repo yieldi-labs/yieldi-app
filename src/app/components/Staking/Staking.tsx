@@ -11,11 +11,9 @@ import {
   OVERFLOW_HEIGHT_WARNING_THRESHOLD,
   OVERFLOW_TVL_WARNING_THRESHOLD,
 } from "@/app/common/constants";
-// import { LoadingView } from "@/app/components/Loading/Loading";
 import { FeedbackModal } from "@/app/components/Modals/FeedbackModal";
 import { PreviewModal } from "@/app/components/Modals/PreviewModal";
 import { useError } from "@/app/context/Error/ErrorContext";
-import { useStake } from "@/app/context/StakeContext";
 import { useGlobalParams } from "@/app/context/api/GlobalParamsProvider";
 import { useStakingStats } from "@/app/context/api/StakingStatsProvider";
 import { Delegation } from "@/app/types/delegations";
@@ -82,7 +80,7 @@ export const Staking: React.FC<StakingProps> = ({
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
-  const [resetFormInputs, setResetFormInputs] = useState(false);
+  const [resetFormInputs] = useState(false);
   const [feedbackModal, setFeedbackModal] = useState<{
     type: "success" | "cancel" | null;
     isOpen: boolean;
@@ -99,9 +97,7 @@ export const Staking: React.FC<StakingProps> = ({
     overTheCapRange: false,
     approchingCapRange: false,
   });
-  const { setSelectedDelegation: setFinalityProvider } = useStake();
 
-  // const [finalityProviders,] = useState<FinalityProviderInterface[]>([]);
   const finalityProvider = selectedFinalityProvider;
   const router = useRouter();
 
@@ -249,15 +245,6 @@ export const Staking: React.FC<StakingProps> = ({
     showError,
   ]);
 
-  const handleResetState = () => {
-    setFinalityProvider(undefined);
-    setStakingAmountSat(0);
-    setStakingTimeBlocks(0);
-    setSelectedFeeRate(0);
-    setPreviewModalOpen(false);
-    setResetFormInputs(!resetFormInputs);
-  };
-
   const { minFeeRate, defaultFeeRate } = getFeeRateFromMempool(mempoolFeeRates);
 
   // Either use the selected fee rate or the fastest fee rate
@@ -294,7 +281,7 @@ export const Staking: React.FC<StakingProps> = ({
       // UI
       handleFeedbackModal("success");
       handleLocalStorageDelegations(stakingTxHex, stakingTerm);
-      handleResetState();
+      router.push("/stake/btc");
     } catch (error: Error | any) {
       showError({
         error: {
@@ -387,41 +374,6 @@ export const Staking: React.FC<StakingProps> = ({
     defaultFeeRate,
     minFeeRate,
   ]);
-
-  // Select the finality provider from the list
-  /*
-  const _handleChooseFinalityProvider = (btcPkHex: string) => {
-    let found: FinalityProviderInterface | undefined;
-    try {
-      if (!finalityProviders) {
-        throw new Error("Finality providers not loaded");
-      }
-
-      found = finalityProviders.find((fp) => fp?.btcPk === btcPkHex);
-      if (!found) {
-        throw new Error("Finality provider not found");
-      }
-
-      if (found.btcPk === publicKeyNoCoord) {
-        throw new Error(
-          "Cannot select a finality provider with the same public key as the wallet",
-        );
-      }
-    } catch (error: any) {
-      showError({
-        error: {
-          message: error.message,
-          errorState: ErrorState.STAKING,
-          errorTime: new Date(),
-        },
-        retryAction: () => handleChooseFinalityProvider(btcPkHex),
-      });
-      return;
-    }
-
-    setFinalityProvider(found);
-  };
-  */
 
   const handleStakingAmountSatChange = (inputAmountSat: number) => {
     setStakingAmountSat(inputAmountSat);
@@ -579,6 +531,9 @@ export const Staking: React.FC<StakingProps> = ({
       return (
         <>
           <Form.Root
+            onSubmit={(e: React.FormEvent) => {
+              e.preventDefault();
+            }}
             className="flex flex-1 flex-col border-gray-800 border bg-gray-100 
             min-w-[368px] md:min-w-[472px] md:py-[42px] py-[24px] md:px-[8px] px-[4px]"
           >
@@ -595,7 +550,9 @@ export const Staking: React.FC<StakingProps> = ({
                     <span>{finalityProvider?.description.moniker}</span>
                     <Link
                       href="#"
-                      onClick={() => router.push("/stake/btc")}
+                      onClick={() => {
+                        router.push("/stake/btc");
+                      }}
                       className="text-black text-sm underline decoration-black"
                     >
                       Change
@@ -617,15 +574,13 @@ export const Staking: React.FC<StakingProps> = ({
                 onStakingAmountSatChange={handleStakingAmountSatChange}
                 reset={resetFormInputs}
               />
-              {signReady ? (
-                <StakingFee
-                  mempoolFeeRates={mempoolFeeRates}
-                  stakingFeeSat={stakingFeeSat}
-                  selectedFeeRate={selectedFeeRate}
-                  onSelectedFeeRateChange={setSelectedFeeRate}
-                  reset={resetFormInputs}
-                />
-              ) : null}
+              <StakingFee
+                mempoolFeeRates={mempoolFeeRates}
+                stakingFeeSat={stakingFeeSat}
+                selectedFeeRate={selectedFeeRate}
+                onSelectedFeeRateChange={setSelectedFeeRate}
+                reset={resetFormInputs}
+              />
             </div>
             {showApproachingCapWarning()}
             <div
@@ -636,8 +591,11 @@ export const Staking: React.FC<StakingProps> = ({
             >
               <button
                 className="btn-primary btn mt-2 l:w-[340px] w-[260px] l:h-11 h-9 bg-blue-400 font-medium"
+                type="button"
                 disabled={!previewReady}
-                onClick={() => setPreviewModalOpen(true)}
+                onClick={() => {
+                  setPreviewModalOpen(true);
+                }}
               >
                 Stake
               </button>
@@ -676,7 +634,12 @@ export const Staking: React.FC<StakingProps> = ({
   return (
     <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm items-center">
       <div className="flex flex-row px-4 py-2 sm:px-6 md:px-8 items-center w-[320px] md:w-[500px] mb-2">
-        <div className="flex items-center cursor-pointer" onClick={() => router.push("/stake/btc")}>
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => {
+            router.push("/stake/btc");
+          }}
+        >
           <svg
             className="size-3 sm:size-4"
             viewBox="0 0 15 15"

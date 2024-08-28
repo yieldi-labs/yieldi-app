@@ -43,7 +43,9 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         <h3 className="font-bold">Preview</h3>
         <button
           className="btn btn-circle btn-ghost btn-sm"
-          onClick={() => onClose(false)}
+          onClick={() => {
+            onClose(false);
+          }}
         >
           <IoMdClose size={24} />
         </button>
