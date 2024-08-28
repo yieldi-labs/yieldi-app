@@ -17,6 +17,7 @@ import { useStake } from "@/app/context/StakeContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
+import { satoshiToBtc } from "@/utils/btcConversions";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
@@ -34,8 +35,13 @@ const StakeBTCPage = () => {
     router.push(`/stake/btc/${delegation.btcPk}`);
   };
 
-  const { btcWallet, address, publicKeyNoCoord, btcWalletNetwork } =
-    useWallet();
+  const {
+    btcWallet,
+    address,
+    publicKeyNoCoord,
+    btcWalletNetwork,
+    btcWalletBalanceSat,
+  } = useWallet();
 
   const { data: paramWithContext } = useQuery({
     queryKey: ["global params"],
@@ -135,7 +141,6 @@ const StakeBTCPage = () => {
   let totalStakedSat = 0;
 
   if (delegations) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     totalStakedSat = delegations.delegations
       .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
       .reduce(
@@ -147,6 +152,22 @@ const StakeBTCPage = () => {
   return (
     <>
       <div className="lg:w-1/2 mx-auto px-4 md:px-16 lg:px-0">
+        {btcWallet ? (
+          <div className="flex space-x-4 mb-4">
+            <div className="flex-1 p-4 bg-gray-200">
+              <div className="text-sm font-medium text-gray-600">TOTAL BTC</div>
+              <div className="text-2xl ">
+                {satoshiToBtc(btcWalletBalanceSat)}
+              </div>
+            </div>
+            <div className="flex-1 p-4 bg-gray-200">
+              <div className="text-sm font-medium text-gray-600">
+                STAKED BTC
+              </div>
+              <div className="text-2xl ">{satoshiToBtc(totalStakedSat)} </div>
+            </div>
+          </div>
+        ) : null}
         <h1 className="text-xl font-bold mb-8 text-gray-700">
           Select Finality Provider
         </h1>
