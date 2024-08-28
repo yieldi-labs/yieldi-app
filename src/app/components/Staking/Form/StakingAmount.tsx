@@ -1,4 +1,7 @@
+import * as Form from "@radix-ui/react-form";
+import { Flex } from "@radix-ui/themes";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/config/network.config";
 import { btcToSatoshi, satoshiToBtc } from "@/utils/btcConversions";
@@ -107,26 +110,30 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const minStakeAmount = maxDecimals(satoshiToBtc(minStakingAmountSat), 8);
   const maxStakeAmount = maxDecimals(satoshiToBtc(maxStakingAmountSat), 8);
   return (
-    <label className="form-control w-full flex-1">
-      <div className="label pt-0">
-        <span className="label-text-alt text-base">Amount</span>
-        <span className="label-text-alt opacity-50">
-          min/max: {minStakeAmount}/{maxStakeAmount} {coinName}
-        </span>
-      </div>
-      <input
-        type="string"
-        className={`no-focus input input-bordered w-full ${error && "input-error"}`}
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        placeholder={coinName}
-      />
-      {error ? (
-        <div className="my-2 min-h-[20px]">
-          <p className="text-center text-sm text-error">{error}</p>
-        </div>
-      ) : null}
-    </label>
+    <Flex direction="column" className="w-full max-w-md bg-gray-100 mb-5">
+      <Form.Field name="amount" className="w-full flex flex-col">
+        <Form.Label className="text-xs font-medium mb-2 pl-2">
+          AMOUNT
+          <span className="font-normal pl-[2px]">
+            min/max: {minStakeAmount}/{maxStakeAmount} {coinName}
+          </span>
+        </Form.Label>
+        <Form.Control asChild className="bg-gray-200 lg:py-3 px-1 lg:px-2">
+          <input
+            className={twMerge(
+              "box-border w-full inline-flex appearance-none items-center justify-center",
+              error ? "input-error" : "",
+            )}
+            type="text"
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder={coinName}
+            required
+          />
+        </Form.Control>
+        {error ? <p className="text-sm text-error py-2">*{error}</p> : null}
+      </Form.Field>
+    </Flex>
   );
 };
