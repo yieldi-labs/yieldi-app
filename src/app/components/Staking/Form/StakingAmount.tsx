@@ -1,6 +1,5 @@
 import * as Form from "@radix-ui/react-form";
 import { Flex, Link } from "@radix-ui/themes";
-import { max } from "date-fns";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -29,7 +28,6 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
 
-  const minFeeSats = 227;
   const errorLabel = "Staking amount";
   const generalErrorMessage = "You should input staking amount";
 
@@ -112,7 +110,10 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
     const safeMaxStakingAmountSat = maxStakingAmountSat - minFeeSats;
     const safeBtcWalletBalanceSat = btcWalletBalanceSat - minFeeSats;
 
-    const maxAmount = Math.min(safeMaxStakingAmountSat, safeBtcWalletBalanceSat);
+    const maxAmount = Math.min(
+      safeMaxStakingAmountSat,
+      safeBtcWalletBalanceSat,
+    );
     const maxAmountBtc = satoshiToBtc(maxAmount);
     setValue(maxDecimals(maxAmountBtc, 8).toString());
     validateAndSetAmount(maxDecimals(maxAmountBtc, 8).toString());
@@ -120,7 +121,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
 
   const minStakeAmount = maxDecimals(satoshiToBtc(minStakingAmountSat), 8);
   const maxStakeAmount = maxDecimals(satoshiToBtc(maxStakingAmountSat), 8);
-  
+
   return (
     <Flex direction="column" className="w-full max-w-md bg-gray-100 mb-5">
       <Form.Field name="amount" className="w-full flex flex-col">
