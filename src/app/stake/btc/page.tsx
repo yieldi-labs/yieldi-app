@@ -2,31 +2,29 @@
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { Table } from "@radix-ui/themes";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getDelegations, PaginatedDelegations } from "@/app/api/getDelegations";
+import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import { Delegations } from "@/app/components/Delegations/Delegations";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
+import { useWallet } from "@/app/context/WalletContext";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
-import { GlobalParamsVersion } from "@/app/types/globalParams";
+import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { maxDecimals } from "@/utils/maxDecimals";
 import { signPsbtTransaction } from "@/utils/psbt";
 import { truncateMiddle } from "@/utils/strings";
-import { Fees, WalletProvider } from "@/utils/wallet/wallet_provider";
 
 const StakeBTCPage = () => {
-  const [btcWallet] = useState<WalletProvider>();
-  const [publicKeyNoCoord] = useState("");
-  const [address] = useState("");
   const { isErrorOpen } = useError();
   const router = useRouter();
   const { setSelectedDelegation } = useStake();
@@ -35,9 +33,40 @@ const StakeBTCPage = () => {
     setSelectedDelegation(delegation);
     router.push(`/stake/btc/${delegation.btcPk}`);
   };
+
+  const { btcWallet, address, publicKeyNoCoord, btcWalletNetwork } =
+    useWallet();
+
+  const { data: paramWithContext } = useQuery({
+    queryKey: ["global params"],
+    queryFn: async () => {
+      const [height, versions] = await Promise.all([
+        btcWallet!.getBTCTipHeight(),
+        getGlobalParams(),
+      ]);
+      return {
+        // The staking parameters are retrieved based on the current height + 1
+        // so this verification should take this into account.
+        currentHeight: height,
+        nextBlockParams: getCurrentGlobalParamsVersion(height + 1, versions),
+      };
+    },
+    refetchInterval: 60000, // 1 minute
+    // Should be enabled only when the wallet is connected
+    enabled: !!btcWallet,
+    retry: (failureCount: number) => {
+      return !isErrorOpen && failureCount <= 3;
+    },
+  });
+
   const { finalityProviders } = useFinalityProviders();
 
-  let { data: delegations } = useInfiniteQuery({
+  const {
+    data: delegations,
+    fetchNextPage: fetchNextDelegationsPage,
+    hasNextPage: hasNextDelegationsPage,
+    isFetchingNextPage: isFetchingNextDelegationsPage,
+  } = useInfiniteQuery({
     queryKey: ["delegations", address, publicKeyNoCoord],
     queryFn: ({ pageParam = "" }) =>
       getDelegations(pageParam, publicKeyNoCoord),
@@ -55,7 +84,7 @@ const StakeBTCPage = () => {
           acc.pagination = page.pagination;
           return acc;
         },
-        { delegations: [], pagination: { next_key: "" } },
+        { delegations: [], pagination: { next_key: "" } }
       );
 
       return flattenedData;
@@ -66,8 +95,9 @@ const StakeBTCPage = () => {
   });
 
   const inTestMode = useSearchParams().get("mockData") === "true";
+  let testDelegations: Delegation[] = [];
   if (inTestMode) {
-    delegations = getDelegations_testData;
+    testDelegations = getDelegations_testData.delegations;
   }
 
   const delegationsLocalStorageKey =
@@ -86,7 +116,7 @@ const StakeBTCPage = () => {
       const { areDelegationsDifferent, delegations: newDelegations } =
         await calculateDelegationsDiff(
           delegations.delegations,
-          delegationsLocalStorage,
+          delegationsLocalStorage
         );
       if (areDelegationsDifferent) {
         setDelegationsLocalStorage(newDelegations);
@@ -99,7 +129,7 @@ const StakeBTCPage = () => {
   // Finality providers key-value map { pk: moniker }
   const finalityProvidersKV = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {},
+    {}
   );
 
   let totalStakedSat = 0;
@@ -110,48 +140,9 @@ const StakeBTCPage = () => {
       .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
       .reduce(
         (accumulator: number, item) => accumulator + item?.stakingValueSat,
-        0,
+        0
       );
   }
-
-  // currently adding some dummy data to test the Delegations component
-
-  const globalParams: GlobalParamsVersion = {
-    version: 1,
-    activationHeight: 680000,
-    stakingCapSat: 5000000000,
-    stakingCapHeight: 680500,
-    tag: "v1.0",
-    covenantPks: ["pk1", "pk2", "pk3"],
-    covenantQuorum: 3,
-    unbondingTime: 7200,
-    unbondingFeeSat: 10000,
-    maxStakingAmountSat: 1000000000,
-    minStakingAmountSat: 100000,
-    maxStakingTimeBlocks: 10000,
-    minStakingTimeBlocks: 100,
-    confirmationDepth: 6,
-  };
-
-  const btcNetwork = {
-    messagePrefix: "\u0018Bitcoin Signed Message:\n",
-    bech32: "bc",
-    bip32: {
-      public: 76067358,
-      private: 76066276,
-    },
-    pubKeyHash: 0,
-    scriptHash: 5,
-    wif: 128,
-  };
-
-  const queryMeta = {
-    next: () => {
-      // logic to fetch next page
-    },
-    hasMore: true,
-    isFetchingMore: false,
-  };
 
   return (
     <>
@@ -223,23 +214,33 @@ const StakeBTCPage = () => {
           </ScrollArea.Root>
         </div>
         <div>
-          {delegations && finalityProvidersKV ? (
+          {(delegations?.delegations || testDelegations) &&
+          finalityProvidersKV &&
+          btcWallet &&
+          paramWithContext?.nextBlockParams?.currentVersion &&
+          btcWalletNetwork ? (
             <Delegations
               finalityProvidersKV={finalityProvidersKV}
-              delegationsAPI={delegations?.delegations}
+              delegationsAPI={
+                inTestMode ? testDelegations : (delegations?.delegations ?? [])
+              }
               delegationsLocalStorage={delegationsLocalStorage}
               publicKeyNoCoord={publicKeyNoCoord}
               address={address}
-              globalParamsVersion={globalParams}
-              btcWalletNetwork={btcNetwork}
+              globalParamsVersion={
+                paramWithContext.nextBlockParams.currentVersion
+              }
+              btcWalletNetwork={btcWalletNetwork}
               signPsbtTx={signPsbtTransaction(btcWallet)}
               pushTx={function (): Promise<string> {
                 throw new Error("Function not implemented.");
               }}
-              queryMeta={queryMeta}
-              getNetworkFees={function (): Promise<Fees> {
-                throw new Error("Function not implemented.");
+              queryMeta={{
+                next: fetchNextDelegationsPage,
+                hasMore: hasNextDelegationsPage,
+                isFetchingMore: isFetchingNextDelegationsPage,
               }}
+              getNetworkFees={btcWallet.getNetworkFees}
             />
           ) : null}
         </div>
