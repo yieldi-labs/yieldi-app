@@ -9,7 +9,11 @@ import {
   useCallback,
 } from "react";
 
-import { getPublicKeyNoCoord, isSupportedAddressType, toNetwork } from "@/utils/wallet";
+import {
+  getPublicKeyNoCoord,
+  isSupportedAddressType,
+  toNetwork,
+} from "@/utils/wallet";
 import { WalletProvider as WalletProviderType } from "@/utils/wallet/wallet_provider";
 
 import { getDelegations } from "../api/getDelegations";
