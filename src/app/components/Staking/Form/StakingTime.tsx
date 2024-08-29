@@ -23,7 +23,7 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
   onStakingTimeBlocksChange,
   reset,
 }) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState("150");
   const [error, setError] = useState("");
   // Track if the input field has been interacted with
   const [touched, setTouched] = useState(false);
@@ -35,7 +35,8 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
 
   // Use effect to reset the state when reset prop changes
   useEffect(() => {
-    setValue("");
+    setValue("150");
+    onStakingTimeBlocksChange(Number(value))
     setError("");
     setTouched(false);
   }, [reset]);

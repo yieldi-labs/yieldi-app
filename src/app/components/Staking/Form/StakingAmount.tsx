@@ -1,6 +1,7 @@
 import * as Form from "@radix-ui/react-form";
 import { Flex, Link } from "@radix-ui/themes";
-import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
+import debounce from 'lodash/debounce';
+import { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/config/network.config";
@@ -39,23 +40,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
     setTouched(false);
   }, [reset]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-
-    if (touched && newValue === "") {
-      setError(generalErrorMessage);
-    } else {
-      setError("");
-    }
-  };
-
-  const handleBlur = (_e: FocusEvent<HTMLInputElement>) => {
-    setTouched(true);
-    validateAndSetAmount(value);
-  };
-
-  const validateAndSetAmount = (amount: string) => {
+  const validateAndSetAmount = useCallback((amount: string) => {
     if (amount === "") {
       onStakingAmountSatChange(0);
       setError(generalErrorMessage);
@@ -102,6 +87,27 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       onStakingAmountSatChange(satoshis);
       setValue(maxDecimals(satoshiToBtc(satoshis), 8).toString());
     }
+  }, [minStakingAmountSat, maxStakingAmountSat, btcWalletBalanceSat, onStakingAmountSatChange, coinName, errorLabel]);
+
+  const debouncedValidateAndSetAmount = useCallback(
+    debounce((value: string) => {
+      validateAndSetAmount(value);
+    }, 500),
+    [validateAndSetAmount]
+  );
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    setTouched(true);
+
+    if (newValue === "") {
+      setError(generalErrorMessage);
+    } else {
+      setError("");
+    }
+
+    debouncedValidateAndSetAmount(newValue);
   };
 
   const handleMaxClick = () => {
@@ -115,8 +121,9 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       safeBtcWalletBalanceSat,
     );
     const maxAmountBtc = satoshiToBtc(maxAmount);
-    setValue(maxDecimals(maxAmountBtc, 8).toString());
-    validateAndSetAmount(maxDecimals(maxAmountBtc, 8).toString());
+    const newValue = maxDecimals(maxAmountBtc, 8).toString();
+    setValue(newValue);
+    validateAndSetAmount(newValue);
   };
 
   const minStakeAmount = maxDecimals(satoshiToBtc(minStakingAmountSat), 8);
@@ -146,7 +153,6 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
               type="text"
               value={value}
               onChange={handleChange}
-              onBlur={handleBlur}
               placeholder={coinName}
               required
             />
@@ -159,7 +165,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
             Max
           </Link>
         </div>
-        {error ? <p className="text-sm text-error py-2">*{error}</p> : null}
+        {touched && error ? <p className="text-sm text-error py-2">*{error}</p> : null}
       </Form.Field>
     </Flex>
   );

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { FaWallet } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-import { PiWalletBold } from "react-icons/pi";
 import { Tooltip } from "react-tooltip";
 import { twMerge } from "tailwind-merge";
 
@@ -21,18 +20,14 @@ interface ConnectModalProps {
   open: boolean;
   onClose: (value: boolean) => void;
   onConnect: (walletProvider: WalletProvider) => void;
-  connectDisabled: boolean;
 }
 
 export const ConnectModal: React.FC<ConnectModalProps> = ({
   open,
   onClose,
   onConnect,
-  connectDisabled,
 }) => {
-  const [selectedWallet, setSelectedWallet] = useState<string>("");
   const [mounted, setMounted] = useState(false);
-
   const [injectedWalletProviderName, setInjectedWalletProviderName] =
     useState("Browser");
   const [injectedWalletProviderIcon, setInjectedWalletProviderIcon] =
@@ -72,13 +67,11 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   }
 
   const isInjectable = !!window[BROWSER];
-  const { networkName } = getNetworkConfig();
-
-  const handleConnect = async () => {
-    if (selectedWallet) {
+  const handleConnect = async (name: string) => {
+    if (name) {
       let walletInstance: WalletProvider;
 
-      if (selectedWallet === BROWSER) {
+      if (name === BROWSER) {
         if (!isInjectable) {
           throw new Error("Browser selected without an injectable interface");
         }
@@ -87,7 +80,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       } else {
         // we are using a custom wallet
         const walletProvider = walletList.find(
-          (w) => w.name === selectedWallet,
+          (w) => w.name === name,
         )?.wallet;
         if (!walletProvider) {
           throw new Error("Wallet provider not found");
@@ -107,8 +100,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     return (
       <button
         key={name}
-        className={`flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary ${selectedWallet === BROWSER ? "border-primary" : "border-base-100"}`}
-        onClick={() => setSelectedWallet(BROWSER)}
+        className={`flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary ${name === BROWSER ? "border-primary" : "border-base-100"}`}
+        onClick={() => handleConnect(BROWSER)}
       >
         <div className="flex size-10 items-center justify-center rounded-full border bg-white p-2 text-black">
           {injectedWalletProviderIcon ? (
@@ -168,13 +161,10 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
                   <a
                     key={name}
                     className={twMerge(
-                      "relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary",
-                      selectedWallet === name
-                        ? "border-primary bg-slate-200"
-                        : "border-base-100",
+                      "relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary hover:border-primary hover:bg-slate-200",
                       !walletAvailable ? "opacity-50" : "",
                     )}
-                    onClick={() => walletAvailable && setSelectedWallet(name)}
+                    onClick={() => walletAvailable && handleConnect(name)}
                     href={!walletAvailable ? linkToDocs : undefined}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -204,14 +194,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             )}
           </div>
         </div>
-        <button
-          className="btn-primary btn h-10 min-h-10 rounded-lg px-2 flex justify-center items-center gap-2.5"
-          onClick={handleConnect}
-          disabled={connectDisabled || !selectedWallet}
-        >
-          <PiWalletBold size={20} />
-          Connect to {networkName} network
-        </button>
       </div>
     </GeneralModal>
   );

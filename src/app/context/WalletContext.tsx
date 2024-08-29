@@ -16,8 +16,6 @@ import {
 } from "@/utils/wallet";
 import { WalletProvider as WalletProviderType } from "@/utils/wallet/wallet_provider";
 
-import { getDelegations } from "../api/getDelegations";
-
 interface WalletContextProps {
   btcWallet: WalletProviderType | undefined;
   btcWalletBalanceSat: number;
@@ -63,10 +61,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         setBTCWallet(walletProvider);
         setBTCWalletBalanceSat(balanceSat);
         setAddress(walletAddress);
-        const newPublicKeyNoCoord = publicKeyNoCoord.toString("hex");
-        console.log("publicKeyNoCoord", newPublicKeyNoCoord);
-        const delegations = await getDelegations("", newPublicKeyNoCoord);
-        console.log("delegations", delegations);
 
         setPublicKeyNoCoord(publicKeyNoCoord.toString("hex"));
         setIsConnected(true);
