@@ -2,7 +2,7 @@ import {
   getNetworkConfig,
   network,
   validateAddress,
-} from "@/app/config/network.config";
+} from "@/app/config/network";
 import {
   getAddressBalance,
   getFundingUTXOs,

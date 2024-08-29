@@ -7,7 +7,7 @@ import { PiWalletBold } from "react-icons/pi";
 import { Tooltip } from "react-tooltip";
 import { twMerge } from "tailwind-merge";
 
-import { getNetworkConfig } from "@/app/config/network.config";
+import { getNetworkConfig } from "@/app/config/network";
 import {
   BROWSER_INJECTED_WALLET_NAME,
   IntegratedWallet,

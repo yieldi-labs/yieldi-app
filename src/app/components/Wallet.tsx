@@ -1,8 +1,11 @@
 "use client";
 
+import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
 import { DropdownMenu, Button } from "@radix-ui/themes";
+import * as bitcoin from "bitcoinjs-lib";
 import { NextPage } from "next";
 import Image from "next/image";
+import { useEffect } from "react";
 
 import { useWallet } from "@/app/context/WalletContext";
 import { truncateMiddle } from "@/utils/strings";
@@ -19,6 +22,12 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
     disconnectWallet,
     isConnected,
   } = useWallet();
+
+  useEffect(() => {
+    if (isConnected && btcWallet) {
+      bitcoin.initEccLib(ecc);
+    }
+  }, [isConnected, btcWallet]);
 
   return (
     <>

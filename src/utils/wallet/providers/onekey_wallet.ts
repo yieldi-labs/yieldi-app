@@ -1,4 +1,4 @@
-import { getNetworkConfig } from "@/app/config/network.config";
+import { getNetworkConfig } from "@/app/config/network";
 import {
   getAddressBalance,
   getFundingUTXOs,

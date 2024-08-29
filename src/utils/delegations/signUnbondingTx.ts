@@ -1,5 +1,3 @@
-import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
-import * as bitcoin from "bitcoinjs-lib";
 import { Transaction, networks } from "bitcoinjs-lib";
 import { unbondingTransaction } from "btc-staking-ts";
 
@@ -74,7 +72,6 @@ export const signUnbondingTx = async (
   );
 
   // Create the unbonding transaction
-  bitcoin.initEccLib(ecc);
   const { psbt: unsignedUnbondingTx } = unbondingTransaction(
     scripts,
     Transaction.fromHex(delegation.stakingTx.txHex),

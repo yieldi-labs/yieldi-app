@@ -1,6 +1,5 @@
 import "@/app/globals.css";
 import "react-responsive-modal/styles.css";
-
 import { Theme } from "@radix-ui/themes";
 import { StrictMode } from "react";
 

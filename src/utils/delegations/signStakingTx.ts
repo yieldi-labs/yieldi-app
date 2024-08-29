@@ -1,6 +1,4 @@
-import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
 import { Transaction, networks } from "bitcoinjs-lib";
-import * as bitcoin from "bitcoinjs-lib";
 import { stakingTransaction } from "btc-staking-ts";
 
 import { signPsbtTransaction } from "@/app/common/utils/psbt";
@@ -12,7 +10,6 @@ import { UTXO, WalletProvider } from "@/utils/wallet/wallet_provider";
 import { getStakingTerm } from "../getStakingTerm";
 
 import { txFeeSafetyCheck } from "./fee";
-bitcoin.initEccLib(ecc);
 // Returns:
 // - unsignedStakingPsbt: the unsigned staking transaction
 // - stakingTerm: the staking term

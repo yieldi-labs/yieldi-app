@@ -1,6 +1,6 @@
 import { IoMdClose } from "react-icons/io";
 
-import { getNetworkConfig } from "@/app/config/network.config";
+import { getNetworkConfig } from "@/app/config/network";
 import { blocksToDisplayTime } from "@/utils/blocksToDisplayTime";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { maxDecimals } from "@/utils/maxDecimals";
