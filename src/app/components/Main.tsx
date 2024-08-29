@@ -21,12 +21,7 @@ export interface MainProps {
 const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
   useFetchFinalityProviders();
 
-  const {
-    address: walletAddress,
-    connectWallet,
-    connectModalOpen,
-    setConnectModalOpen,
-  } = useWallet();
+  const { connectWallet, connectModalOpen, setConnectModalOpen } = useWallet();
   const { error, isErrorOpen, hideError, retryErrorAction } = useError();
 
   const handleConnectBTC = async (walletProvider: any) => {
@@ -44,7 +39,6 @@ const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
         open={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
         onConnect={handleConnectBTC}
-        connectDisabled={!!walletAddress}
       />
       <ErrorModal
         open={isErrorOpen}

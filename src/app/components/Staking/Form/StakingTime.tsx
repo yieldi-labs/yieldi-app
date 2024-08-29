@@ -1,6 +1,6 @@
 import * as Form from "@radix-ui/react-form";
 import { Flex } from "@radix-ui/themes";
-import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/config/network.config";
@@ -25,80 +25,117 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
 }) => {
   const [value, setValue] = useState("150");
   const [error, setError] = useState("");
-  // Track if the input field has been interacted with
   const [touched, setTouched] = useState(false);
+  const [updateTimeout, setUpdateTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   const errorLabel = "Staking term";
   const generalErrorMessage = "You should input staking term";
 
   const { coinName } = getNetworkConfig();
 
-  // Use effect to reset the state when reset prop changes
+  const validateAndSetTime = useCallback(
+    (timeValue: string) => {
+      if (timeValue === "") {
+        onStakingTimeBlocksChange(0);
+        setError(generalErrorMessage);
+        return;
+      }
+
+      const numValue = Number(timeValue);
+
+      const validations = [
+        {
+          valid: !isNaN(numValue),
+          message: `${errorLabel} must be a valid number.`,
+        },
+        {
+          valid: numValue !== 0,
+          message: `${errorLabel} must be greater than 0.`,
+        },
+        {
+          valid: validateNoDecimalPoints(timeValue),
+          message: `${errorLabel} must not have decimal points.`,
+        },
+        {
+          valid: numValue >= minStakingTimeBlocks,
+          message: `${errorLabel} must be at least ${minStakingTimeBlocks} blocks.`,
+        },
+        {
+          valid: numValue <= maxStakingTimeBlocks,
+          message: `${errorLabel} must be no more than ${maxStakingTimeBlocks} blocks.`,
+        },
+      ];
+
+      const firstInvalid = validations.find((validation) => !validation.valid);
+
+      if (firstInvalid) {
+        onStakingTimeBlocksChange(0);
+        setError(firstInvalid.message);
+      } else {
+        setError("");
+        onStakingTimeBlocksChange(numValue);
+      }
+    },
+    [
+      minStakingTimeBlocks,
+      maxStakingTimeBlocks,
+      onStakingTimeBlocksChange,
+      errorLabel,
+      generalErrorMessage,
+    ],
+  );
+
+  const debouncedValidateAndSetTime = useCallback(
+    (newValue: string) => {
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
+      const timeout = setTimeout(() => {
+        validateAndSetTime(newValue);
+      }, 1000);
+      setUpdateTimeout(timeout);
+    },
+    [updateTimeout, validateAndSetTime],
+  );
+
   useEffect(() => {
-    setValue("150");
-    onStakingTimeBlocksChange(Number(value))
-    setError("");
-    setTouched(false);
-  }, [reset]);
+    // Set and validate initial value
+    validateAndSetTime("150");
+
+    // Cleanup function
+    return () => {
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
+    };
+  }, [validateAndSetTime, updateTimeout]);
+
+  useEffect(() => {
+    if (reset) {
+      setValue("150");
+      setError("");
+      setTouched(false);
+      validateAndSetTime("150");
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
+    }
+  }, [reset, validateAndSetTime, updateTimeout]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-
-    // Allow the input to be changed freely
     setValue(newValue);
-
-    if (touched && newValue === "") {
-      setError(generalErrorMessage);
-    } else {
-      setError("");
-    }
-  };
-
-  const handleBlur = (_e: FocusEvent<HTMLInputElement>) => {
     setTouched(true);
 
-    if (value === "") {
-      onStakingTimeBlocksChange(0);
+    if (newValue === "") {
       setError(generalErrorMessage);
-      return;
-    }
-
-    const numValue = Number(value);
-
-    // Run all validations
-    const validations = [
-      {
-        valid: !isNaN(Number(value)),
-        message: `${errorLabel} must be a valid number.`,
-      },
-      {
-        valid: numValue !== 0,
-        message: `${errorLabel} must be greater than 0.`,
-      },
-      {
-        valid: validateNoDecimalPoints(value),
-        message: `${errorLabel} must not have decimal points.`,
-      },
-      {
-        valid: numValue >= minStakingTimeBlocks,
-        message: `${errorLabel} must be at least ${minStakingTimeBlocks} blocks.`,
-      },
-      {
-        valid: numValue <= maxStakingTimeBlocks,
-        message: `${errorLabel} must be no more than ${maxStakingTimeBlocks} blocks.`,
-      },
-    ];
-
-    // Find the first failing validation
-    const firstInvalid = validations.find((validation) => !validation.valid);
-
-    if (firstInvalid) {
-      onStakingTimeBlocksChange(0);
-      setError(firstInvalid.message);
     } else {
       setError("");
-      onStakingTimeBlocksChange(numValue);
     }
+
+    debouncedValidateAndSetTime(newValue);
   };
 
   const isFixed = minStakingTimeBlocks === maxStakingTimeBlocks;
@@ -143,12 +180,13 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
             type="number"
             value={value}
             onChange={handleChange}
-            onBlur={handleBlur}
             placeholder="150"
             required
           />
         </Form.Control>
-        {error ? <p className="text-sm text-error py-2">*{error}</p> : null}
+        {touched && error ? (
+          <p className="text-sm text-error py-2">*{error}</p>
+        ) : null}
       </Form.Field>
     </Flex>
   );

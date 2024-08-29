@@ -1,6 +1,5 @@
 import * as Form from "@radix-ui/react-form";
 import { Flex, Link } from "@radix-ui/themes";
-import debounce from 'lodash/debounce';
 import { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -28,6 +27,9 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
+  const [updateTimeout, setUpdateTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   const errorLabel = "Staking amount";
   const generalErrorMessage = "You should input staking amount";
@@ -35,65 +37,86 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const { coinName } = getNetworkConfig();
 
   useEffect(() => {
-    setValue("");
-    setError("");
-    setTouched(false);
-  }, [reset]);
-
-  const validateAndSetAmount = useCallback((amount: string) => {
-    if (amount === "") {
-      onStakingAmountSatChange(0);
-      setError(generalErrorMessage);
-      return;
-    }
-
-    const numValue = parseFloat(amount);
-    const satoshis = btcToSatoshi(numValue);
-
-    const validations = [
-      {
-        valid: !isNaN(Number(amount)),
-        message: `${errorLabel} must be a valid number.`,
-      },
-      {
-        valid: numValue !== 0,
-        message: `${errorLabel} must be greater than 0.`,
-      },
-      {
-        valid: satoshis >= minStakingAmountSat,
-        message: `${errorLabel} must be at least ${satoshiToBtc(minStakingAmountSat)} ${coinName}.`,
-      },
-      {
-        valid: satoshis <= maxStakingAmountSat,
-        message: `${errorLabel} must be no more than ${satoshiToBtc(maxStakingAmountSat)} ${coinName}.`,
-      },
-      {
-        valid: satoshis <= btcWalletBalanceSat,
-        message: `${errorLabel} must be no more than ${satoshiToBtc(btcWalletBalanceSat)} wallet balance.`,
-      },
-      {
-        valid: validateDecimalPoints(amount),
-        message: `${errorLabel} must have no more than 8 decimal points.`,
-      },
-    ];
-
-    const firstInvalid = validations.find((validation) => !validation.valid);
-
-    if (firstInvalid) {
-      onStakingAmountSatChange(0);
-      setError(firstInvalid.message);
-    } else {
+    if (reset) {
+      setValue("");
       setError("");
-      onStakingAmountSatChange(satoshis);
-      setValue(maxDecimals(satoshiToBtc(satoshis), 8).toString());
+      setTouched(false);
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
     }
-  }, [minStakingAmountSat, maxStakingAmountSat, btcWalletBalanceSat, onStakingAmountSatChange, coinName, errorLabel]);
+  }, [reset, updateTimeout]);
+
+  const validateAndSetAmount = useCallback(
+    (amount: string) => {
+      if (amount === "") {
+        onStakingAmountSatChange(0);
+        setError(generalErrorMessage);
+        return;
+      }
+
+      const numValue = parseFloat(amount);
+      const satoshis = btcToSatoshi(numValue);
+
+      const validations = [
+        {
+          valid: !isNaN(Number(amount)),
+          message: `${errorLabel} must be a valid number.`,
+        },
+        {
+          valid: numValue !== 0,
+          message: `${errorLabel} must be greater than 0.`,
+        },
+        {
+          valid: satoshis >= minStakingAmountSat,
+          message: `${errorLabel} must be at least ${satoshiToBtc(minStakingAmountSat)} ${coinName}.`,
+        },
+        {
+          valid: satoshis <= maxStakingAmountSat,
+          message: `${errorLabel} must be no more than ${satoshiToBtc(maxStakingAmountSat)} ${coinName}.`,
+        },
+        {
+          valid: satoshis <= btcWalletBalanceSat,
+          message: `${errorLabel} must be no more than ${satoshiToBtc(btcWalletBalanceSat)} wallet balance.`,
+        },
+        {
+          valid: validateDecimalPoints(amount),
+          message: `${errorLabel} must have no more than 8 decimal points.`,
+        },
+      ];
+
+      const firstInvalid = validations.find((validation) => !validation.valid);
+
+      if (firstInvalid) {
+        onStakingAmountSatChange(0);
+        setError(firstInvalid.message);
+      } else {
+        setError("");
+        onStakingAmountSatChange(satoshis);
+      }
+    },
+    [
+      minStakingAmountSat,
+      maxStakingAmountSat,
+      btcWalletBalanceSat,
+      onStakingAmountSatChange,
+      coinName,
+      errorLabel,
+      generalErrorMessage,
+    ],
+  );
 
   const debouncedValidateAndSetAmount = useCallback(
-    debounce((value: string) => {
-      validateAndSetAmount(value);
-    }, 500),
-    [validateAndSetAmount]
+    (newValue: string) => {
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
+      const timeout = setTimeout(() => {
+        validateAndSetAmount(newValue);
+      }, 500);
+      setUpdateTimeout(timeout);
+    },
+    [updateTimeout, validateAndSetAmount],
   );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -159,13 +182,18 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
           </Form.Control>
           <Link
             href="#"
-            onClick={handleMaxClick}
+            onClick={(e) => {
+              e.preventDefault();
+              handleMaxClick();
+            }}
             className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-sm text-black text-sm underline decoration-black"
           >
             Max
           </Link>
         </div>
-        {touched && error ? <p className="text-sm text-error py-2">*{error}</p> : null}
+        {touched && error ? (
+          <p className="text-sm text-error py-2">*{error}</p>
+        ) : null}
       </Form.Field>
     </Flex>
   );
