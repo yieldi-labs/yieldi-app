@@ -2,12 +2,11 @@
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { Table } from "@radix-ui/themes";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
-import { getDelegations, PaginatedDelegations } from "@/app/api/getDelegations";
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import { Delegations } from "@/app/components/Delegations/Delegations";
@@ -15,6 +14,7 @@ import { useError } from "@/app/context/Error/ErrorContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
 import { useWallet } from "@/app/context/WalletContext";
+import { useGetDelegations } from "@/app/hooks/useGetDelegations";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
 import { satoshiToBtc } from "@/utils/btcConversions";
@@ -68,37 +68,11 @@ const StakeBTCPage = () => {
   const { finalityProviders } = useFinalityProviders();
 
   const {
-    data: delegations,
-    fetchNextPage: fetchNextDelegationsPage,
-    hasNextPage: hasNextDelegationsPage,
-    isFetchingNextPage: isFetchingNextDelegationsPage,
-  } = useInfiniteQuery({
-    queryKey: ["delegations", address, publicKeyNoCoord],
-    queryFn: ({ pageParam = "" }) =>
-      getDelegations(pageParam, publicKeyNoCoord),
-    getNextPageParam: (lastPage: { pagination: { next_key: string } }) =>
-      lastPage?.pagination?.next_key !== ""
-        ? lastPage?.pagination?.next_key
-        : null,
-    initialPageParam: "",
-    refetchInterval: 60000, // 1 minute
-    enabled: true, //figure out where the btc address is coming from and how to ensure wallet is connected
-    select: (data: { pages: any[] }) => {
-      const flattenedData = data.pages.reduce<PaginatedDelegations>(
-        (acc, page) => {
-          acc.delegations.push(...page.delegations);
-          acc.pagination = page.pagination;
-          return acc;
-        },
-        { delegations: [], pagination: { next_key: "" } },
-      );
-
-      return flattenedData;
-    },
-    retry: (failureCount: number) => {
-      return !isErrorOpen && failureCount <= 3;
-    },
-  });
+    delegations,
+    fetchNextDelegationsPage,
+    hasNextDelegationsPage,
+    isFetchingNextDelegationsPage,
+  } = useGetDelegations(address, publicKeyNoCoord);
 
   const inTestMode = useSearchParams().get("mockData") === "true";
   let testDelegations: Delegation[] = [];
@@ -253,9 +227,7 @@ const StakeBTCPage = () => {
               }
               btcWalletNetwork={btcWalletNetwork}
               signPsbtTx={signPsbtTransaction(btcWallet)}
-              pushTx={function (): Promise<string> {
-                throw new Error("Function not implemented.");
-              }}
+              pushTx={btcWallet.pushTx}
               queryMeta={{
                 next: fetchNextDelegationsPage,
                 hasMore: hasNextDelegationsPage,
