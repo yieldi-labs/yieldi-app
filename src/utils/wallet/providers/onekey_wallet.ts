@@ -33,20 +33,20 @@ export class OneKeyWallet extends WalletProvider {
     super();
 
     // check whether there is an OneKey extension
-    if (!window[oneKeyProvider]?.btcwallet) {
+    if (!window[oneKeyProvider]?.btc) {
       throw new Error("OneKey Wallet extension not found");
     }
 
     this.oneKeyWallet = window[oneKeyProvider];
 
     // OneKey provider stays the same for all networks
-    this.bitcoinNetworkProvider = this.oneKeyWallet.btcwallet;
+    this.bitcoinNetworkProvider = this.oneKeyWallet.btc;
 
     this.networkEnv = getNetworkConfig().network;
   }
 
   async connectWallet(): Promise<this> {
-    const self = await this.bitcoinNetworkProvider.connectWallet();
+    const self = await this.bitcoinNetworkProvider.requestAccounts();
     const walletNetwork = await this.getNetwork();
 
     if (this.networkEnv !== walletNetwork) {
