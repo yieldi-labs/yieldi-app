@@ -3,6 +3,7 @@ import {
   getAddressBalance,
   getFundingUTXOs,
   getNetworkFees,
+  getTipHeight,
   pushTx,
 } from "@/utils/mempool_api";
 
@@ -87,7 +88,7 @@ export class OneKeyWallet extends WalletProvider {
   }
 
   async getWalletProviderName(): Promise<string> {
-    return this.bitcoinNetworkProvider.getWalletProviderName();
+    return "OneKey";
   }
 
   async getAddress(): Promise<string> {
@@ -159,7 +160,7 @@ export class OneKeyWallet extends WalletProvider {
     return getFundingUTXOs(address, amount);
   }
 
-  async getBTCTipHeight(): Promise<number> {
-    return this.bitcoinNetworkProvider.getBTCTipHeight();
-  }
+  getBTCTipHeight = async (): Promise<number> => {
+    return await getTipHeight();
+  };
 }
