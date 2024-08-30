@@ -1,12 +1,11 @@
-import { getNetworkConfig } from "@/app/config/network";
+import { getNetworkConfig } from "@/config/network.config";
+
 import {
   getAddressBalance,
   getFundingUTXOs,
   getNetworkFees,
-  getTipHeight,
   pushTx,
-} from "@/utils/mempool_api";
-
+} from "../../mempool_api";
 import {
   Fees,
   Network,
@@ -34,20 +33,20 @@ export class OneKeyWallet extends WalletProvider {
     super();
 
     // check whether there is an OneKey extension
-    if (!window[oneKeyProvider]?.btc) {
+    if (!window[oneKeyProvider]?.btcwallet) {
       throw new Error("OneKey Wallet extension not found");
     }
 
     this.oneKeyWallet = window[oneKeyProvider];
 
     // OneKey provider stays the same for all networks
-    this.bitcoinNetworkProvider = this.oneKeyWallet.btc;
+    this.bitcoinNetworkProvider = this.oneKeyWallet.btcwallet;
 
     this.networkEnv = getNetworkConfig().network;
   }
 
   async connectWallet(): Promise<this> {
-    const self = await this.bitcoinNetworkProvider.requestAccounts();
+    const self = await this.bitcoinNetworkProvider.connectWallet();
     const walletNetwork = await this.getNetwork();
 
     if (this.networkEnv !== walletNetwork) {
@@ -58,28 +57,27 @@ export class OneKeyWallet extends WalletProvider {
 
     // TODO `window.$onekey.btcwallet.switchNetwork` does not support "signet" network at the moment
     // Uncomment once it is supported
-    switch (this.networkEnv) {
-      case Network.MAINNET:
-        await this.bitcoinNetworkProvider.switchNetwork(
-          INTERNAL_NETWORK_NAMES.mainnet,
-        );
-        break;
-      case Network.TESTNET:
-        await this.bitcoinNetworkProvider.switchNetwork(
-          INTERNAL_NETWORK_NAMES.testnet,
-        );
-        break;
-      case Network.SIGNET:
-        await this.bitcoinNetworkProvider.switchNetwork(
-          INTERNAL_NETWORK_NAMES.signet,
-        );
-        break;
-      default:
-        throw new Error("Unsupported network");
-    }
-    const address = (await this.bitcoinNetworkProvider.getAccounts())[0];
-    const publicKeyHex = await this.bitcoinNetworkProvider.getPublicKey();
-    console.log({ address, publicKeyHex });
+    // switch (this.networkEnv) {
+    //   case Network.MAINNET:
+    //     await this.bitcoinNetworkProvider.switchNetwork(
+    //       INTERNAL_NETWORK_NAMES.mainnet,
+    //     );
+    //     break;
+    //   case Network.TESTNET:
+    //     await this.bitcoinNetworkProvider.switchNetwork(
+    //       INTERNAL_NETWORK_NAMES.testnet,
+    //     );
+    //     break;
+    //   case Network.SIGNET:
+    //     await this.bitcoinNetworkProvider.switchNetwork(
+    //       INTERNAL_NETWORK_NAMES.signet,
+    //     );
+    //     break;
+    //   default:
+    //     throw new Error("Unsupported network");
+    // }
+    const address = await this.bitcoinNetworkProvider.getAddress();
+    const publicKeyHex = await this.bitcoinNetworkProvider.getPublicKeyHex();
     this.oneKeyWalletInfo = {
       address,
       publicKeyHex,
@@ -88,19 +86,19 @@ export class OneKeyWallet extends WalletProvider {
   }
 
   async getWalletProviderName(): Promise<string> {
-    return "OneKey";
+    return this.bitcoinNetworkProvider.getWalletProviderName();
   }
 
   async getAddress(): Promise<string> {
     if (!this.oneKeyWalletInfo) {
-      return (await this.bitcoinNetworkProvider.getAccounts())[0];
+      return this.bitcoinNetworkProvider.getAddress();
     }
     return this.oneKeyWalletInfo.address;
   }
 
   async getPublicKeyHex(): Promise<string> {
     if (!this.oneKeyWalletInfo) {
-      return this.bitcoinNetworkProvider.getPublicKey();
+      return this.bitcoinNetworkProvider.getPublicKeyHex();
     }
     return this.oneKeyWalletInfo.publicKeyHex;
   }
@@ -160,7 +158,7 @@ export class OneKeyWallet extends WalletProvider {
     return getFundingUTXOs(address, amount);
   }
 
-  getBTCTipHeight = async (): Promise<number> => {
-    return await getTipHeight();
-  };
+  async getBTCTipHeight(): Promise<number> {
+    return this.bitcoinNetworkProvider.getBTCTipHeight();
+  }
 }

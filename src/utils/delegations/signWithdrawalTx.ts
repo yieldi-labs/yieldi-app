@@ -6,10 +6,10 @@ import {
 } from "btc-staking-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
-import { SignPsbtTransaction } from "@/app/common/utils/psbt";
 import { Delegation as DelegationInterface } from "@/app/types/delegations";
 import { apiDataToStakingScripts } from "@/utils/apiDataToStakingScripts";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
+import { SignPsbtTransaction } from "@/utils/psbt";
 
 import { getFeeRateFromMempool } from "../getFeeRateFromMempool";
 import { Fees } from "../wallet/wallet_provider";
