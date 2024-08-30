@@ -57,27 +57,28 @@ export class OneKeyWallet extends WalletProvider {
 
     // TODO `window.$onekey.btcwallet.switchNetwork` does not support "signet" network at the moment
     // Uncomment once it is supported
-    // switch (this.networkEnv) {
-    //   case Network.MAINNET:
-    //     await this.bitcoinNetworkProvider.switchNetwork(
-    //       INTERNAL_NETWORK_NAMES.mainnet,
-    //     );
-    //     break;
-    //   case Network.TESTNET:
-    //     await this.bitcoinNetworkProvider.switchNetwork(
-    //       INTERNAL_NETWORK_NAMES.testnet,
-    //     );
-    //     break;
-    //   case Network.SIGNET:
-    //     await this.bitcoinNetworkProvider.switchNetwork(
-    //       INTERNAL_NETWORK_NAMES.signet,
-    //     );
-    //     break;
-    //   default:
-    //     throw new Error("Unsupported network");
-    // }
-    const address = await this.bitcoinNetworkProvider.getAddress();
-    const publicKeyHex = await this.bitcoinNetworkProvider.getPublicKeyHex();
+    switch (this.networkEnv) {
+      case Network.MAINNET:
+        await this.bitcoinNetworkProvider.switchNetwork(
+          INTERNAL_NETWORK_NAMES.mainnet,
+        );
+        break;
+      case Network.TESTNET:
+        await this.bitcoinNetworkProvider.switchNetwork(
+          INTERNAL_NETWORK_NAMES.testnet,
+        );
+        break;
+      case Network.SIGNET:
+        await this.bitcoinNetworkProvider.switchNetwork(
+          INTERNAL_NETWORK_NAMES.signet,
+        );
+        break;
+      default:
+        throw new Error("Unsupported network");
+    }
+    const address = (await this.bitcoinNetworkProvider.getAccounts())[0];
+    const publicKeyHex = await this.bitcoinNetworkProvider.getPublicKey();
+    console.log({ address, publicKeyHex });
     this.oneKeyWalletInfo = {
       address,
       publicKeyHex,
@@ -91,14 +92,14 @@ export class OneKeyWallet extends WalletProvider {
 
   async getAddress(): Promise<string> {
     if (!this.oneKeyWalletInfo) {
-      return this.bitcoinNetworkProvider.getAddress();
+      return (await this.bitcoinNetworkProvider.getAccounts())[0];
     }
     return this.oneKeyWalletInfo.address;
   }
 
   async getPublicKeyHex(): Promise<string> {
     if (!this.oneKeyWalletInfo) {
-      return this.bitcoinNetworkProvider.getPublicKeyHex();
+      return this.bitcoinNetworkProvider.getPublicKey();
     }
     return this.oneKeyWalletInfo.publicKeyHex;
   }
