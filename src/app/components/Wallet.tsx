@@ -1,111 +1,38 @@
 "use client";
 
+import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
 import { DropdownMenu, Button } from "@radix-ui/themes";
-import { networks } from "bitcoinjs-lib";
+import * as bitcoin from "bitcoinjs-lib";
+import { NextPage } from "next";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useEffect } from "react";
 
-import { ConnectModal } from "@/app/components/Modals/ConnectModal";
-import { ErrorModal } from "@/app/components/Modals/ErrorModal";
-import { useError } from "@/app/context/Error/ErrorContext";
-import { ErrorState } from "@/app/types/errors";
-import { WalletError, WalletErrorType } from "@/app/utils/errors";
-import {
-  getPublicKeyNoCoord,
-  isSupportedAddressType,
-  toNetwork,
-} from "@/app/utils/wallet";
-import { WalletProvider } from "@/app/utils/wallet/wallet_provider";
+import { useWallet } from "@/app/context/WalletContext";
+import { truncateMiddle } from "@/utils/strings";
 import btcIcon from "@public/icons/btc.svg";
+export interface WalletProps {
+  setConnectModalOpen: (open: boolean) => void;
+}
 
-export default function Wallet() {
-  const [connectModalOpen, setConnectModalOpen] = useState(false);
-  const [btcWallet, setBTCWallet] = useState<WalletProvider>();
-  const [btcWalletBalanceSat, setBTCWalletBalanceSat] = useState(0);
-  const [_btcWalletNetwork, setBTCWalletNetwork] = useState<networks.Network>();
-  const [, setPublicKeyNoCoord] = useState("");
+const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+  const {
+    address,
+    btcWallet,
+    btcWalletBalanceSat,
+    disconnectWallet,
+    isConnected,
+  } = useWallet();
 
-  const [address, setAddress] = useState("");
-  const { error, isErrorOpen, showError, hideError, retryErrorAction } =
-    useError();
-
-  const handleDisconnectBTC = () => {
-    setBTCWallet(undefined);
-    setBTCWalletBalanceSat(0);
-    setBTCWalletNetwork(undefined);
-    setPublicKeyNoCoord("");
-    setAddress("");
-  };
-
-  const handleConnectBTC = useCallback(
-    async (walletProvider: WalletProvider) => {
-      // close the modal
-      setConnectModalOpen(false);
-
-      try {
-        await walletProvider.connectWallet();
-        const address = await walletProvider.getAddress();
-        // check if the wallet address type is supported in babylon
-        const supported = isSupportedAddressType(address);
-        if (!supported) {
-          throw new Error(
-            "Invalid address type. Please use a Native SegWit or Taproot",
-          );
-        }
-
-        const balanceSat = await walletProvider.getBalance();
-        const publicKeyNoCoord = getPublicKeyNoCoord(
-          await walletProvider.getPublicKeyHex(),
-        );
-        setBTCWallet(walletProvider);
-        setBTCWalletBalanceSat(balanceSat);
-        setBTCWalletNetwork(toNetwork(await walletProvider.getNetwork()));
-        setAddress(address);
-        setPublicKeyNoCoord(publicKeyNoCoord.toString("hex"));
-      } catch (error: Error | any) {
-        if (
-          error instanceof WalletError &&
-          error.getType() === WalletErrorType.ConnectionCancelled
-        ) {
-          // User cancelled the connection, hence do nothing
-          return;
-        }
-        let errorMessage;
-        switch (true) {
-          case /Incorrect address prefix for (Testnet \/ Signet|Mainnet)/.test(
-            error.message,
-          ):
-            errorMessage =
-              "Unsupported address type detected. Please use a Native SegWit or Taproot address.";
-            break;
-          default:
-            errorMessage = error.message;
-            break;
-        }
-        showError({
-          error: {
-            message: errorMessage,
-            errorState: ErrorState.WALLET,
-            errorTime: new Date(),
-          },
-          retryAction: () => handleConnectBTC(walletProvider),
-        });
-        console.error(errorMessage);
-      }
-    },
-    [showError],
-  );
-
-  const truncateMiddle = (str: string, padding: number) => {
-    return str.length <= padding * 2
-      ? str
-      : str.slice(0, padding) + "…" + str.slice(-1 * padding);
-  };
+  useEffect(() => {
+    if (isConnected && btcWallet) {
+      bitcoin.initEccLib(ecc);
+    }
+  }, [isConnected, btcWallet]);
 
   return (
     <>
       <DropdownMenu.Root modal={false}>
-        {btcWallet ? (
+        {isConnected && btcWallet ? (
           <>
             <DropdownMenu.Trigger>
               <Button variant="soft" className="cursor-pointer">
@@ -120,7 +47,7 @@ export default function Wallet() {
               <DropdownMenu.Sub>
                 <DropdownMenu.Item
                   className="cursor-pointer"
-                  onClick={handleDisconnectBTC}
+                  onClick={disconnectWallet}
                 >
                   Disconnect
                 </DropdownMenu.Item>
@@ -129,28 +56,18 @@ export default function Wallet() {
           </>
         ) : (
           <>
-            <Button asChild size="3" onClick={() => setConnectModalOpen(true)}>
-              <button className="bg-slate-700 hover:bg-slate-800 text-white bg-surface-950 cursor-pointer transition-transform hover:scale-95">
-                Connect Wallet
-              </button>
+            <Button
+              variant="soft"
+              className="cursor-pointer"
+              onClick={() => setConnectModalOpen(true)}
+            >
+              Connect Wallet
             </Button>
           </>
         )}
       </DropdownMenu.Root>
-      <ConnectModal
-        open={connectModalOpen}
-        onClose={() => setConnectModalOpen(false)}
-        onConnect={handleConnectBTC}
-        connectDisabled={!!address}
-      />
-      <ErrorModal
-        open={isErrorOpen}
-        errorMessage={error.message}
-        errorState={error.errorState}
-        errorTime={error.errorTime}
-        onClose={hideError}
-        onRetry={retryErrorAction}
-      />
     </>
   );
-}
+};
+
+export default Wallet;

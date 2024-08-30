@@ -2,14 +2,14 @@ import {
   getNetworkConfig,
   network,
   validateAddress,
-} from "@/app/config/network.config";
+} from "@/app/config/network";
 import {
   getAddressBalance,
   getFundingUTXOs,
   getNetworkFees,
   getTipHeight,
   pushTx,
-} from "@/app/utils/mempool_api";
+} from "@/utils/mempool_api";
 
 import {
   Fees,

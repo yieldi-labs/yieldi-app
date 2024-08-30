@@ -3,7 +3,7 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import { IoIosWarning } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 
-import { getNetworkConfig } from "@/app/config/network.config";
+import { getNetworkConfig } from "@/app/config/network";
 import { DelegationState, StakingTx } from "@/app/types/delegations";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
 import { satoshiToBtc } from "@/utils/btcConversions";

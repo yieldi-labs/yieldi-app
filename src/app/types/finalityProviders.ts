@@ -15,3 +15,9 @@ export interface Description {
   securityContact: string;
   details: string;
 }
+export interface FinalityProvidersContextType {
+  finalityProviders: FinalityProvider[];
+  setFinalityProviders: React.Dispatch<
+    React.SetStateAction<FinalityProvider[]>
+  >;
+}

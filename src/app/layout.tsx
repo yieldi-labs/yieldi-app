@@ -1,13 +1,10 @@
-import "./globals.css";
+import "@/app/globals.css";
 import "react-responsive-modal/styles.css";
-
 import { Theme } from "@radix-ui/themes";
 import { StrictMode } from "react";
 
-import { StakeProvider } from "@/context/StakeContext";
-import QueryClientProvider from "@/lib/providers/QueryClientProvider";
-
-import Navbar from "./components/Navbar";
+import Main from "./components/Main";
+import Providers from "./providers";
 
 export default function RootLayout({
   children,
@@ -17,20 +14,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <StrictMode>
-        <QueryClientProvider>
-          <StakeProvider>
-            <body>
-              <Theme
-                accentColor="gray"
-                grayColor="gray"
-                panelBackground="translucent"
-                radius="full"
-              >
-                <Navbar>{children}</Navbar>
-              </Theme>
-            </body>
-          </StakeProvider>
-        </QueryClientProvider>
+        <Providers>
+          <body>
+            <Theme
+              accentColor="yellow"
+              grayColor="gray"
+              panelBackground="translucent"
+              radius="full"
+            >
+              <Main>{children}</Main>
+            </Theme>
+          </body>
+        </Providers>
       </StrictMode>
     </html>
   );

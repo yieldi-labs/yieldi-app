@@ -1,13 +1,13 @@
 import { Psbt } from "bitcoinjs-lib";
 
-import { getNetworkConfig } from "@/app/config/network.config";
+import { getNetworkConfig } from "@/app/config/network";
 import {
   getAddressBalance,
   getFundingUTXOs,
   getNetworkFees,
   getTipHeight,
   pushTx,
-} from "@/app/utils/mempool_api";
+} from "@/utils/mempool_api";
 
 import { Fees, Network, UTXO, WalletProvider } from "../wallet_provider";
 
