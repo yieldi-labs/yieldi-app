@@ -23,10 +23,10 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
           </span>
           <span
             className={`p-2 ${
-              pathName === "/stake/btc" ? "border-b-2 border-black pb-2" : ""
+              pathName.includes("/stake") ? "border-b-2 border-black pb-2" : ""
             }`}
           >
-            <Link href="/stake/btc">RESTAKE</Link>
+            <Link href="/stake">RESTAKE</Link>
           </span>
         </div>
         <Wallet setConnectModalOpen={setConnectModalOpen} />
