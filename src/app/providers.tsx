@@ -14,17 +14,17 @@ function Providers({ children }: React.PropsWithChildren) {
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GlobalParamsProvider>
-        <StakeProvider>
-          <WalletProvider>
-            <FinalityProvidersProvider>
-              <ErrorProvider>{children}</ErrorProvider>
-            </FinalityProvidersProvider>
-          </WalletProvider>
-        </StakeProvider>
-      </GlobalParamsProvider>
-    </QueryClientProvider>
+    <ErrorProvider>
+      <QueryClientProvider client={queryClient}>
+        <GlobalParamsProvider>
+          <StakeProvider>
+            <WalletProvider>
+              <FinalityProvidersProvider>{children}</FinalityProvidersProvider>
+            </WalletProvider>
+          </StakeProvider>
+        </GlobalParamsProvider>
+      </QueryClientProvider>
+    </ErrorProvider>
   );
 }
 
