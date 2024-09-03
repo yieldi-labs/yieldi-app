@@ -4,9 +4,9 @@ import { Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import { RestakeAsset } from "@/app/types/restakeAsset";
+import { StakeAsset } from "@/app/types/stakeAsset";
 
-const assets: RestakeAsset[] = [
+const assets: StakeAsset[] = [
   {
     assetName: "Bitcoin",
     assetSymbol: "BTC",
@@ -25,7 +25,7 @@ const assets: RestakeAsset[] = [
   },
 ];
 
-const RestakePage: React.FC = () => {
+const StakePage: React.FC = () => {
   const router = useRouter();
   const handleOnClick = (assetSymbol: string) => () => {
     router.push(`/stake/${assetSymbol.toLocaleLowerCase()}`);
@@ -33,7 +33,7 @@ const RestakePage: React.FC = () => {
   return (
     <div className="p-10">
       <div className="flex">
-        <h1>RESTAKE Page | </h1> <span> Choose an asset to stake</span>
+        <h1>STAKE Page | </h1> <span> Choose an asset to stake</span>
       </div>
       <Table.Root className="">
         <Table.Header className="">
@@ -84,4 +84,4 @@ const RestakePage: React.FC = () => {
   );
 };
 
-export default RestakePage;
+export default StakePage;
