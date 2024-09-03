@@ -9,6 +9,7 @@ import {
   useCallback,
 } from "react";
 
+import { useError } from "@/app/context/Error/ErrorContext";
 import {
   getPublicKeyNoCoord,
   isSupportedAddressType,
@@ -39,6 +40,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [publicKeyNoCoord, setPublicKeyNoCoord] = useState("");
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [btcWalletNetwork, setBtcWalletNetwork] = useState<networks.Network>();
+  const { showError } = useError();
 
   const connectWallet = useCallback(
     async (walletProvider: WalletProviderType) => {
@@ -67,12 +69,16 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         walletProvider
           .getNetwork()
           .then((network) => setBtcWalletNetwork(toNetwork(network)));
-      } catch (error) {
-        console.error("Failed to connect wallet:", error);
-        throw new Error("Failed to connect wallet");
+      } catch (error: Error | any) {
+        showError({
+          error: {
+            message: error.message,
+            errorTime: new Date(),
+          },
+        });
       }
     },
-    [],
+    [showError],
   );
 
   const disconnectWallet = () => {

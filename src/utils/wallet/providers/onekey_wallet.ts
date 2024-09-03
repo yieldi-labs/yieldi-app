@@ -1,11 +1,11 @@
-import { getNetworkConfig } from "@/app/config/network";
+import { getNetworkConfig } from "@/config/network.config";
+
 import {
   getAddressBalance,
   getFundingUTXOs,
   getNetworkFees,
   pushTx,
-} from "@/utils/mempool_api";
-
+} from "../../mempool_api";
 import {
   Fees,
   Network,

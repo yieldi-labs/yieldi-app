@@ -4,10 +4,10 @@ import { unbondingTransaction } from "btc-staking-ts";
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getUnbondingEligibility } from "@/app/api/getUnbondingEligibility";
 import { postUnbonding } from "@/app/api/postUnbonding";
-import { SignPsbtTransaction } from "@/app/common/utils/psbt";
 import { Delegation as DelegationInterface } from "@/app/types/delegations";
 import { apiDataToStakingScripts } from "@/utils/apiDataToStakingScripts";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
+import { SignPsbtTransaction } from "@/utils/psbt";
 
 // Get the staker signature from the unbonding transaction
 const getStakerSignature = (unbondingTx: Transaction): string => {
@@ -79,7 +79,6 @@ export const signUnbondingTx = async (
     btcWalletNetwork,
     delegation.stakingTx.outputIndex,
   );
-
   // Sign the unbonding transaction
   let unbondingTx: Transaction;
   try {

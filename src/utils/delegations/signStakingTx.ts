@@ -1,9 +1,9 @@
 import { Transaction, networks } from "bitcoinjs-lib";
 import { stakingTransaction } from "btc-staking-ts";
 
-import { signPsbtTransaction } from "@/app/common/utils/psbt";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
 import { apiDataToStakingScripts } from "@/utils/apiDataToStakingScripts";
+import { signPsbtTransaction } from "@/utils/psbt";
 import { isTaproot } from "@/utils/wallet";
 import { UTXO, WalletProvider } from "@/utils/wallet/wallet_provider";
 
