@@ -1,10 +1,9 @@
-import * as Form from "@radix-ui/react-form";
-import { Flex, Link } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { Tooltip } from "react-tooltip";
 import { useLocalStorage } from "usehooks-ts";
 
 import {
@@ -35,7 +34,7 @@ import { WalletProvider } from "@/utils/wallet/wallet_provider";
 
 import { StakingAmount } from "./Form/StakingAmount";
 import { StakingFee } from "./Form/StakingFee";
-import { StakingTime } from "./Form/StakingTime";
+// import { StakingTime } from "./Form/StakingTime";
 import { Message } from "./Form/States/Message";
 import { WalletNotConnected } from "./Form/States/WalletNotConnected";
 import stakingCapReached from "./Form/States/staking-cap-reached.svg";
@@ -75,7 +74,7 @@ export const Staking: React.FC<StakingProps> = ({
 }) => {
   // Staking form state
   const [stakingAmountSat, setStakingAmountSat] = useState(0);
-  const [stakingTimeBlocks, setStakingTimeBlocks] = useState(0);
+  const [stakingTimeBlocks, setStakingTimeBlocks] = useState(150);
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
@@ -99,6 +98,7 @@ export const Staking: React.FC<StakingProps> = ({
 
   const finalityProvider = selectedFinalityProvider;
   const router = useRouter();
+  const [dialogOpen, setDialogOpen] = useState(true);
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -513,108 +513,123 @@ export const Staking: React.FC<StakingProps> = ({
         : stakingTimeBlocks;
 
       // Check if the staking transaction is ready to be signed
-      const { isReady: signReady, reason: signNotReadyReason } =
-        isStakingSignReady(
-          minStakingAmountSat,
-          maxStakingAmountSat,
-          minStakingTimeBlocks,
-          maxStakingTimeBlocks,
-          stakingAmountSat,
-          stakingTimeBlocksWithFixed,
-          !!finalityProvider,
-        );
+      const { isReady: signReady } = isStakingSignReady(
+        minStakingAmountSat,
+        maxStakingAmountSat,
+        minStakingTimeBlocks,
+        maxStakingTimeBlocks,
+        stakingAmountSat,
+        stakingTimeBlocksWithFixed,
+        !!finalityProvider,
+      );
 
       const previewReady =
         signReady && feeRate && availableUTXOs && stakingAmountSat;
 
       return (
         <>
-          <Form.Root
-            onSubmit={(e: React.FormEvent) => {
-              e.preventDefault();
-            }}
-            className="flex flex-1 flex-col border-gray-800 border bg-gray-100 
-            min-w-[368px] md:min-w-[472px] md:py-[42px] py-[24px] md:px-[8px] px-[4px]"
-          >
-            <div className="flex flex-1 flex-col">
-              <Flex direction="column" className="w-full bg-gray-100 mb-5">
-                <h3 className="text-xs font-medium mb-2 pl-2">
-                  FINALITY PROVIDER
-                </h3>
-                <Form.Field
-                  name="finality-provider"
-                  className="w-full bg-gray-200 lg:py-3 px-1 lg:px-2"
-                >
-                  <Flex justify="between" align="center">
-                    <span>{finalityProvider?.description.moniker}</span>
-                    <Link
-                      href="#"
-                      onClick={() => {
-                        router.push("/stake/btc");
-                      }}
-                      className="text-black text-sm underline decoration-black"
-                    >
-                      Change
-                    </Link>
-                  </Flex>
-                </Form.Field>
-              </Flex>
-              <StakingTime
-                minStakingTimeBlocks={minStakingTimeBlocks}
-                maxStakingTimeBlocks={maxStakingTimeBlocks}
-                unbondingTimeBlocks={stakingParams.unbondingTime}
-                onStakingTimeBlocksChange={handleStakingTimeBlocksChange}
-                reset={resetFormInputs}
-              />
-              <StakingAmount
-                minStakingAmountSat={minStakingAmountSat}
-                maxStakingAmountSat={maxStakingAmountSat}
-                btcWalletBalanceSat={btcWalletBalanceSat}
-                onStakingAmountSatChange={handleStakingAmountSatChange}
-                reset={resetFormInputs}
-              />
-              <StakingFee
-                mempoolFeeRates={mempoolFeeRates}
-                stakingFeeSat={stakingFeeSat}
-                selectedFeeRate={selectedFeeRate}
-                onSelectedFeeRateChange={setSelectedFeeRate}
-                reset={resetFormInputs}
-              />
-            </div>
-            {showApproachingCapWarning()}
-            <div
-              className="cursor-pointer text-xs flex justify-center"
-              data-tooltip-id="tooltip-staking-preview"
-              data-tooltip-content={signNotReadyReason}
-              data-tooltip-place="top"
-            >
+          <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog.Trigger asChild>
               <button
                 className="btn-primary btn mt-2 l:w-[340px] w-[260px] l:h-11 h-9 bg-blue-400 font-medium"
-                type="button"
                 disabled={!previewReady}
-                onClick={() => {
-                  setPreviewModalOpen(true);
-                }}
               >
                 Stake
               </button>
-              <Tooltip id="tooltip-staking-preview" />
-            </div>
-            {previewReady ? (
-              <PreviewModal
-                open={previewModalOpen}
-                onClose={handlePreviewModalClose}
-                onSign={handleSign}
-                finalityProvider={finalityProvider?.description.moniker}
-                stakingAmountSat={stakingAmountSat}
-                stakingTimeBlocks={stakingTimeBlocksWithFixed}
-                stakingFeeSat={stakingFeeSat}
-                confirmationDepth={confirmationDepth}
-                feeRate={feeRate}
-                unbondingTimeBlocks={unbondingTime}
-              />
-            ) : null}
-          </Form.Root>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+              <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-lg max-w-sm w-full border border-gray-200">
+                <div className="flex justify-between items-center mb-4">
+                  <Dialog.Title className="text-xl font-bold">
+                    Deposit Stake
+                  </Dialog.Title>
+                  <Dialog.Close className="text-gray-500 hover:text-gray-700">
+                    <Cross2Icon />
+                  </Dialog.Close>
+                </div>
+
+                <div className="flex items-center mb-4 bg-gray-50 p-3 border border-gray-200">
+                  <div className="bg-orange-500 p-2 mr-3">
+                    {/* Bitcoin icon placeholder */}
+                  </div>
+                  <div>
+                    <div className="font-bold">BTC</div>
+                    <div className="text-sm text-gray-500">Native Bitcoin</div>
+                  </div>
+                </div>
+
+                <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
+                  <div className="text-sm text-gray-500 mb-1">Delegate</div>
+                  <div className="font-bold">
+                    {finalityProvider?.description.moniker}
+                  </div>
+                </div>
+
+                <StakingAmount
+                  minStakingAmountSat={minStakingAmountSat}
+                  maxStakingAmountSat={maxStakingAmountSat}
+                  btcWalletBalanceSat={btcWalletBalanceSat}
+                  onStakingAmountSatChange={handleStakingAmountSatChange}
+                  reset={resetFormInputs}
+                />
+
+                <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm text-gray-500">TERM</span>
+                    <span className="text-sm text-gray-500">
+                      in blocks (min {minStakingTimeBlocks})
+                    </span>
+                  </div>
+                  <div className="flex justify-end items-center">
+                    <input
+                      type="number"
+                      value={stakingTimeBlocks}
+                      onChange={(e) =>
+                        handleStakingTimeBlocksChange(Number(e.target.value))
+                      }
+                      className="text-right text-2xl font-bold w-32 bg-transparent focus:outline-none"
+                      min={minStakingTimeBlocks}
+                      max={maxStakingTimeBlocks}
+                    />
+                  </div>
+                </div>
+
+                <StakingFee
+                  mempoolFeeRates={mempoolFeeRates}
+                  stakingFeeSat={stakingFeeSat}
+                  selectedFeeRate={selectedFeeRate}
+                  onSelectedFeeRateChange={setSelectedFeeRate}
+                  reset={resetFormInputs}
+                />
+
+                <button
+                  className="w-full bg-green-400 text-white py-3 font-bold hover:bg-green-500 transition duration-300"
+                  onClick={() => {
+                    setDialogOpen(false);
+                    setPreviewModalOpen(true);
+                  }}
+                >
+                  DELEGATE STAKE
+                </button>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          {showApproachingCapWarning()}
+          {previewReady ? (
+            <PreviewModal
+              open={previewModalOpen}
+              onClose={handlePreviewModalClose}
+              onSign={handleSign}
+              finalityProvider={finalityProvider?.description.moniker}
+              stakingAmountSat={stakingAmountSat}
+              stakingTimeBlocks={stakingTimeBlocksWithFixed}
+              stakingFeeSat={stakingFeeSat}
+              confirmationDepth={confirmationDepth}
+              feeRate={feeRate}
+              unbondingTimeBlocks={unbondingTime}
+            />
+          ) : null}
         </>
       );
     } else {
@@ -631,46 +646,13 @@ export const Staking: React.FC<StakingProps> = ({
   };
 
   return (
-    <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm items-center">
-      <div className="flex flex-row px-4 py-2 sm:px-6 md:px-8 items-center w-[320px] md:w-[500px] mb-2">
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={() => {
-            router.push("/stake/btc");
-          }}
-        >
-          <svg
-            className="size-3 sm:size-4"
-            viewBox="0 0 15 15"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6.85355 3.14645C7.04882 3.34171 7.04882 3.65829 6.85355 3.85355L3.70711 7H12.5C12.7761 7 13 7.22386 13 7.5C13 7.77614 12.7761 8 12.5 8H3.70711L6.85355 11.1464C7.04882 11.3417 7.04882 11.6583 6.85355 11.8536C6.65829 12.0488 6.34171 12.0488 6.14645 11.8536L2.14645 7.85355C1.95118 7.65829 1.95118 7.34171 2.14645 7.14645L6.14645 3.14645C6.34171 2.95118 6.65829 2.95118 6.85355 3.14645Z"
-              fill="currentColor"
-              fillRule="evenodd"
-              clipRule="evenodd"
-            />
-          </svg>
-          <button className="btn btn-ghost btn-sm ml-1 sm:ml-2 text-xs sm:text-sm">
-            Back
-          </button>
-        </div>
-        <h3 className="font-bold text-sm sm:text-base md:text-lg absolute left-1/2 -translate-x-1/2">
-          Stake
-        </h3>
-      </div>
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="divider m-0 lg:divider-horizontal lg:m-0" />
-        <div className="flex flex-1 flex-col gap-4 lg:basis-2/5 xl:basis-1/3">
-          {renderStakingForm()}
-        </div>
-      </div>
+    <>
+      {renderStakingForm()}
       <FeedbackModal
         open={feedbackModal.isOpen}
         onClose={handleCloseFeedbackModal}
         type={feedbackModal.type}
       />
-    </div>
+    </>
   );
 };

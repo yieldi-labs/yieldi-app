@@ -1,6 +1,4 @@
-import * as Form from "@radix-ui/react-form";
-import { Flex, Link } from "@radix-ui/themes";
-import { ChangeEvent, useEffect, useState, useCallback } from "react";
+import React, { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { getNetworkConfig } from "@/config/network.config";
@@ -134,7 +132,6 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   };
 
   const handleMaxClick = () => {
-    //TODO: Add fee calculation
     const minFeeSats = 277;
     const safeMaxStakingAmountSat = maxStakingAmountSat - minFeeSats;
     const safeBtcWalletBalanceSat = btcWalletBalanceSat - minFeeSats;
@@ -149,52 +146,36 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
     validateAndSetAmount(newValue);
   };
 
-  const minStakeAmount = maxDecimals(satoshiToBtc(minStakingAmountSat), 8);
-  const maxStakeAmount = maxDecimals(satoshiToBtc(maxStakingAmountSat), 8);
-
   return (
-    <Flex direction="column" className="w-full bg-gray-100 mb-5">
-      <Form.Field name="amount" className="w-full flex flex-col">
-        <div className="flex justify-between items-center mb-2">
-          <Form.Label className="text-xs font-medium pl-2">
-            AMOUNT
-            <span className="font-normal pl-[2px]">
-              (min: {minStakeAmount}, max: {maxStakeAmount})
-            </span>
-          </Form.Label>
-          <span className="text-xs font-normal pr-2">
-            Balance: {satoshiToBtc(btcWalletBalanceSat)}
-          </span>
-        </div>
-        <div className="relative">
-          <Form.Control asChild className="bg-gray-200 lg:py-3 px-1 lg:px-2">
-            <input
-              className={twMerge(
-                "box-border w-full inline-flex appearance-none items-center justify-center pr-16",
-                error ? "input-error" : "",
-              )}
-              type="text"
-              value={value}
-              onChange={handleChange}
-              placeholder={coinName}
-              required
-            />
-          </Form.Control>
-          <Link
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handleMaxClick();
-            }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-sm text-black text-sm underline decoration-black"
-          >
-            Max
-          </Link>
-        </div>
-        {touched && error ? (
-          <p className="text-sm text-error py-2">*{error}</p>
-        ) : null}
-      </Form.Field>
-    </Flex>
+    <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm text-gray-500">AMOUNT</span>
+        <span className="text-sm text-gray-500">
+          Balance: {satoshiToBtc(btcWalletBalanceSat)} BTC
+        </span>
+      </div>
+      <div className="flex justify-between items-center">
+        <button
+          onClick={handleMaxClick}
+          className="bg-gray-700 text-white px-3 py-1 text-sm"
+        >
+          MAX
+        </button>
+        <input
+          type="text"
+          value={value}
+          onChange={handleChange}
+          className={twMerge(
+            "text-right text-2xl font-bold w-32 bg-transparent focus:outline-none",
+            error ? "text-red-500" : "",
+          )}
+          placeholder={coinName}
+          required
+        />
+      </div>
+      {touched && error ? (
+        <p className="text-sm text-red-500 mt-1">{error}</p>
+      ) : null}
+    </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { getNetworkConfig } from "@/config/network.config";
 import { satoshiToBtc } from "@/utils/btcConversions";
@@ -12,11 +12,9 @@ interface StakingFeeProps {
   selectedFeeRate: number;
   onSelectedFeeRateChange: (fee: number) => void;
   reset: boolean;
-  // optional as component shows loading state
   mempoolFeeRates?: Fees;
 }
 
-// Staking fee sat might be expensive to calculate as it sums UTXOs
 export const StakingFee: React.FC<StakingFeeProps> = ({
   stakingFeeSat,
   selectedFeeRate,
@@ -26,7 +24,6 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
 }) => {
   const [customMode, setCustomMode] = useState(false);
 
-  // Use effect to reset the state when reset prop changes
   useEffect(() => {
     setCustomMode(false);
   }, [reset]);
@@ -48,26 +45,23 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
 
   const defaultModeRender = () => {
     return (
-      <div className="flex flex-col justify-center gap-1 items-center px">
-        <div className="divider h-px w-11/12 bg-gray-800 mb-4"></div>
-        <div className="flex flex-col items-center px-10 gap-2 mb-4">
-          <div className="flex flex-row justify-between flex-1 mx-10 gap-4 mb-2 w-full">
+      <div className="grid grid-cols-2 mb-4 bg-gray-50 border border-gray-200">
+        <div className="p-3 border-r border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">FEE RATE</div>
+          <div>
             {mempoolFeeRates ? (
-              <>
-                <p>Fee rate:</p>
-                <strong>{defaultFeeRate} sats/vB</strong>
-              </>
+              <strong>{defaultFeeRate} sats/vB</strong>
             ) : (
-              <LoadingSmall text="Loading recommended fee rate..." />
+              <LoadingSmall text="Loading..." />
             )}
           </div>
-          <div className="flex flex-row justify-between w-full mx-10 gap-4 mb-2">
-            <>
-              <p>Transaction fee amount: </p>
-              <strong>
-                {satoshiToBtc(stakingFeeSat)} {coinName}
-              </strong>
-            </>
+        </div>
+        <div className="p-3">
+          <div className="text-sm text-gray-500 mb-1">TX FEE</div>
+          <div>
+            <strong>
+              {satoshiToBtc(stakingFeeSat)} {coinName}
+            </strong>
           </div>
         </div>
       </div>
@@ -75,23 +69,26 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
   };
 
   const selectedModeRender = () => {
-    // If fee is below the fastest fee, show a warning
     const showLowFeesWarning =
       selectedFeeRate && mempoolFeeRates && selectedFeeRate < defaultFeeRate;
 
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col items-center justify-start">
-          <p>
-            Selected fee rate:{" "}
-            <strong>{selectedFeeRate || defaultFeeRate} sat/vB</strong>
-          </p>
-          <p>
-            Transaction fee amount:{" "}
-            <strong>
-              {satoshiToBtc(stakingFeeSat)} {coinName}
-            </strong>
-          </p>
+        <div className="grid grid-cols-2 mb-4 bg-gray-50 border border-gray-200">
+          <div className="p-3 border-r border-gray-200">
+            <div className="text-sm text-gray-500 mb-1">FEE RATE</div>
+            <div>
+              <strong>{selectedFeeRate || defaultFeeRate} sat/vB</strong>
+            </div>
+          </div>
+          <div className="p-3">
+            <div className="text-sm text-gray-500 mb-1">TX FEE</div>
+            <div>
+              <strong>
+                {satoshiToBtc(stakingFeeSat)} {coinName}
+              </strong>
+            </div>
+          </div>
         </div>
         <div>
           <input
@@ -116,7 +113,6 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
     );
   };
 
-  // fetched fee rates and staking fee sat
   const customModeReady = customMode && mempoolFeeRates && stakingFeeSat;
 
   return (
