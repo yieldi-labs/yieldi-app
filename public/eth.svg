@@ -1,0 +1,29 @@
+<svg xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="eth.xsd" xmlns="http://www.w3.org/2000/svg" width="45"
+    height="45" viewBox="0 0 45 45" fill="none">
+    <g clip-path="url(#clip0_82_2482)">
+        <mask id="mask0_82_2482" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0"
+            width="45" height="45">
+            <path d="M45 0H0V45H45V0Z" fill="white" />
+        </mask>
+        <g mask="url(#mask0_82_2482)">
+            <path
+                d="M22.5 45C34.9265 45 45 34.9265 45 22.5C45 10.0736 34.9265 0 22.5 0C10.0736 0 0 10.0736 0 22.5C0 34.9265 10.0736 45 22.5 45Z"
+                fill="#627EEA" />
+            <path d="M23.2003 5.625V18.0984L33.743 22.8094L23.2003 5.625Z" fill="white"
+                fill-opacity="0.602" />
+            <path d="M23.2003 5.625L12.6562 22.8094L23.2003 18.0984V5.625Z" fill="white" />
+            <path d="M23 29.12V37.5955L33.5497 23L23 29.12Z" fill="white" fill-opacity="0.602" />
+            <path d="M23.2003 39.3679V30.8911L12.6562 24.7725L23.2003 39.3679Z" fill="white" />
+            <path d="M23.2003 28.9309L33.743 22.8094L23.2003 18.1013V28.9309Z" fill="white"
+                fill-opacity="0.2" />
+            <path d="M12.6562 22.8094L23.2003 28.9309V18.1013L12.6562 22.8094Z" fill="white"
+                fill-opacity="0.602" />
+        </g>
+    </g>
+    <defs>
+        <clipPath id="clip0_82_2482">
+            <rect width="45" height="45" fill="white" />
+        </clipPath>
+    </defs>
+</svg>

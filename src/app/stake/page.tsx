@@ -1,6 +1,7 @@
 "use client";
 
 import { Table } from "@radix-ui/themes";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -8,7 +9,7 @@ import { StakeAsset } from "@/app/types/stakeAsset";
 
 const assets: StakeAsset[] = [
   {
-    assetName: "Bitcoin",
+    assetName: "Native Bitcoin",
     assetSymbol: "BTC",
     amount: 0.0001,
     price: 10000,
@@ -16,8 +17,16 @@ const assets: StakeAsset[] = [
     remainingBalance: 0.0001,
   },
   {
-    assetName: "Ethereum",
+    assetName: "Native ETH",
     assetSymbol: "ETH",
+    amount: 0.0001,
+    price: 10000,
+    totalBalance: 0.0001,
+    remainingBalance: 0.0001,
+  },
+  {
+    assetName: "Staked Coinbase ETH",
+    assetSymbol: "cbETH",
     amount: 0.0001,
     price: 10000,
     totalBalance: 0.0001,
@@ -32,7 +41,7 @@ const StakePage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full px-6 py-0 flex-col items-start gap-4 shrink-0 self-stretch">
+    <div className="flex pl-[64px] pr-[56px] h-full px-6 py-0 flex-col items-start gap-4 shrink-0 self-stretch">
       <div className="flex w-full items-center gap-4">
         <h2 className="text-m font-semibold">STAKE</h2>
         <span className="text-sm">Choose an asset to stake</span>
@@ -70,9 +79,20 @@ const StakePage: React.FC = () => {
                 onClick={handleOnClick(asset.assetSymbol)}
               >
                 <Table.Cell className="w-1/4 p-2">
-                  <strong>{asset.assetSymbol}</strong>
-                  <br />
-                  <span className="text-xs">{asset.assetName}</span>
+                  <div className="flex ">
+                    <Image
+                      src={`/${asset.assetSymbol.toLocaleLowerCase()}.svg`}
+                      alt={`${asset.assetName} Logo`}
+                      width={0}
+                      height={0}
+                      className="size-[35px] rounded-full"
+                    />
+                    <span className="flex-col">
+                      <strong>{asset.assetSymbol}</strong>
+                      <br />
+                      <span className="text-xs">{asset.assetName}</span>
+                    </span>
+                  </div>
                 </Table.Cell>
                 <Table.Cell className="w-1/5 p-2 hidden md:block">
                   {asset.totalBalance}
@@ -87,11 +107,21 @@ const StakePage: React.FC = () => {
                   {asset.remainingBalance}
                 </Table.Cell>
                 <Table.Cell className="flex w-1/4 p-2 flex gap-2">
-                  <button className="bg-[#A1FD59] text-black  py-2">
-                    STAKE
+                  <button className="bg-[#A1FD59] text-black  ">
+                    <Image
+                      src="/download.svg"
+                      alt="Stake asset"
+                      width={29}
+                      height={32}
+                    />
                   </button>
-                  <button className="bg-[#A1FD59] text-black  py-2">
-                    WITHDRAW
+                  <button className="bg-[#6D655D] text-white  ">
+                    <Image
+                      src="/upload.svg"
+                      alt="Unstake asset"
+                      width={29}
+                      height={28}
+                    />
                   </button>
                 </Table.Cell>
               </Table.Row>
