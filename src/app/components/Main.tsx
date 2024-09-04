@@ -30,7 +30,7 @@ const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <div>
+    <div className="bg-[#F5F1EB]">
       <Navbar setConnectModalOpen={setConnectModalOpen} />
       <QueryClientProvider>
         <main className="h-screen grow pt-24">{children}</main>
