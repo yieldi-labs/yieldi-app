@@ -43,7 +43,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         clearTimeout(updateTimeout);
       }
     }
-  }, [reset, updateTimeout]);
+  }, [onStakingAmountSatChange, reset, updateTimeout]);
 
   const validateAndSetAmount = useCallback(
     (amount: string) => {
@@ -162,11 +162,11 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
           MAX
         </button>
         <input
-          type="text"
+          type="number"
           value={value}
           onChange={handleChange}
           className={twMerge(
-            "text-right text-2xl font-bold w-32 bg-transparent focus:outline-none",
+            "text-right text-2xl font-bold w-full bg-transparent focus:outline-none",
             error ? "text-red-500" : "",
           )}
           placeholder={coinName}

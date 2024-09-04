@@ -2,6 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
@@ -31,20 +32,21 @@ import {
 import { isStakingSignReady } from "@/utils/isStakingSignReady";
 import { toLocalStorageDelegation } from "@/utils/local_storage/toLocalStorageDelegation";
 import { WalletProvider } from "@/utils/wallet/wallet_provider";
+import wBtcIcon from "@public/icons/wbtc.svg";
 
-import { StakingAmount } from "./Form/StakingAmount";
-import { StakingFee } from "./Form/StakingFee";
-// import { StakingTime } from "./Form/StakingTime";
-import { Message } from "./Form/States/Message";
-import { WalletNotConnected } from "./Form/States/WalletNotConnected";
-import stakingCapReached from "./Form/States/staking-cap-reached.svg";
-import stakingNotStarted from "./Form/States/staking-not-started.svg";
-import stakingUpgrading from "./Form/States/staking-upgrading.svg";
+import { StakingAmount } from "./Dialog/StakingAmount";
+import { StakingFee } from "./Dialog/StakingFee";
+import { StakingTime } from "./Dialog/StakingTime";
+import { Message } from "./Dialog/States/Message";
+import { WalletNotConnected } from "./Dialog/States/WalletNotConnected";
+import stakingCapReached from "./Dialog/States/staking-cap-reached.svg";
+import stakingNotStarted from "./Dialog/States/staking-not-started.svg";
+import stakingUpgrading from "./Dialog/States/staking-upgrading.svg";
 
 interface OverflowProperties {
   isHeightCap: boolean;
   overTheCapRange: boolean;
-  approchingCapRange: boolean;
+  approachingCapRange: boolean;
 }
 
 export interface StakingProps {
@@ -58,6 +60,8 @@ export interface StakingProps {
   address: string | undefined;
   publicKeyNoCoord: string;
   setDelegationsLocalStorage: Dispatch<SetStateAction<Delegation[]>>;
+  isOpen: boolean;
+  onCloseDialog: () => void;
 }
 
 export const Staking: React.FC<StakingProps> = ({
@@ -71,6 +75,8 @@ export const Staking: React.FC<StakingProps> = ({
   setDelegationsLocalStorage,
   selectedFinalityProvider,
   btcWalletBalanceSat,
+  isOpen,
+  onCloseDialog,
 }) => {
   // Staking form state
   const [stakingAmountSat, setStakingAmountSat] = useState(0);
@@ -78,7 +84,7 @@ export const Staking: React.FC<StakingProps> = ({
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
-  const [resetFormInputs] = useState(false);
+  const [resetFormInputs, setResetFormInputs] = useState(false);
   const [feedbackModal, setFeedbackModal] = useState<{
     type: "success" | "cancel" | null;
     isOpen: boolean;
@@ -93,12 +99,17 @@ export const Staking: React.FC<StakingProps> = ({
   const [overflow, setOverflow] = useState<OverflowProperties>({
     isHeightCap: false,
     overTheCapRange: false,
-    approchingCapRange: false,
+    approachingCapRange: false,
   });
 
   const finalityProvider = selectedFinalityProvider;
   const router = useRouter();
-  const [dialogOpen, setDialogOpen] = useState(true);
+  const handleOnClose = () => {
+    console.log("handleOnCloseDialog");
+    setResetFormInputs(true);
+    setPreviewModalOpen(false);
+    onCloseDialog();
+  }
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -176,7 +187,7 @@ export const Staking: React.FC<StakingProps> = ({
           We also don't take the confirmation depth into account here as majority
           of the delegation will be overflow after the cap is reached, unless btc fork happens but it's unlikely
         */
-        approchingCapRange:
+        approachingCapRange:
           nextBlockHeight >=
           stakingCapHeight - OVERFLOW_HEIGHT_WARNING_THRESHOLD,
       });
@@ -185,7 +196,7 @@ export const Staking: React.FC<StakingProps> = ({
       setOverflow({
         isHeightCap: false,
         overTheCapRange: stakingCapSat <= activeTVLSat,
-        approchingCapRange:
+        approachingCapRange:
           stakingCapSat * OVERFLOW_TVL_WARNING_THRESHOLD < unconfirmedTVLSat,
       });
     }
@@ -438,7 +449,7 @@ export const Staking: React.FC<StakingProps> = ({
   };
 
   const showApproachingCapWarning = () => {
-    if (!overflow.approchingCapRange) {
+    if (!overflow.approachingCapRange) {
       return;
     }
     if (overflow.isHeightCap) {
@@ -455,17 +466,13 @@ export const Staking: React.FC<StakingProps> = ({
     );
   };
 
-  const renderStakingForm = () => {
+  const renderDialogContent = () => {
     // States of the staking form:
     // 1. Wallet is not connected
     if (!isWalletConnected) {
-      return <WalletNotConnected onConnect={onConnect} />;
+      return <WalletNotConnected onConnect={() => {onConnect(); handleOnClose(); }} />;
     }
-    // 2. Wallet is connected but we are still loading the staking params
-    // else if (isLoading) {
-    // return <LoadingView />;
-    // }
-    // 3. Staking has not started yet
+    // 2. Staking has not started yet
     else if (isBlockHeightUnderActivation) {
       return (
         <Message
@@ -477,7 +484,7 @@ export const Staking: React.FC<StakingProps> = ({
         />
       );
     }
-    // 4. Staking params upgrading
+    // 3. Staking params upgrading
     else if (isUpgrading) {
       return (
         <Message
@@ -489,11 +496,11 @@ export const Staking: React.FC<StakingProps> = ({
         />
       );
     }
-    // 5. Staking cap reached
+    // 4. Staking cap reached
     else if (overflow.overTheCapRange) {
       return showOverflowWarning(overflow);
     }
-    // 6. Staking form
+    // 5. Staking form
     else if (stakingParams) {
       const {
         minStakingAmountSat,
@@ -501,7 +508,6 @@ export const Staking: React.FC<StakingProps> = ({
         minStakingTimeBlocks,
         maxStakingTimeBlocks,
         unbondingTime,
-        confirmationDepth,
       } = stakingParams;
 
       // Staking time is fixed
@@ -528,108 +534,59 @@ export const Staking: React.FC<StakingProps> = ({
 
       return (
         <>
-          <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-            <Dialog.Trigger asChild>
-              <button
-                className="btn-primary btn mt-2 l:w-[340px] w-[260px] l:h-11 h-9 bg-blue-400 font-medium"
-                disabled={!previewReady}
-              >
-                Stake
-              </button>
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-              <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-lg max-w-sm w-full border border-gray-200">
-                <div className="flex justify-between items-center mb-4">
-                  <Dialog.Title className="text-xl font-bold">
-                    Deposit Stake
-                  </Dialog.Title>
-                  <Dialog.Close className="text-gray-500 hover:text-gray-700">
-                    <Cross2Icon />
-                  </Dialog.Close>
-                </div>
+          <div className="flex items-center mb-4 bg-gray-50 p-3 border border-gray-200">
+            <div className="mr-3">
+              <Image src={wBtcIcon} alt="WBTC" width={65} height={65} />
+            </div>
+            <div>
+              <div className="font-bold">BTC</div>
+              <div className="text-sm text-gray-500">Native Bitcoin</div>
+            </div>
+          </div>
 
-                <div className="flex items-center mb-4 bg-gray-50 p-3 border border-gray-200">
-                  <div className="bg-orange-500 p-2 mr-3">
-                    {/* Bitcoin icon placeholder */}
-                  </div>
-                  <div>
-                    <div className="font-bold">BTC</div>
-                    <div className="text-sm text-gray-500">Native Bitcoin</div>
-                  </div>
-                </div>
+          <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
+            <div className="text-sm text-gray-500 mb-1">Delegate</div>
+            <div className="font-bold">
+              {finalityProvider?.description.moniker}
+            </div>
+          </div>
 
-                <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
-                  <div className="text-sm text-gray-500 mb-1">Delegate</div>
-                  <div className="font-bold">
-                    {finalityProvider?.description.moniker}
-                  </div>
-                </div>
+          <StakingAmount
+            minStakingAmountSat={minStakingAmountSat}
+            maxStakingAmountSat={maxStakingAmountSat}
+            btcWalletBalanceSat={btcWalletBalanceSat}
+            onStakingAmountSatChange={handleStakingAmountSatChange}
+            reset={resetFormInputs}
+          />
 
-                <StakingAmount
-                  minStakingAmountSat={minStakingAmountSat}
-                  maxStakingAmountSat={maxStakingAmountSat}
-                  btcWalletBalanceSat={btcWalletBalanceSat}
-                  onStakingAmountSatChange={handleStakingAmountSatChange}
-                  reset={resetFormInputs}
-                />
+          <StakingTime
+            minStakingTimeBlocks={minStakingTimeBlocks}
+            maxStakingTimeBlocks={maxStakingTimeBlocks}
+            unbondingTimeBlocks={unbondingTime}
+            onStakingTimeBlocksChange={handleStakingTimeBlocksChange}
+            reset={resetFormInputs}
+          />
+          
+          <StakingFee
+            mempoolFeeRates={mempoolFeeRates}
+            stakingFeeSat={stakingFeeSat}
+            selectedFeeRate={selectedFeeRate}
+            onSelectedFeeRateChange={setSelectedFeeRate}
+            reset={resetFormInputs}
+          />
 
-                <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-500">TERM</span>
-                    <span className="text-sm text-gray-500">
-                      in blocks (min {minStakingTimeBlocks})
-                    </span>
-                  </div>
-                  <div className="flex justify-end items-center">
-                    <input
-                      type="number"
-                      value={stakingTimeBlocks}
-                      onChange={(e) =>
-                        handleStakingTimeBlocksChange(Number(e.target.value))
-                      }
-                      className="text-right text-2xl font-bold w-32 bg-transparent focus:outline-none"
-                      min={minStakingTimeBlocks}
-                      max={maxStakingTimeBlocks}
-                    />
-                  </div>
-                </div>
+          <button
+            className="w-full bg-green-400 text-white py-3 font-bold hover:bg-green-500 transition duration-300"
+            onClick={() => {
+              // handleOnClose();
+              setPreviewModalOpen(true);
+            }}
+            disabled={!previewReady}
+          >
+            DELEGATE STAKE
+          </button>
 
-                <StakingFee
-                  mempoolFeeRates={mempoolFeeRates}
-                  stakingFeeSat={stakingFeeSat}
-                  selectedFeeRate={selectedFeeRate}
-                  onSelectedFeeRateChange={setSelectedFeeRate}
-                  reset={resetFormInputs}
-                />
-
-                <button
-                  className="w-full bg-green-400 text-white py-3 font-bold hover:bg-green-500 transition duration-300"
-                  onClick={() => {
-                    setDialogOpen(false);
-                    setPreviewModalOpen(true);
-                  }}
-                >
-                  DELEGATE STAKE
-                </button>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
           {showApproachingCapWarning()}
-          {previewReady ? (
-            <PreviewModal
-              open={previewModalOpen}
-              onClose={handlePreviewModalClose}
-              onSign={handleSign}
-              finalityProvider={finalityProvider?.description.moniker}
-              stakingAmountSat={stakingAmountSat}
-              stakingTimeBlocks={stakingTimeBlocksWithFixed}
-              stakingFeeSat={stakingFeeSat}
-              confirmationDepth={confirmationDepth}
-              feeRate={feeRate}
-              unbondingTimeBlocks={unbondingTime}
-            />
-          ) : null}
         </>
       );
     } else {
@@ -647,7 +604,36 @@ export const Staking: React.FC<StakingProps> = ({
 
   return (
     <>
-      {renderStakingForm()}
+      <Dialog.Root open={isOpen} onOpenChange={(open) => { if (!open) { handleOnClose() }}}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-lg max-w-sm w-full border border-gray-200">
+            <div className="flex justify-between items-center mb-4">
+              <Dialog.Title className="text-xl font-bold">
+                Deposit Stake
+              </Dialog.Title>
+              <Dialog.Close className="text-gray-500 hover:text-gray-700">
+                <Cross2Icon />
+              </Dialog.Close>
+            </div>
+            {renderDialogContent()}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+      
+      {stakingParams ? <PreviewModal
+          open={previewModalOpen}
+          onClose={handlePreviewModalClose}
+          onSign={handleSign}
+          finalityProvider={finalityProvider?.description.moniker}
+          stakingAmountSat={stakingAmountSat}
+          stakingTimeBlocks={stakingTimeBlocks}
+          stakingFeeSat={stakingFeeSat}
+          confirmationDepth={stakingParams.confirmationDepth}
+          feeRate={feeRate}
+          unbondingTimeBlocks={stakingParams.unbondingTime}
+        /> : null}
+      
       <FeedbackModal
         open={feedbackModal.isOpen}
         onClose={handleCloseFeedbackModal}

@@ -3,13 +3,14 @@
 import { Table } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import { Delegations } from "@/app/components/Delegations/Delegations";
+import { Staking, StakingProps } from "@/app/components/Staking/Staking";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
@@ -27,15 +28,15 @@ import wBtcIcon from "@public/icons/wbtc.svg";
 
 const StakeBTCPage = () => {
   const { isErrorOpen } = useError();
-  const router = useRouter();
   const { setSelectedDelegation } = useStake();
 
-  const handleRowClick = (delegation: FinalityProvider) => {
+  const handleSelectProvider = (delegation: FinalityProvider) => {
     setSelectedDelegation(delegation);
-    router.push(`/stake/btc/${delegation.btcPk}`);
+    setSelectedFinalityProvider(delegation);
+    setStakingDialogIsOpen(true);
   };
 
-  const { btcWallet, address, publicKeyNoCoord, btcWalletNetwork } =
+  const { btcWallet, address, publicKeyNoCoord, btcWalletNetwork, btcWalletBalanceSat, isConnected, setConnectModalOpen } =
     useWallet();
 
   const { data: paramWithContext } = useQuery({
@@ -61,6 +62,51 @@ const StakeBTCPage = () => {
   });
 
   const { finalityProviders } = useFinalityProviders();
+  const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
+  const delegationsLocalStorageKey =
+    getDelegationsLocalStorageKey(publicKeyNoCoord);
+  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<Delegation[]>(
+    delegationsLocalStorageKey,
+    [],
+  );
+  const [selectedFinalityProvider, setSelectedFinalityProvider] = useState<
+    FinalityProvider | undefined
+  >(undefined);
+  const [stakingDialogIsOpen, setStakingDialogIsOpen] = useState(false);
+
+  const stakingProps: StakingProps = {
+    btcHeight,
+    btcWallet,
+    btcWalletNetwork,
+    btcWalletBalanceSat,
+    isWalletConnected: isConnected,
+    onConnect: function (): void {
+      setConnectModalOpen(true);
+    },
+    address,
+    publicKeyNoCoord,
+    selectedFinalityProvider: selectedFinalityProvider,
+    setDelegationsLocalStorage,
+    isOpen: stakingDialogIsOpen,
+    onCloseDialog: () => {
+      console.log("onCloseDialog");
+      setStakingDialogIsOpen(false);
+      setSelectedFinalityProvider(undefined);
+    }
+  };
+
+  useEffect(() => {
+    //TODO: add auto refresh for btc height for every minute and move this to wallet context
+    if (btcWallet) {
+      Promise.all([btcWallet.getBTCTipHeight(), btcWallet.getNetwork()]).then(
+        ([height, _network]) => {
+          setBtcHeight(height);
+          // setBtcWalletNetwork(toNetwork(network));
+        },
+      );
+    }
+  }, [btcWallet]);
+
 
   const {
     delegations,
@@ -74,13 +120,6 @@ const StakeBTCPage = () => {
   if (inTestMode) {
     testDelegations = getDelegations_testData.delegations;
   }
-
-  const delegationsLocalStorageKey =
-    getDelegationsLocalStorageKey(publicKeyNoCoord);
-
-  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<
-    Delegation[]
-  >(delegationsLocalStorageKey, []);
 
   useEffect(() => {
     if (!delegations?.delegations) {
@@ -244,7 +283,7 @@ const StakeBTCPage = () => {
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
                         <button
-                          onClick={() => handleRowClick(provider)}
+                          onClick={() => handleSelectProvider(provider)}
                           className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] 
                             gap-[10px] shrink-0 rounded bg-[#332B29] text-[#F5F1EB] text-sm font-medium"
                         >
@@ -292,6 +331,7 @@ const StakeBTCPage = () => {
           ) : null}
         </div>
       </div>
+      <Staking {...stakingProps} />
     </>
   );
 };
