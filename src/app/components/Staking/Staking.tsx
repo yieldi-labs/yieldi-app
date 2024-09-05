@@ -2,6 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
+import { set } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -83,8 +84,7 @@ export const Staking: React.FC<StakingProps> = ({
   const [stakingTimeBlocks, setStakingTimeBlocks] = useState(150);
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
-  const [previewModalOpen, setPreviewModalOpen] = useState(false);
-  const [resetFormInputs, setResetFormInputs] = useState(false);
+  const [resetFormInputs, setResetFormInputs] = useState(0);
   const [feedbackModal, setFeedbackModal] = useState<{
     type: "success" | "cancel" | null;
     isOpen: boolean;
@@ -105,9 +105,9 @@ export const Staking: React.FC<StakingProps> = ({
   const finalityProvider = selectedFinalityProvider;
   const router = useRouter();
   const handleOnClose = () => {
-    console.log("handleOnCloseDialog");
-    setResetFormInputs(true);
-    setPreviewModalOpen(false);
+    setStakingAmountSat(0);
+    setSelectedFeeRate(0);
+    setResetFormInputs(Number.MAX_SAFE_INTEGER);
     onCloseDialog();
   }
 
@@ -153,6 +153,7 @@ export const Staking: React.FC<StakingProps> = ({
   });
 
   const stakingStats = useStakingStats();
+  const [signing, setSigning] = useState(false);
 
   // load global params and calculate the current staking params
   const globalParams = useGlobalParams();
@@ -215,6 +216,12 @@ export const Staking: React.FC<StakingProps> = ({
   const { isErrorOpen, showError } = useError();
 
   useEffect(() => {
+    if (resetFormInputs === Number.MAX_SAFE_INTEGER) {
+      setResetFormInputs(0);
+    }
+  }, [resetFormInputs]);
+
+  useEffect(() => {
     const handleError = ({
       error,
       hasError,
@@ -262,6 +269,7 @@ export const Staking: React.FC<StakingProps> = ({
 
   const handleSign = async () => {
     try {
+      setSigning(true);
       // Initial validation
       if (!btcWallet) throw new Error("Wallet is not connected");
       if (!address) throw new Error("Address is not set");
@@ -291,7 +299,7 @@ export const Staking: React.FC<StakingProps> = ({
       // UI
       handleFeedbackModal("success");
       handleLocalStorageDelegations(stakingTxHex, stakingTerm);
-      router.push("/stake/btc");
+      setSigning(false);
     } catch (error: Error | any) {
       showError({
         error: {
@@ -301,6 +309,9 @@ export const Staking: React.FC<StakingProps> = ({
         },
         retryAction: handleSign,
       });
+    } finally {
+      handleOnClose();
+      setSigning(false);
     }
   };
 
@@ -404,11 +415,6 @@ export const Staking: React.FC<StakingProps> = ({
         setFeedbackModal({ type, isOpen: true });
       }
     }
-  };
-
-  const handlePreviewModalClose = (isOpen: boolean) => {
-    setPreviewModalOpen(isOpen);
-    handleFeedbackModal("cancel");
   };
 
   const showOverflowWarning = (overflow: OverflowProperties) => {
@@ -578,12 +584,11 @@ export const Staking: React.FC<StakingProps> = ({
           <button
             className="w-full bg-green-400 text-white py-3 font-bold hover:bg-green-500 transition duration-300"
             onClick={() => {
-              // handleOnClose();
-              setPreviewModalOpen(true);
+              handleSign();
             }}
-            disabled={!previewReady}
+            disabled={!previewReady || signing}
           >
-            DELEGATE STAKE
+            { signing ? "Signing Transaction" : "DELEGATE STAKE" }
           </button>
 
           {showApproachingCapWarning()}
@@ -620,20 +625,7 @@ export const Staking: React.FC<StakingProps> = ({
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-      
-      {stakingParams ? <PreviewModal
-          open={previewModalOpen}
-          onClose={handlePreviewModalClose}
-          onSign={handleSign}
-          finalityProvider={finalityProvider?.description.moniker}
-          stakingAmountSat={stakingAmountSat}
-          stakingTimeBlocks={stakingTimeBlocks}
-          stakingFeeSat={stakingFeeSat}
-          confirmationDepth={stakingParams.confirmationDepth}
-          feeRate={feeRate}
-          unbondingTimeBlocks={stakingParams.unbondingTime}
-        /> : null}
-      
+     
       <FeedbackModal
         open={feedbackModal.isOpen}
         onClose={handleCloseFeedbackModal}

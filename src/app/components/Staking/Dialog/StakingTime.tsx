@@ -8,7 +8,7 @@ interface StakingTimeProps {
   maxStakingTimeBlocks: number;
   unbondingTimeBlocks: number;
   onStakingTimeBlocksChange: (inputTimeBlocks: number) => void;
-  reset: boolean;
+  reset: number;
 }
 
 export const StakingTime: React.FC<StakingTimeProps> = ({
@@ -21,7 +21,9 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
   const [value, setValue] = useState("150");
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
-
+  const [updateTimeout, setUpdateTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
   const { coinName } = getNetworkConfig();
 
   const validateAndSetTime = useCallback(
@@ -52,13 +54,25 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
     [minStakingTimeBlocks, maxStakingTimeBlocks, onStakingTimeBlocksChange]
   );
 
+  const debouncedValidateAndSetTime = useCallback(
+    (newValue: string) => {
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
+      const timeout = setTimeout(() => {
+        validateAndSetTime(newValue);
+      }, 500);
+      setUpdateTimeout(timeout);
+    },
+    [updateTimeout, validateAndSetTime],
+  );
+
   useEffect(() => {
     validateAndSetTime("150");
   }, [validateAndSetTime]);
 
   useEffect(() => {
     if (reset) {
-      setValue("150");
       setError("");
       setTouched(false);
       validateAndSetTime("150");
@@ -69,7 +83,8 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
     const newValue = e.target.value;
     setValue(newValue);
     setTouched(true);
-    validateAndSetTime(newValue);
+    debouncedValidateAndSetTime(newValue);
+    // validateAndSetTime(newValue);
   };
 
   const isFixed = minStakingTimeBlocks === maxStakingTimeBlocks;

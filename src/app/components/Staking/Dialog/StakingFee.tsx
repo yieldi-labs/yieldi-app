@@ -11,7 +11,7 @@ interface StakingFeeProps {
   stakingFeeSat: number;
   selectedFeeRate: number;
   onSelectedFeeRateChange: (fee: number) => void;
-  reset: boolean;
+  reset: number;
   mempoolFeeRates?: Fees;
 }
 
@@ -26,7 +26,10 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
 
   useEffect(() => {
     setCustomMode(false);
-  }, [reset]);
+    if (reset) {
+      onSelectedFeeRateChange(0);
+    }
+  }, [onSelectedFeeRateChange, reset]);
 
   const { coinName } = getNetworkConfig();
 

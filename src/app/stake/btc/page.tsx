@@ -89,7 +89,6 @@ const StakeBTCPage = () => {
     setDelegationsLocalStorage,
     isOpen: stakingDialogIsOpen,
     onCloseDialog: () => {
-      console.log("onCloseDialog");
       setStakingDialogIsOpen(false);
       setSelectedFinalityProvider(undefined);
     }

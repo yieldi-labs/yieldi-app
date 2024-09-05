@@ -12,7 +12,7 @@ interface StakingAmountProps {
   maxStakingAmountSat: number;
   btcWalletBalanceSat: number;
   onStakingAmountSatChange: (inputAmountSat: number) => void;
-  reset: boolean;
+  reset: number;
 }
 
 export const StakingAmount: React.FC<StakingAmountProps> = ({
@@ -43,7 +43,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         clearTimeout(updateTimeout);
       }
     }
-  }, [onStakingAmountSatChange, reset, updateTimeout]);
+  }, [reset, updateTimeout]);
 
   const validateAndSetAmount = useCallback(
     (amount: string) => {
@@ -162,7 +162,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
           MAX
         </button>
         <input
-          type="number"
+          type="text"
           value={value}
           onChange={handleChange}
           className={twMerge(
