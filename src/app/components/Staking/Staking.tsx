@@ -6,6 +6,7 @@ import { set } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { useLocalStorage } from "usehooks-ts";
 
 import {
@@ -103,11 +104,11 @@ export const Staking: React.FC<StakingProps> = ({
   });
 
   const finalityProvider = selectedFinalityProvider;
-  const router = useRouter();
   const handleOnClose = () => {
     setStakingAmountSat(0);
     setSelectedFeeRate(0);
     setResetFormInputs(Number.MAX_SAFE_INTEGER);
+    setSigning(false);
     onCloseDialog();
   }
 
@@ -582,7 +583,7 @@ export const Staking: React.FC<StakingProps> = ({
           />
 
           <button
-            className="w-full bg-green-400 text-white py-3 font-bold hover:bg-green-500 transition duration-300"
+            className={twMerge("w-full py-3 text-[#332B29] font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer", signing ? "bg-gray-300" : "bg-[#A1FD59]")}
             onClick={() => {
               handleSign();
             }}
