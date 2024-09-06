@@ -5,13 +5,12 @@ import { Transaction, networks } from "bitcoinjs-lib";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useLocalStorage } from "usehooks-ts";
 
 import {
   OVERFLOW_HEIGHT_WARNING_THRESHOLD,
   OVERFLOW_TVL_WARNING_THRESHOLD,
 } from "@/app/common/constants";
-import { FeedbackModal } from "@/app/components/Modals/FeedbackModal";
+import { useDialog } from "@/app/context/DialogContext";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { useGlobalParams } from "@/app/context/api/GlobalParamsProvider";
 import { useStakingStats } from "@/app/context/api/StakingStatsProvider";
@@ -83,14 +82,6 @@ export const Staking: React.FC<StakingProps> = ({
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
   const [resetFormInputs, setResetFormInputs] = useState(0);
-  const [feedbackModal, setFeedbackModal] = useState<{
-    type: "success" | "cancel" | null;
-    isOpen: boolean;
-  }>({ type: null, isOpen: false });
-  const [successFeedbackModalOpened, setSuccessFeedbackModalOpened] =
-    useLocalStorage<boolean>("bbn-staking-successFeedbackModalOpened", false);
-  const [cancelFeedbackModalOpened, setCancelFeedbackModalOpened] =
-    useLocalStorage<boolean>("bbn-staking-cancelFeedbackModalOpened ", false);
   const [paramWithCtx, setParamWithCtx] = useState<
     ParamsWithContext | undefined
   >();
@@ -108,6 +99,7 @@ export const Staking: React.FC<StakingProps> = ({
     setSigning(false);
     onCloseDialog();
   };
+  const { showDialog } = useDialog();
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -295,7 +287,14 @@ export const Staking: React.FC<StakingProps> = ({
         availableUTXOs,
       );
       // UI
-      handleFeedbackModal("success");
+      showDialog({
+        title: "Success",
+        message: "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
+        buttonTitle: "see my delegations",
+        onButtonClick: function (): void {
+          throw new Error("Function not implemented.");
+        }
+      })
       handleLocalStorageDelegations(stakingTxHex, stakingTerm);
       setSigning(false);
     } catch (error: Error | any) {
@@ -402,19 +401,6 @@ export const Staking: React.FC<StakingProps> = ({
     setStakingTimeBlocks(inputTimeBlocks);
   };
 
-  // Show feedback modal only once for each type
-  const handleFeedbackModal = (type: "success" | "cancel") => {
-    if (!feedbackModal.isOpen && feedbackModal.type !== type) {
-      const isFeedbackModalOpened =
-        type === "success"
-          ? successFeedbackModalOpened
-          : cancelFeedbackModalOpened;
-      if (!isFeedbackModalOpened) {
-        setFeedbackModal({ type, isOpen: true });
-      }
-    }
-  };
-
   const showOverflowWarning = (overflow: OverflowProperties) => {
     if (overflow.isHeightCap) {
       return (
@@ -441,15 +427,6 @@ export const Staking: React.FC<StakingProps> = ({
         />
       );
     }
-  };
-
-  const handleCloseFeedbackModal = () => {
-    if (feedbackModal.type === "success") {
-      setSuccessFeedbackModalOpened(true);
-    } else if (feedbackModal.type === "cancel") {
-      setCancelFeedbackModalOpened(true);
-    }
-    setFeedbackModal({ type: null, isOpen: false });
   };
 
   const showApproachingCapWarning = () => {
@@ -645,12 +622,6 @@ export const Staking: React.FC<StakingProps> = ({
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-
-      <FeedbackModal
-        open={feedbackModal.isOpen}
-        onClose={handleCloseFeedbackModal}
-        type={feedbackModal.type}
-      />
     </>
   );
 };
