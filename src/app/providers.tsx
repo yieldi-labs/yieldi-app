@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 
 import { DialogProvider } from "./context/DialogContext";
-import { ErrorProvider } from "./context/Error/ErrorContext";
 import { FinalityProvidersProvider } from "./context/FinalityProvidersContext";
 import { StakeProvider } from "./context/StakeContext";
 import { WalletProvider } from "./context/WalletContext";
@@ -20,9 +19,7 @@ function Providers({ children }: React.PropsWithChildren) {
         <StakeProvider>
           <WalletProvider>
             <FinalityProvidersProvider>
-              <DialogProvider>
-                <ErrorProvider>{children}</ErrorProvider>
-              </DialogProvider>
+              <DialogProvider>{children}</DialogProvider>
             </FinalityProvidersProvider>
           </WalletProvider>
         </StakeProvider>

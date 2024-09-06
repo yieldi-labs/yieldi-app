@@ -1,6 +1,12 @@
-import React, { createContext, useState, useContext, useCallback, useRef } from 'react';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 
-import SimpleDialog from '../components/SimpleDialog';
+import SimpleDialog from "../components/SimpleDialog";
 
 interface DialogContent {
   title: string;
@@ -16,7 +22,9 @@ interface DialogContextType {
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
 
-export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dialogContentRef = useRef<DialogContent | null>(null);
 
@@ -39,14 +47,16 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <DialogContext.Provider value={{ showDialog, hideDialog }}>
       {children}
-      {dialogContentRef.current ? <SimpleDialog
+      {dialogContentRef.current ? (
+        <SimpleDialog
           isOpen={isOpen}
           onClose={hideDialog}
           title={dialogContentRef.current.title}
           message={dialogContentRef.current.message}
           buttonTitle={dialogContentRef.current.buttonTitle}
           onButtonClick={handleButtonClick}
-        /> : null}
+        />
+      ) : null}
     </DialogContext.Provider>
   );
 };
@@ -54,7 +64,7 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 export const useDialog = () => {
   const context = useContext(DialogContext);
   if (context === undefined) {
-    throw new Error('useDialog must be used within a DialogProvider');
+    throw new Error("useDialog must be used within a DialogProvider");
   }
   return context;
 };

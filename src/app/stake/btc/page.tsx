@@ -11,7 +11,6 @@ import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import { Delegations } from "@/app/components/Delegations/Delegations";
 import { Staking, StakingProps } from "@/app/components/Staking/Staking";
-import { useError } from "@/app/context/Error/ErrorContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
 import { useWallet } from "@/app/context/WalletContext";
@@ -27,7 +26,6 @@ import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
 
 const StakeBTCPage = () => {
-  const { isErrorOpen } = useError();
   const { setSelectedDelegation } = useStake();
 
   const handleSelectProvider = (delegation: FinalityProvider) => {
@@ -64,7 +62,7 @@ const StakeBTCPage = () => {
     // Should be enabled only when the wallet is connected
     enabled: !!btcWallet,
     retry: (failureCount: number) => {
-      return !isErrorOpen && failureCount <= 3;
+      return failureCount <= 3;
     },
   });
 

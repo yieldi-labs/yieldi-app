@@ -11,7 +11,6 @@ import {
   OVERFLOW_TVL_WARNING_THRESHOLD,
 } from "@/app/common/constants";
 import { useDialog } from "@/app/context/DialogContext";
-import { useError } from "@/app/context/Error/ErrorContext";
 import { useGlobalParams } from "@/app/context/api/GlobalParamsProvider";
 import { useStakingStats } from "@/app/context/api/StakingStatsProvider";
 import { Delegation } from "@/app/types/delegations";
@@ -22,6 +21,7 @@ import {
   createStakingTx,
   signStakingTx,
 } from "@/utils/delegations/signStakingTx";
+import { getErrorMessage, getErrorTitle } from "@/utils/errors";
 import { getFeeRateFromMempool } from "@/utils/getFeeRateFromMempool";
 import {
   ParamsWithContext,
@@ -118,7 +118,7 @@ export const Staking: React.FC<StakingProps> = ({
     enabled: !!btcWallet?.getNetworkFees,
     refetchInterval: 60000, // 1 minute
     retry: (failureCount) => {
-      return !isErrorOpen && failureCount <= 3;
+      return failureCount <= 3;
     },
   });
 
@@ -138,7 +138,7 @@ export const Staking: React.FC<StakingProps> = ({
     enabled: !!(btcWallet?.getUtxos && address),
     refetchInterval: 60000 * 5, // 5 minutes
     retry: (failureCount) => {
-      return !isErrorOpen && failureCount <= 3;
+      return failureCount <= 3;
     },
   });
 
@@ -203,8 +203,6 @@ export const Staking: React.FC<StakingProps> = ({
       firstActivationHeight &&
       btcHeight + 1 < firstActivationHeight);
 
-  const { isErrorOpen, showError } = useError();
-
   useEffect(() => {
     if (resetFormInputs === Number.MAX_SAFE_INTEGER) {
       setResetFormInputs(0);
@@ -219,13 +217,11 @@ export const Staking: React.FC<StakingProps> = ({
       refetchFunction,
     }: ErrorHandlerParam) => {
       if (hasError && error) {
-        showError({
-          error: {
-            message: error.message,
-            errorState,
-            errorTime: new Date(),
-          },
-          retryAction: refetchFunction,
+        showDialog({
+          title: getErrorTitle(errorState),
+          message: getErrorMessage(errorState, error.message),
+          buttonTitle: "Retry",
+          onButtonClick: refetchFunction,
         });
       }
     };
@@ -249,7 +245,7 @@ export const Staking: React.FC<StakingProps> = ({
     hasAvailableUTXOsError,
     refetchMempoolFeeRates,
     refetchAvailableUTXOs,
-    showError,
+    showDialog,
   ]);
 
   const { minFeeRate, defaultFeeRate } = getFeeRateFromMempool(mempoolFeeRates);
@@ -289,22 +285,21 @@ export const Staking: React.FC<StakingProps> = ({
       // UI
       showDialog({
         title: "Success",
-        message: "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
+        message:
+          "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
         buttonTitle: "see my delegations",
         onButtonClick: function (): void {
           throw new Error("Function not implemented.");
-        }
-      })
+        },
+      });
       handleLocalStorageDelegations(stakingTxHex, stakingTerm);
       setSigning(false);
     } catch (error: Error | any) {
-      showError({
-        error: {
-          message: error.message,
-          errorState: ErrorState.STAKING,
-          errorTime: new Date(),
-        },
-        retryAction: handleSign,
+      showDialog({
+        title: getErrorTitle(ErrorState.STAKING),
+        message: getErrorMessage(ErrorState.STAKING, error.message),
+        buttonTitle: "Retry",
+        onButtonClick: handleSign,
       });
     } finally {
       handleOnClose();
@@ -363,13 +358,11 @@ export const Staking: React.FC<StakingProps> = ({
         return stakingFeeSat;
       } catch (error: Error | any) {
         // fees + staking amount can be more than the balance
-        showError({
-          error: {
-            message: error.message,
-            errorState: ErrorState.STAKING,
-            errorTime: new Date(),
-          },
-          retryAction: () => setSelectedFeeRate(0),
+        showDialog({
+          title: getErrorTitle(ErrorState.STAKING),
+          message: getErrorMessage(ErrorState.STAKING, error.message),
+          buttonTitle: "Retry",
+          onButtonClick: () => setSelectedFeeRate(0),
         });
         setSelectedFeeRate(0);
         return 0;
@@ -382,15 +375,15 @@ export const Staking: React.FC<StakingProps> = ({
     address,
     publicKeyNoCoord,
     stakingAmountSat,
-    stakingTimeBlocks,
     finalityProvider,
     paramWithCtx,
     mempoolFeeRates,
-    selectedFeeRate,
     availableUTXOs,
-    showError,
-    defaultFeeRate,
+    selectedFeeRate,
     minFeeRate,
+    defaultFeeRate,
+    stakingTimeBlocks,
+    showDialog,
   ]);
 
   const handleStakingAmountSatChange = (inputAmountSat: number) => {

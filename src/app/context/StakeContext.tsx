@@ -3,7 +3,6 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-import { ErrorProvider } from "@/app/context/Error/ErrorContext";
 import { FinalityProvider } from "@/app/types/finalityProviders";
 
 interface StakeContextType {
@@ -20,7 +19,7 @@ export const StakeProvider = ({ children }: { children: ReactNode }) => {
     <StakeContext.Provider
       value={{ selectedDelegation, setSelectedDelegation }}
     >
-      <ErrorProvider>{children}</ErrorProvider>
+      {children}
     </StakeContext.Provider>
   );
 };
