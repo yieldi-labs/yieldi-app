@@ -10,7 +10,7 @@ import { assets } from "@/app/config/StakedAssets";
 const StakePage: React.FC = () => {
   const router = useRouter();
   const handleOnClick = (assetSymbol: string) => () => {
-    router.push(`/stake/${assetSymbol.toLocaleLowerCase()}`);
+    router.push(`/stake/${assetSymbol.toLocaleLowerCase()}/details`);
   };
 
   return (
