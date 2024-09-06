@@ -630,8 +630,8 @@ export const Staking: React.FC<StakingProps> = ({
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50" />
           <Dialog.Content
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-            border-2 border-[#DCD4C9] bg-[#F5F1EB] shadow-lg md:min-w-[552px]"
+            className="fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 
+            border-2 border-[#DCD4C9] bg-[#F5F1EB] shadow-lg md:min-w-[552px] size-full md:size-auto top-0 left-0"
           >
             <div className="flex justify-between items-center mb-4 border-b border-[#DCD4C9]">
               <Dialog.Title className="text-2xl font-bold text-[#332B29] p-2">

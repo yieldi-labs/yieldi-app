@@ -46,7 +46,9 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
         </div>
         <div className="p-3">
           <div className="text-sm mb-1 font-light">TX FEE</div>
-          <p>{satoshiToBtc(stakingFeeSat)} {coinName}</p>
+          <p>
+            {satoshiToBtc(stakingFeeSat)} {coinName}
+          </p>
         </div>
       </div>
     </div>
