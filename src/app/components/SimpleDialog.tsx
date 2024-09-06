@@ -25,7 +25,7 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
         <Dialog.Content
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-          border-2 border-[#DCD4C9] bg-[#F5F1EB] shadow-lg w-[90%] max-w-[552px] text-[#332B29]"
+          border-2 border-[#DCD4C9] bg-yieldi-beige shadow-lg w-[90%] max-w-dialog text-[#332B29]"
         >
           <div className="flex justify-between items-center mb-4 border-b border-[#DCD4C9]">
             <Dialog.Title className="text-2xl font-bold text-[#332B29] p-2">
@@ -38,7 +38,7 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({
           <div className="mb-6 p-4">{message}</div>
           <div className="flex justify-center px-2 pb-3">
             <button
-              className="w-full py-4 px-2 bg-[#A1FD59] font-medium text-sm cursor-pointer border border-[#DCD4C9] uppercase"
+              className="w-full py-4 px-2 bg-yieldi-green font-medium text-sm cursor-pointer border border-[#DCD4C9] uppercase"
               onClick={onButtonClick}
             >
               {buttonTitle}

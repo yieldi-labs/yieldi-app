@@ -163,58 +163,58 @@ const StakeBTCPage = () => {
     <>
       <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
         <div className="flex items-baseline mb-4">
-          <h1 className="text-[#332B29] text-2xl font-bold mr-[16px]">
+          <h1 className="text-yieldi-brown text-2xl font-bold mr-4">
             Choose Finality Provider
           </h1>
-          <p className="text-[rgba(51,43,41,0.80)] text-lg font-light border-l border-[#332B29] ps-3">
+          <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3">
             Select to delegate stake
           </p>
         </div>
         <div className="w-full mb-6 bg-white">
-          <div className="border border-gray-200">
-            <div className="flex items-center p-4 border-b border-gray-200">
+          <div className="border border-yieldi-gray-200">
+            <div className="flex items-center p-4 border-b border-yieldi-gray-200">
               <div className="size-12 flex items-center justify-center mr-4">
                 <Image src={wBtcIcon} alt="WBTC" width={65} height={65} />
               </div>
               <div className="flex items-center">
-                <h2 className="text-[#332B29] text-[40px] font-medium leading-normal mr-4">
+                <h2 className="text-yieldi-brown text-4xl font-medium leading-normal mr-4">
                   BTC
                 </h2>
-                <p className="text-[#332B29] text-[20px] font-light leading-normal">
+                <p className="text-yieldi-brown text-xl font-light leading-normal">
                   Native Bitcoin
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-4 divide-x divide-gray-200">
+            <div className="grid grid-cols-4 divide-x divide-yieldi-gray-200">
               <div className="p-4 flex flex-col justify-end items-start self-stretch">
-                <p className="text-[#332B29] text-[12px] font-extralight leading-normal">
+                <p className="text-yieldi-brown text-xs font-light leading-normal">
                   TVL
                 </p>
-                <p className="text-[#332B29] text-[20px] font-medium leading-normal">
+                <p className="text-yieldi-brown text-xl font-medium leading-normal">
                   {satoshiToBtc(totalStakedSat)} BTC
                 </p>
               </div>
               <div className="p-4 flex flex-col justify-end items-start self-stretch">
-                <p className="text-[#332B29] text-[12px] font-extralight leading-normal">
+                <p className="text-yieldi-brown text-xs font-light leading-normal">
                   CAP
                 </p>
-                <p className="text-[#332B29] text-[20px] font-medium leading-normal">
+                <p className="text-yieldi-brown text-xl font-medium leading-normal">
                   1.25K BTC
                 </p>
               </div>
               <div className="p-4 flex flex-col justify-end items-start self-stretch">
-                <p className="text-[#332B29] text-[12px] font-extralight leading-normal">
+                <p className="text-yieldi-brown text-xs font-light leading-normal">
                   STAKING WINDOW
                 </p>
-                <p className="text-[#332B29] text-[20px] font-medium leading-normal">
+                <p className="text-yieldi-brown text-xl font-medium leading-normal">
                   239 blocks
                 </p>
               </div>
               <div className="p-4 flex flex-col justify-end items-start self-stretch">
-                <p className="text-[#332B29] text-[12px] font-extralight leading-normal">
+                <p className="text-yieldi-brown text-xs font-light leading-normal">
                   PRICE
                 </p>
-                <p className="text-[#332B29] text-[20px] font-medium leading-normal">
+                <p className="text-yieldi-brown text-xl font-medium leading-normal">
                   $60,000
                 </p>
               </div>
@@ -225,19 +225,19 @@ const StakeBTCPage = () => {
           <Table.Root>
             <Table.Header className="[--table-row-box-shadow:none]">
               <Table.Row>
-                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider flex self-stretch text-[#6D655D] text-xs font-light">
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider flex self-stretch text-yieldi-brown-light text-xs font-light">
                   Provider
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
                   My Stake
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
                   Total Delegation
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
                   Commission
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
                   Actions
                 </Table.ColumnHeaderCell>
               </Table.Row>
@@ -248,36 +248,36 @@ const StakeBTCPage = () => {
                   index % 2 == 0 ? (
                     <Table.Row
                       key={provider.btcPk}
-                      className="mb-[5px] items-start gap-2.5 w-full border border-[#DCD4C9] bg-white [--table-row-box-shadow:none]"
+                      className="mb-[5px] items-start gap-2.5 w-full border border-yieldi-gray-200 bg-white [--table-row-box-shadow:none]"
                     >
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-[#332B29] text-xl font-medium">
+                        <div className="text-yieldi-brown text-xl font-medium">
                           {provider.description.moniker
                             ? provider.description.moniker
                             : "Unknown"}
                         </div>
-                        <div className="text-[#6D655D] font-['GT_America_Mono_Trial'] text-sm font-normal">
+                        <div className="text-yieldi-brown-light font-['GT_America_Mono_Trial'] text-sm font-normal">
                           {truncateMiddle(provider.btcPk, 5)}
                         </div>
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-[#332B29] text-xl font-normal">
+                        <div className="text-yieldi-brown text-xl font-normal">
                           $0.00
                         </div>
-                        <div className="text-[#6D655D] text-sm font-normal">
+                        <div className="text-yieldi-brown-light text-sm font-normal">
                           0.0 BTC
                         </div>
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-[#332B29] text-xl font-normal">
+                        <div className="text-yieldi-brown text-xl font-normal">
                           $0.00
                         </div>
-                        <div className="text-[#6D655D] text-sm font-normal">
+                        <div className="text-yieldi-brown-light text-sm font-normal">
                           {provider.totalDelegations} BTC
                         </div>
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-[#332B29] text-xl font-normal">
+                        <div className="text-yieldi-brown text-xl font-normal">
                           {provider.commission
                             ? `${(Number(provider.commission) * 100).toFixed(0)}%`
                             : "-"}
@@ -287,7 +287,7 @@ const StakeBTCPage = () => {
                         <button
                           onClick={() => handleSelectProvider(provider)}
                           className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] 
-                            gap-[10px] shrink-0 rounded bg-[#332B29] text-[#F5F1EB] text-sm font-medium"
+                            gap-[10px] shrink-0 rounded bg-yieldi-brown text-yieldi-beige text-sm font-medium"
                         >
                           SELECT
                         </button>

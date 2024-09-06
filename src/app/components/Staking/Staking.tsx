@@ -514,8 +514,8 @@ export const Staking: React.FC<StakingProps> = ({
         signReady && feeRate && availableUTXOs && stakingAmountSat;
 
       return (
-        <div className="text-[#332B29]">
-          <div className="flex items-center mx-2 bg-white p-3 border border-[#DCD4C9]">
+        <div className="text-yieldi-brown">
+          <div className="flex items-center mx-2 bg-white p-3 border border-yieldi-gray-200">
             <div className="mr-3">
               <Image src={wBtcIcon} alt="WBTC" width={65} height={65} />
             </div>
@@ -525,7 +525,7 @@ export const Staking: React.FC<StakingProps> = ({
             </div>
           </div>
 
-          <div className="mb-2 mx-2 p-3 border-x border-b border-[#DCD4C9] bg-white">
+          <div className="mb-2 mx-2 p-3 border-x border-b border-yieldi-gray-200 bg-white">
             <div className="text-sm mb-1 font-light">Delegate</div>
             <div className="text-xl font-medium">
               {finalityProvider?.description.moniker}
@@ -559,8 +559,8 @@ export const Staking: React.FC<StakingProps> = ({
           <div className="w-full px-2 pb-3">
             <button
               className={twMerge(
-                "w-full py-4 px-2 font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer border border-[#DCD4C9]",
-                signing ? "bg-gray-300" : "bg-[#A1FD59]",
+                "w-full py-4 px-2 font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer border border-yieldi-gray-200",
+                signing ? "bg-gray-300" : "bg-yieldi-green",
               )}
               onClick={() => {
                 handleSign();
@@ -601,13 +601,13 @@ export const Staking: React.FC<StakingProps> = ({
           <Dialog.Overlay className="fixed inset-0 bg-black/50" />
           <Dialog.Content
             className="fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 
-            border-2 border-[#DCD4C9] bg-[#F5F1EB] shadow-lg md:min-w-[552px] size-full md:size-auto top-0 left-0"
+            border-2 border-yieldi-gray-200 bg-yieldi-beige shadow-lg md:min-w-dialog size-full md:size-auto top-0 left-0"
           >
-            <div className="flex justify-between items-center mb-4 border-b border-[#DCD4C9]">
-              <Dialog.Title className="text-2xl font-bold text-[#332B29] p-2">
+            <div className="flex justify-between items-center mb-4 border-b border-yieldi-gray-200">
+              <Dialog.Title className="text-2xl font-bold text-yieldi-brown p-2">
                 Deposit Stake
               </Dialog.Title>
-              <Dialog.Close className="text-[#332B29] border-x border-[#DCD4C9] p-2">
+              <Dialog.Close className="text-yieldi-brown border-x border-yieldi-gray-200 p-2">
                 <Cross2Icon width={36} height={36} />
               </Dialog.Close>
             </div>

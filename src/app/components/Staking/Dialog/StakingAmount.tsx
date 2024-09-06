@@ -147,7 +147,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   };
 
   return (
-    <div className="mb-2 mx-2 p-3 border border-[#DCD4C9] bg-white">
+    <div className="mb-2 mx-2 p-3 border border-yieldi-gray-200 bg-white">
       <div className="flex justify-between mb-3">
         <span className="text-sm">AMOUNT</span>
         <span className="text-sm font-light">
@@ -157,8 +157,8 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       <div className="flex justify-between items-center">
         <button
           onClick={handleMaxClick}
-          className="flex w-14 pb-[2px] pt-[4px] justify-center items-center 
-            rounded bg-[#332B29] text-[#F5F1EB] text-xs font-medium"
+          className="flex w-[56px] pb-2px pt-4px justify-center items-center 
+        rounded bg-yieldi-brown text-yieldi-beige text-xs font-medium"
         >
           MAX
         </button>
@@ -167,7 +167,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
           value={value}
           onChange={handleChange}
           className={twMerge(
-            "text-right text-3xl font-bold w-full bg-transparent focus:outline-none font-['GT_America_Mono_Trial']",
+            "text-right text-3xl font-bold w-full bg-transparent focus:outline-none font-gt-america-mono",
             error ? "text-red-500" : "",
           )}
           placeholder={coinName}

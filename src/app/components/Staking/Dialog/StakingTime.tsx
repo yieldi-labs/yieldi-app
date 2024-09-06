@@ -116,7 +116,7 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
   }
 
   return (
-    <div className="mb-2 mx-2 p-3 border border-[#DCD4C9] bg-white flex flex-row justify-between">
+    <div className="mb-2 mx-2 p-3 border border-yieldi-gray-200 bg-white flex flex-row justify-between">
       <div className="flex flex-col justify-between mb-1">
         <span className="text-sm">TERM</span>
         <span className="text-sm font-light">

@@ -21,7 +21,7 @@ export const WalletNotConnected: React.FC<WalletNotConnectedProps> = ({
           Please connect wallet to start staking
         </p>
       </div>
-      <button className="btn-primary btn" onClick={onConnect}>
+      <button className="btn-primary btn mb-6" onClick={onConnect}>
         <Image src={connectIcon} alt="Connect wallet" />
         Connect wallet
       </button>

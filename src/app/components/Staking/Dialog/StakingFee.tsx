@@ -33,8 +33,8 @@ export const StakingFee: React.FC<StakingFeeProps> = ({
 
   return (
     <div className="my-2 text-sm">
-      <div className="grid grid-cols-2 mb-2 mx-2 border border-[#DCD4C9] bg-white">
-        <div className="p-3 border-r border-[#DCD4C9]">
+      <div className="grid grid-cols-2 mb-2 mx-2 border border-yieldi-gray-200 bg-white">
+        <div className="p-3 border-r border-yieldi-gray-200">
           <div className="text-sm mb-1 font-light">FEE RATE</div>
           <div>
             {mempoolFeeRates ? (
