@@ -11,10 +11,18 @@ import { getStats } from "@/app/api/getStats";
 import { assets } from "@/app/config/StakedAssets";
 import { useWallet } from "@/app/context/WalletContext";
 import { useGetDelegations } from "@/app/hooks/useGetDelegations";
-import { DelegationState } from "@/app/types/delegations";
+import { Delegation, DelegationState } from "@/app/types/delegations";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
+import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
+import { useLocalStorage } from "usehooks-ts";
+import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
+import { truncateMiddle } from "@/utils/strings";
+import { getNetworkConfig } from "@/app/network.config";
+import { trim } from "@/utils/trim";
+import { durationTillNow } from "@/utils/formatTime";
 
 const StakedAssetDetails: React.FC = () => {
   const pathname = usePathname(); // Access dynamic route parameter
@@ -121,6 +129,41 @@ const StakedAssetDetails: React.FC = () => {
         0
       );
   }
+  console.log("delegations", delegations?.delegations);
+
+  const { finalityProviders } = useFinalityProviders();
+  const { mempoolApiUrl } = getNetworkConfig();
+
+  // Finality providers key-value map { pk: moniker }
+  const finalityProvidersKV: Record<string, string> = finalityProviders?.reduce(
+    (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
+    {}
+  );
+
+  // Local storage state for intermediate delegations (withdrawing, unbonding)
+  const intermediateDelegationsLocalStorageKey =
+    getIntermediateDelegationsLocalStorageKey(publicKeyNoCoord);
+
+  const [
+    intermediateDelegationsLocalStorage,
+    setIntermediateDelegationsLocalStorage,
+  ] = useLocalStorage<Delegation[]>(intermediateDelegationsLocalStorageKey, []);
+
+  // Update the local storage with the new intermediate delegation state
+  const updateLocalStorage = (delegation: Delegation, newState: string) => {
+    setIntermediateDelegationsLocalStorage((delegations) => [
+      toLocalStorageIntermediateDelegation(
+        delegation.stakingTxHashHex,
+        publicKeyNoCoord,
+        delegation.finalityProviderPkHex,
+        delegation.stakingValueSat,
+        delegation.stakingTx.txHex,
+        delegation.stakingTx.timelock,
+        newState
+      ),
+      ...delegations,
+    ]);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 pb-16">
@@ -128,7 +171,6 @@ const StakedAssetDetails: React.FC = () => {
       <Button onClick={() => router.push("/stake")} variant="ghost">
         &larr; Assets
       </Button>
-
       <Card variant="classic" className="p-6 mb-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-5">
@@ -165,7 +207,10 @@ const StakedAssetDetails: React.FC = () => {
             </Card>
             <Card variant="ghost" className="border rounded-none">
               <p>Cap</p>
-              <p className="text-lg font-semibold">{stakingCap}{" BTC"}</p>
+              <p className="text-lg font-semibold">
+                {stakingCap}
+                {" BTC"}
+              </p>
             </Card>
             <Card variant="ghost" className="border rounded-none">
               <p>Staking Window</p>
@@ -180,9 +225,8 @@ const StakedAssetDetails: React.FC = () => {
           </div>
         </div>
       </Card>
-
       {/* My Stake */}
-      <Card className="p-6 mb-4 rounded-none">
+      {/* <Card className="p-6 mb-4 rounded-none">
         <h3 className="text-xl font-semibold mb-4">My Stake</h3>
         <div className="grid grid-cols-2 gap-6">
           <Card variant="ghost" className="border rounded-none">
@@ -208,10 +252,9 @@ const StakedAssetDetails: React.FC = () => {
             </p>
           </Card>
         </div>
-      </Card>
-
+      </Card> */}
       {/* Transactions Table - Mobile View */}
-      <div className="grid gap-4">
+      {/* <div className="grid gap-4">
         <Card variant="classic" className="p-4">
           <div className="flex justify-between items-center">
             <div>
@@ -253,7 +296,7 @@ const StakedAssetDetails: React.FC = () => {
               <p className="font-semibold">Babylon Foundation</p>
               <p className="text-xs text-gray-500">bb0bced...5538fdd1</p>
             </div>
-            <Button variant="red" size="small">
+            <Button variant="red" size="1">
               Closed
             </Button>
           </div>
@@ -281,8 +324,171 @@ const StakedAssetDetails: React.FC = () => {
             </Button>
           </div>
         </Card>
-      </div>
+      </div> */}
+      {delegations?.delegations &&
+      finalityProvidersKV &&
+      btcWallet &&
+      paramWithContext?.nextBlockParams?.currentVersion ? (
+        <div className="pb-12">
+          <Table.Root>
+            <Table.Header className="[--table-row-box-shadow:none]">
+              <Table.Row>
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider flex self-stretch text-[#6D655D] text-xs font-light">
+                  OPENED ON
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                  PROVIDER
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                  AMOUNT
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                  WITHDRAWAL BALANCE
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                  STATUS
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+                  ACTIONS
+                </Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body className="space-y-1.5">
+              {delegations?.delegations?.map((delegation: Delegation) => {
+                if (!delegation) return null;
+                const {
+                  stakingValueSat,
+                  stakingTx,
+                  stakingTxHashHex,
+                  finalityProviderPkHex,
+                  state,
+                  // isOverflow,
+                } = delegation;
+                // Get the moniker of the finality provider
+                const finalityProviderMoniker =
+                  finalityProvidersKV[finalityProviderPkHex];
+                const intermediateDelegation =
+                  intermediateDelegationsLocalStorage.find(
+                    (item) => item.stakingTxHashHex === stakingTxHashHex
+                  );
+                const { startTimestamp } = stakingTx;
+                const currentTime = Date.now();
 
+                const generateActionButton = () => {
+                  // This function generates the unbond or withdraw button
+                  // based on the state of the delegation
+                  // It also disables the button if the delegation
+                  // is in an intermediate state (local storage)
+                  if (state === DelegationState.ACTIVE) {
+                    return (
+                      <div className="flex justify-end lg:justify-start">
+                        <button
+                          className="btn btn-outline btn-xs inline-flex text-sm font-normal text-primary"
+                          // onClick={() => onUnbond(stakingTxHash)}
+                          onClick={() => {
+                            console.log("Unbonding...");
+                          }}
+                          disabled={
+                            intermediateDelegation?.state ===
+                            DelegationState.INTERMEDIATE_UNBONDING
+                          }
+                        >
+                          Unbond
+                        </button>
+                      </div>
+                    );
+                  } else if (state === DelegationState.UNBONDED) {
+                    return (
+                      <div className="flex justify-end lg:justify-start">
+                        <button
+                          className="btn btn-outline btn-xs inline-flex text-sm font-normal text-primary"
+                          onClick={() => {
+                            console.log("Withdrawing...");
+                          }}
+                          // onClick={() => onWithdraw(stakingTxHash)}
+                          disabled={
+                            intermediateDelegation?.state ===
+                            DelegationState.INTERMEDIATE_WITHDRAWAL
+                          }
+                        >
+                          Withdraw
+                        </button>
+                      </div>
+                    );
+                  } else {
+                    return null;
+                  }
+                };
+
+                return (
+                  <Table.Row
+                    className="mb-[5px] items-start gap-2.5 w-full border border-[#DCD4C9]  [--table-row-box-shadow:none]"
+                    key={delegation.finalityProviderPkHex}
+                  >
+                    <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-[#332B29] text-xl font-medium">
+                        {durationTillNow(startTimestamp, currentTime)}
+                        {/* {"current time"} */}
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-[#6D655D] font-['GT_America_Mono_Trial'] text-sm font-normal">
+                      {finalityProviderMoniker}{" "}
+                      <a
+                        href={`${mempoolApiUrl}/tx/${stakingTxHashHex}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {trim(stakingTxHashHex)}
+                      </a>
+                      {intermediateDelegation?.state}
+                    </div>
+                      {/* {"finalityProviderMoniker"} */}
+                    </Table.Cell>
+                    <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-[#332B29] text-xl font-normal">
+                        {`$${satoshiToBtc(stakingValueSat) * (asset?.price || 1)}`}
+                        {`${satoshiToBtc(stakingValueSat)} ${assetSymbol}`}
+                        {/* {"satoshiToBtc(stakingValueSat)"} */}
+                      </div>
+                      <div className="text-[#6D655D] text-sm font-normal">
+                        0.0 BTC
+                      </div>
+                      <div className="text-[#332B29] text-xl font-normal">
+                        $0.00 PENDING
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-[#332B29] text-xl font-normal">
+                        $0.00 PENDING
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-[#6D655D] text-sm font-normal">
+                        {delegation.state}
+                      </div>
+
+                      {/* <button
+                        onClick={() => handleSelectdelegation(delegation)}
+                        className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] 
+                            gap-[10px] shrink-0 rounded bg-[#332B29] text-[#F5F1EB] text-sm font-medium"
+                      >
+                        SELECT
+                      </button> */}
+                    </Table.Cell>
+                    <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-[#332B29] text-xl font-normal">
+                        {generateActionButton()}
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
+            </Table.Body>
+          </Table.Root>
+        </div>
+      ) : null}
       {/* Footer Stake Button for Mobile */}
       <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white p-4 shadow-lg">
         <Button
