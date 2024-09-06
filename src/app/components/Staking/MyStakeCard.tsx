@@ -15,7 +15,7 @@ const MyStakeCard: React.FC<{
       .filter((delegation: any) => delegation?.state === "ACTIVE")
       .reduce(
         (accumulator: number, item: any) => accumulator + item?.stakingValueSat,
-        0
+        0,
       );
   }
 

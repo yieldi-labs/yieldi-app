@@ -33,7 +33,7 @@ const StakedAssetDetails: React.FC = () => {
     btcWalletBalanceSat,
   } = useWallet();
   const asset = assets.find(
-    (asset) => asset.assetSymbol.toLowerCase() === assetSymbol
+    (asset) => asset.assetSymbol.toLowerCase() === assetSymbol,
   );
 
   // Fetch global params and stats
@@ -64,7 +64,7 @@ const StakedAssetDetails: React.FC = () => {
         ([height]) => {
           setBtcHeight(height);
           setRemainingBlocks(activationHeight - height);
-        }
+        },
       );
     }
   }, [activationHeight, btcHeight, btcWallet, remainingBlocks]);
@@ -81,14 +81,14 @@ const StakedAssetDetails: React.FC = () => {
   const stakingCap = maxDecimals(
     satoshiToBtc(
       paramWithContext?.nextBlockParams?.currentVersion?.maxStakingAmountSat ||
-        0
+        0,
     ),
-    8
+    8,
   );
   const { finalityProviders } = useFinalityProviders();
   const finalityProvidersKV: Record<string, string> = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {}
+    {},
   );
 
   const handleOnClick = () => {
