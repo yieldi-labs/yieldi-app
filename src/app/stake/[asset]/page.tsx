@@ -4,25 +4,24 @@ import { Table, Button, Card } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getStats } from "@/app/api/getStats";
 import { assets } from "@/app/config/StakedAssets";
+import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { useGetDelegations } from "@/app/hooks/useGetDelegations";
+import { getNetworkConfig } from "@/app/network.config";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { satoshiToBtc } from "@/utils/btcConversions";
-import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
-import { maxDecimals } from "@/utils/maxDecimals";
-import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
-import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
-import { useLocalStorage } from "usehooks-ts";
-import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
-import { truncateMiddle } from "@/utils/strings";
-import { getNetworkConfig } from "@/app/network.config";
-import { trim } from "@/utils/trim";
 import { durationTillNow } from "@/utils/formatTime";
+import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
+import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
+// import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
+import { maxDecimals } from "@/utils/maxDecimals";
+import { trim } from "@/utils/trim";
 
 const StakedAssetDetails: React.FC = () => {
   const pathname = usePathname(); // Access dynamic route parameter
@@ -39,7 +38,7 @@ const StakedAssetDetails: React.FC = () => {
   } = useWallet();
   const router = useRouter(); // To handle the back navigation
   const asset = assets.find(
-    (asset) => asset.assetSymbol.toLowerCase() === assetSymbol
+    (asset) => asset.assetSymbol.toLowerCase() === assetSymbol,
   );
   const { data: paramWithContext } = useQuery({
     queryKey: ["global params"],
@@ -70,9 +69,9 @@ const StakedAssetDetails: React.FC = () => {
   const stakingCap = maxDecimals(
     satoshiToBtc(
       paramWithContext?.nextBlockParams?.currentVersion?.maxStakingAmountSat ||
-        0
+        0,
     ),
-    8
+    8,
   );
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const StakedAssetDetails: React.FC = () => {
       Promise.all([btcWallet.getBTCTipHeight(), btcWallet.getNetwork()]).then(
         ([height]) => {
           setBtcHeight(height);
-        }
+        },
       );
 
       setRemainingBlocks(activationHeight || 0 - (btcHeight || 0) - 1);
@@ -93,12 +92,7 @@ const StakedAssetDetails: React.FC = () => {
     paramWithContext?.nextBlockParams?.currentVersion?.activationHeight,
   ]);
 
-  const {
-    delegations,
-    fetchNextDelegationsPage,
-    hasNextDelegationsPage,
-    isFetchingNextDelegationsPage,
-  } = useGetDelegations(address, publicKeyNoCoord);
+  const { delegations } = useGetDelegations(address, publicKeyNoCoord);
 
   const { data } = useQuery({
     queryKey: ["API_STATS"],
@@ -126,7 +120,7 @@ const StakedAssetDetails: React.FC = () => {
       .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
       .reduce(
         (accumulator: number, item) => accumulator + item?.stakingValueSat,
-        0
+        0,
       );
   }
   console.log("delegations", delegations?.delegations);
@@ -137,7 +131,7 @@ const StakedAssetDetails: React.FC = () => {
   // Finality providers key-value map { pk: moniker }
   const finalityProvidersKV: Record<string, string> = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {}
+    {},
   );
 
   // Local storage state for intermediate delegations (withdrawing, unbonding)
@@ -146,24 +140,24 @@ const StakedAssetDetails: React.FC = () => {
 
   const [
     intermediateDelegationsLocalStorage,
-    setIntermediateDelegationsLocalStorage,
+    // setIntermediateDelegationsLocalStorage,
   ] = useLocalStorage<Delegation[]>(intermediateDelegationsLocalStorageKey, []);
 
   // Update the local storage with the new intermediate delegation state
-  const updateLocalStorage = (delegation: Delegation, newState: string) => {
-    setIntermediateDelegationsLocalStorage((delegations) => [
-      toLocalStorageIntermediateDelegation(
-        delegation.stakingTxHashHex,
-        publicKeyNoCoord,
-        delegation.finalityProviderPkHex,
-        delegation.stakingValueSat,
-        delegation.stakingTx.txHex,
-        delegation.stakingTx.timelock,
-        newState
-      ),
-      ...delegations,
-    ]);
-  };
+  // const updateLocalStorage = (delegation: Delegation, newState: string) => {
+  //   setIntermediateDelegationsLocalStorage((delegations) => [
+  //     toLocalStorageIntermediateDelegation(
+  //       delegation.stakingTxHashHex,
+  //       publicKeyNoCoord,
+  //       delegation.finalityProviderPkHex,
+  //       delegation.stakingValueSat,
+  //       delegation.stakingTx.txHex,
+  //       delegation.stakingTx.timelock,
+  //       newState
+  //     ),
+  //     ...delegations,
+  //   ]);
+  // };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 pb-16">
@@ -226,7 +220,7 @@ const StakedAssetDetails: React.FC = () => {
         </div>
       </Card>
       {/* My Stake */}
-      {/* <Card className="p-6 mb-4 rounded-none">
+      <Card className="p-6 mb-4 rounded-none">
         <h3 className="text-xl font-semibold mb-4">My Stake</h3>
         <div className="grid grid-cols-2 gap-6">
           <Card variant="ghost" className="border rounded-none">
@@ -252,7 +246,7 @@ const StakedAssetDetails: React.FC = () => {
             </p>
           </Card>
         </div>
-      </Card> */}
+      </Card>
       {/* Transactions Table - Mobile View */}
       {/* <div className="grid gap-4">
         <Card variant="classic" className="p-4">
@@ -369,7 +363,7 @@ const StakedAssetDetails: React.FC = () => {
                   finalityProvidersKV[finalityProviderPkHex];
                 const intermediateDelegation =
                   intermediateDelegationsLocalStorage.find(
-                    (item) => item.stakingTxHashHex === stakingTxHashHex
+                    (item) => item.stakingTxHashHex === stakingTxHashHex,
                   );
                 const { startTimestamp } = stakingTx;
                 const currentTime = Date.now();
@@ -433,17 +427,17 @@ const StakedAssetDetails: React.FC = () => {
                     </Table.Cell>
                     <Table.Cell className="px-6 py-4 whitespace-nowrap">
                       <div className="text-[#6D655D] font-['GT_America_Mono_Trial'] text-sm font-normal">
-                      {finalityProviderMoniker}{" "}
-                      <a
-                        href={`${mempoolApiUrl}/tx/${stakingTxHashHex}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        {trim(stakingTxHashHex)}
-                      </a>
-                      {intermediateDelegation?.state}
-                    </div>
+                        {finalityProviderMoniker}{" "}
+                        <a
+                          href={`${mempoolApiUrl}/tx/${stakingTxHashHex}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                        >
+                          {trim(stakingTxHashHex)}
+                        </a>
+                        {intermediateDelegation?.state}
+                      </div>
                       {/* {"finalityProviderMoniker"} */}
                     </Table.Cell>
                     <Table.Cell className="px-6 py-4 whitespace-nowrap">
