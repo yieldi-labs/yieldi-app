@@ -36,8 +36,15 @@ const StakeBTCPage = () => {
     setStakingDialogIsOpen(true);
   };
 
-  const { btcWallet, address, publicKeyNoCoord, btcWalletNetwork, btcWalletBalanceSat, isConnected, setConnectModalOpen } =
-    useWallet();
+  const {
+    btcWallet,
+    address,
+    publicKeyNoCoord,
+    btcWalletNetwork,
+    btcWalletBalanceSat,
+    isConnected,
+    setConnectModalOpen,
+  } = useWallet();
 
   const { data: paramWithContext } = useQuery({
     queryKey: ["global params"],
@@ -65,10 +72,9 @@ const StakeBTCPage = () => {
   const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
   const delegationsLocalStorageKey =
     getDelegationsLocalStorageKey(publicKeyNoCoord);
-  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<Delegation[]>(
-    delegationsLocalStorageKey,
-    [],
-  );
+  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<
+    Delegation[]
+  >(delegationsLocalStorageKey, []);
   const [selectedFinalityProvider, setSelectedFinalityProvider] = useState<
     FinalityProvider | undefined
   >(undefined);
@@ -91,7 +97,7 @@ const StakeBTCPage = () => {
     onCloseDialog: () => {
       setStakingDialogIsOpen(false);
       setSelectedFinalityProvider(undefined);
-    }
+    },
   };
 
   useEffect(() => {
@@ -105,7 +111,6 @@ const StakeBTCPage = () => {
       );
     }
   }, [btcWallet]);
-
 
   const {
     delegations,
@@ -158,7 +163,7 @@ const StakeBTCPage = () => {
 
   return (
     <>
-      <div className="lg:w-1/2 mx-auto px-4 md:px-16 lg:px-0">
+      <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
         <div className="flex items-baseline mb-4">
           <h1 className="text-[#332B29] text-2xl font-bold mr-[16px]">
             Choose Finality Provider

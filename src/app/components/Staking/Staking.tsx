@@ -2,9 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
-import { set } from "date-fns";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useLocalStorage } from "usehooks-ts";
@@ -14,7 +12,6 @@ import {
   OVERFLOW_TVL_WARNING_THRESHOLD,
 } from "@/app/common/constants";
 import { FeedbackModal } from "@/app/components/Modals/FeedbackModal";
-import { PreviewModal } from "@/app/components/Modals/PreviewModal";
 import { useError } from "@/app/context/Error/ErrorContext";
 import { useGlobalParams } from "@/app/context/api/GlobalParamsProvider";
 import { useStakingStats } from "@/app/context/api/StakingStatsProvider";
@@ -110,7 +107,7 @@ export const Staking: React.FC<StakingProps> = ({
     setResetFormInputs(Number.MAX_SAFE_INTEGER);
     setSigning(false);
     onCloseDialog();
-  }
+  };
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -477,7 +474,14 @@ export const Staking: React.FC<StakingProps> = ({
     // States of the staking form:
     // 1. Wallet is not connected
     if (!isWalletConnected) {
-      return <WalletNotConnected onConnect={() => {onConnect(); handleOnClose(); }} />;
+      return (
+        <WalletNotConnected
+          onConnect={() => {
+            onConnect();
+            handleOnClose();
+          }}
+        />
+      );
     }
     // 2. Staking has not started yet
     else if (isBlockHeightUnderActivation) {
@@ -540,20 +544,20 @@ export const Staking: React.FC<StakingProps> = ({
         signReady && feeRate && availableUTXOs && stakingAmountSat;
 
       return (
-        <>
-          <div className="flex items-center mb-4 bg-gray-50 p-3 border border-gray-200">
+        <div className="text-[#332B29]">
+          <div className="flex items-center mx-2 bg-white p-3 border border-[#DCD4C9]">
             <div className="mr-3">
               <Image src={wBtcIcon} alt="WBTC" width={65} height={65} />
             </div>
             <div>
-              <div className="font-bold">BTC</div>
-              <div className="text-sm text-gray-500">Native Bitcoin</div>
+              <div className="text-xl font-medium">BTC</div>
+              <div className="text-xs font-light">Native Bitcoin</div>
             </div>
           </div>
 
-          <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
-            <div className="text-sm text-gray-500 mb-1">Delegate</div>
-            <div className="font-bold">
+          <div className="mb-2 mx-2 p-3 border-x border-b border-[#DCD4C9] bg-white">
+            <div className="text-sm mb-1 font-light">Delegate</div>
+            <div className="text-xl font-medium">
               {finalityProvider?.description.moniker}
             </div>
           </div>
@@ -573,7 +577,7 @@ export const Staking: React.FC<StakingProps> = ({
             onStakingTimeBlocksChange={handleStakingTimeBlocksChange}
             reset={resetFormInputs}
           />
-          
+
           <StakingFee
             mempoolFeeRates={mempoolFeeRates}
             stakingFeeSat={stakingFeeSat}
@@ -582,18 +586,23 @@ export const Staking: React.FC<StakingProps> = ({
             reset={resetFormInputs}
           />
 
-          <button
-            className={twMerge("w-full py-3 text-[#332B29] font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer", signing ? "bg-gray-300" : "bg-[#A1FD59]")}
-            onClick={() => {
-              handleSign();
-            }}
-            disabled={!previewReady || signing}
-          >
-            { signing ? "Signing Transaction" : "DELEGATE STAKE" }
-          </button>
+          <div className="w-full px-2 pb-3">
+            <button
+              className={twMerge(
+                "w-full py-4 px-2 font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer border border-[#DCD4C9]",
+                signing ? "bg-gray-300" : "bg-[#A1FD59]",
+              )}
+              onClick={() => {
+                handleSign();
+              }}
+              disabled={!previewReady || signing}
+            >
+              {signing ? "Signing Transaction" : "DELEGATE STAKE"}
+            </button>
+          </div>
 
           {showApproachingCapWarning()}
-        </>
+        </div>
       );
     } else {
       return (
@@ -610,23 +619,33 @@ export const Staking: React.FC<StakingProps> = ({
 
   return (
     <>
-      <Dialog.Root open={isOpen} onOpenChange={(open) => { if (!open) { handleOnClose() }}}>
+      <Dialog.Root
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleOnClose();
+          }
+        }}
+      >
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-lg max-w-sm w-full border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-xl font-bold">
+          <Dialog.Content
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+            border-2 border-[#DCD4C9] bg-[#F5F1EB] shadow-lg md:min-w-[552px]"
+          >
+            <div className="flex justify-between items-center mb-4 border-b border-[#DCD4C9]">
+              <Dialog.Title className="text-2xl font-bold text-[#332B29] p-2">
                 Deposit Stake
               </Dialog.Title>
-              <Dialog.Close className="text-gray-500 hover:text-gray-700">
-                <Cross2Icon />
+              <Dialog.Close className="text-[#332B29] border-x border-[#DCD4C9] p-2">
+                <Cross2Icon width={36} height={36} />
               </Dialog.Close>
             </div>
             {renderDialogContent()}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-     
+
       <FeedbackModal
         open={feedbackModal.isOpen}
         onClose={handleCloseFeedbackModal}

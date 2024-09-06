@@ -37,13 +37,17 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
       }
 
       if (numValue < minStakingTimeBlocks) {
-        setError(`Staking term must be at least ${minStakingTimeBlocks} blocks.`);
+        setError(
+          `Staking term must be at least ${minStakingTimeBlocks} blocks.`,
+        );
         onStakingTimeBlocksChange(0);
         return;
       }
 
       if (numValue > maxStakingTimeBlocks) {
-        setError(`Staking term must be no more than ${maxStakingTimeBlocks} blocks.`);
+        setError(
+          `Staking term must be no more than ${maxStakingTimeBlocks} blocks.`,
+        );
         onStakingTimeBlocksChange(0);
         return;
       }
@@ -51,7 +55,7 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
       setError("");
       onStakingTimeBlocksChange(numValue);
     },
-    [minStakingTimeBlocks, maxStakingTimeBlocks, onStakingTimeBlocksChange]
+    [minStakingTimeBlocks, maxStakingTimeBlocks, onStakingTimeBlocksChange],
   );
 
   const debouncedValidateAndSetTime = useCallback(
@@ -112,10 +116,10 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
   }
 
   return (
-    <div className="mb-4 bg-gray-50 p-3 border border-gray-200">
-      <div className="flex justify-between mb-1">
-        <span className="text-sm text-gray-500">TERM</span>
-        <span className="text-sm text-gray-500">
+    <div className="mb-2 mx-2 p-3 border border-[#DCD4C9] bg-white flex flex-row justify-between">
+      <div className="flex flex-col justify-between mb-1">
+        <span className="text-sm">TERM</span>
+        <span className="text-sm font-light">
           in blocks (min {minStakingTimeBlocks})
         </span>
       </div>
@@ -124,12 +128,14 @@ export const StakingTime: React.FC<StakingTimeProps> = ({
           type="number"
           value={value}
           onChange={handleChange}
-          className="text-right text-2xl font-bold w-full bg-transparent focus:outline-none"
+          className="text-right text-3xl font-bold w-full bg-transparent focus:outline-none"
           min={minStakingTimeBlocks}
           max={maxStakingTimeBlocks}
         />
       </div>
-      {touched && error ? <p className="text-sm text-red-500 mt-1">{error}</p> : null}
+      {touched && error ? (
+        <p className="text-sm text-red-500 mt-1">{error}</p>
+      ) : null}
     </div>
   );
 };
