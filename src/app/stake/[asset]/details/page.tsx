@@ -26,6 +26,9 @@ const StakedAssetDetails: React.FC = () => {
   const router = useRouter();
   const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
   const [remainingBlocks, setRemainingBlocks] = useState<number>(0);
+  // This state variable will force a re-render when its value changes
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const {
     address,
     btcWallet,
@@ -96,6 +99,11 @@ const StakedAssetDetails: React.FC = () => {
     router.push(`/stake/${assetSymbol}`);
   };
 
+  // Function to trigger a refresh of the transactions table
+  const refreshTransactions = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
+
   return (
     <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
       <div>
@@ -125,6 +133,8 @@ const StakedAssetDetails: React.FC = () => {
             delegations={delegations}
             finalityProvidersKV={finalityProvidersKV}
             asset={asset}
+            refreshKey={refreshKey}
+            onRefresh={refreshTransactions}
           />
         </>
       ) : null}

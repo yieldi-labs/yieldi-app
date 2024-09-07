@@ -1,6 +1,6 @@
 import { Card, Table, Button } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
@@ -46,20 +46,34 @@ const DelegationRow: React.FC<{
   const { mempoolApiUrl } = getNetworkConfig();
 
   const generateActionButton = () => {
-    if (state === "ACTIVE") {
+    if (state === "active") {
       return (
-        <Button variant="outline" className="self-center" onClick={onUnbond}>
+        <Button
+          className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-green text-yieldi-beige text-sm font-medium"
+          onClick={onUnbond}
+        >
           Unbond
         </Button>
       );
-    } else if (state === "UNBONDED") {
+    } else if (state === "unbounded") {
       return (
-        <Button variant="outline" className="self-center" onClick={onWithdraw}>
+        <Button
+          className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-beige text-yieldi-beige text-sm font-medium"
+          onClick={onWithdraw}
+        >
           Withdraw
         </Button>
       );
+    } else {
+      return (
+        <Button
+          className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-yieldi-beige text-sm font-medium"
+          disabled
+        >
+          No Action Required
+        </Button>
+      );
     }
-    return null;
   };
 
   if (screenType === "table") {
@@ -158,7 +172,9 @@ const Transactions: React.FC<{
   delegations: any;
   finalityProvidersKV: Record<string, string>;
   asset: any;
-}> = ({ delegations, finalityProvidersKV, asset }) => {
+  refreshKey: number; // Add refreshKey as a prop
+  onRefresh: () => void; // Add a refresh handler
+}> = ({ delegations, finalityProvidersKV, asset, refreshKey, onRefresh }) => {
   const { publicKeyNoCoord, btcWallet, btcWalletNetwork } = useWallet();
   const [modalOpen, setModalOpen] = useState(false);
   const [txID, setTxID] = useState("");
@@ -169,6 +185,12 @@ const Transactions: React.FC<{
     setTxID(txID);
     setModalMode(mode);
   };
+
+  useEffect(() => {
+    // Whenever refreshKey changes, trigger a data fetch or refresh logic
+    // This useEffect will trigger when refreshKey updates
+    console.log("Refreshing transactions...");
+  }, [refreshKey]); // Add refreshKey as a dependency
 
   const delegationsAPI = delegations.delegations;
 
@@ -250,6 +272,7 @@ const Transactions: React.FC<{
         setModalOpen(false);
         setTxID("");
         setModalMode(undefined);
+        onRefresh();
       }
     }
   };
@@ -297,6 +320,7 @@ const Transactions: React.FC<{
         setModalOpen(false);
         setTxID("");
         setModalMode(undefined);
+        onRefresh();
       }
     }
   };
@@ -336,7 +360,7 @@ const Transactions: React.FC<{
               </Table.ColumnHeaderCell>
             </Table.Row>
           </Table.Header>
-          <Table.Body className="space-y-1.5">
+          <Table.Body className="space-y-1.5 bg-white border-b hover:bg-gray-50 cursor-pointer">
             {delegations?.delegations?.map((delegation: any) => {
               const finalityProviderMoniker =
                 finalityProvidersKV[delegation.finalityProviderPkHex];
