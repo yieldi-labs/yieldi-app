@@ -9,6 +9,7 @@ import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
+import BackButton from "@/app/components/BackButton";
 import { Delegations } from "@/app/components/Delegations/Delegations";
 import { Staking, StakingProps } from "@/app/components/Staking/Staking";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
@@ -24,7 +25,6 @@ import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegati
 import { signPsbtTransaction } from "@/utils/psbt";
 import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
-import BackButton from "@/app/components/BackButton";
 
 const StakeBTCPage = () => {
   const { setSelectedDelegation } = useStake();

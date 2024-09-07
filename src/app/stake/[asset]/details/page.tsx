@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
 import { getStats } from "@/app/api/getStats";
+import BackButton from "@/app/components/BackButton";
 import AssetDetailsSection from "@/app/components/Staking/AssetDetailsSection";
 import MyStakeCard from "@/app/components/Staking/MyStakeCard";
 import Transactions from "@/app/components/Transactions/Transactions";
@@ -17,7 +18,6 @@ import { useGetDelegations } from "@/app/hooks/useGetDelegations";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { maxDecimals } from "@/utils/maxDecimals";
-import BackButton from "@/app/components/BackButton";
 
 const StakedAssetDetails: React.FC = () => {
   const pathname = usePathname();
