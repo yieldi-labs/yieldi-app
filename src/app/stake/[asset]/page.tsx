@@ -24,6 +24,7 @@ import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegati
 import { signPsbtTransaction } from "@/utils/psbt";
 import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
+import BackButton from "@/app/components/BackButton";
 
 const StakeBTCPage = () => {
   const { setSelectedDelegation } = useStake();
@@ -162,6 +163,9 @@ const StakeBTCPage = () => {
   return (
     <>
       <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
+        <div>
+          <BackButton text="STAKE DETAILS" />
+        </div>
         <div className="flex items-baseline mb-4">
           <h1 className="text-yieldi-brown text-2xl font-bold mr-4">
             Choose Finality Provider

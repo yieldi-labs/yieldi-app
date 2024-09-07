@@ -17,6 +17,7 @@ import { useGetDelegations } from "@/app/hooks/useGetDelegations";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { maxDecimals } from "@/utils/maxDecimals";
+import BackButton from "@/app/components/BackButton";
 
 const StakedAssetDetails: React.FC = () => {
   const pathname = usePathname();
@@ -92,13 +93,14 @@ const StakedAssetDetails: React.FC = () => {
   );
 
   const handleOnClick = () => {
-    console.log("Stake button clicked");
-    console.log(`/stake/${assetSymbol}`);
     router.push(`/stake/${assetSymbol}`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 pb-16">
+    <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
+      <div>
+        <BackButton text=" ASSETS" />
+      </div>
       <AssetDetailsSection
         asset={asset}
         isConnected={isConnected}

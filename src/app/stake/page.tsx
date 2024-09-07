@@ -14,7 +14,7 @@ const StakePage: React.FC = () => {
   };
 
   return (
-    <div className="flex pl-[64px] pr-[56px] h-full px-6 py-0 flex-col items-start gap-4 shrink-0 self-stretch">
+    <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
       <div className="flex w-full items-center gap-4">
         <h2 className="text-m font-semibold">STAKE</h2>
         <span className="text-sm">Choose an asset to stake</span>
