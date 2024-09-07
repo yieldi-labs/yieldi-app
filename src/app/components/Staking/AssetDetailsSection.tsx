@@ -22,7 +22,7 @@ const AssetDetailsSection: React.FC<{
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-5">
           <Image
-            src={`/${asset?.assetSymbol}.svg`}
+            src={`/${asset?.assetSymbol.toLowerCase()}.svg`}
             alt={`${asset?.assetSymbol} Logo`}
             width={0}
             height={0}
