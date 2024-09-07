@@ -92,7 +92,9 @@ const StakedAssetDetails: React.FC = () => {
   );
 
   const handleOnClick = () => {
-    router.push(`/stake/${assetSymbol}/[pk]`);
+    console.log("Stake button clicked");
+    console.log(`/stake/${assetSymbol}`);
+    router.push(`/stake/${assetSymbol}`);
   };
 
   return (
@@ -103,7 +105,7 @@ const StakedAssetDetails: React.FC = () => {
         confirmedTvl={confirmedTvl}
         stakingCap={stakingCap}
         remainingBlocks={remainingBlocks}
-        onStakeClick={() => handleOnClick}
+        onStakeClick={handleOnClick}
       />
 
       <MyStakeCard
@@ -127,10 +129,11 @@ const StakedAssetDetails: React.FC = () => {
 
       <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white p-4 shadow-lg">
         <Button
-          className={`w-full bg-[#A1FD59] text-black rounded-none ${
+          className={`w-full bg-yieldi-green text-black rounded-none ${
             !isConnected ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={!isConnected}
+          onClick={handleOnClick}
         >
           STAKE
         </Button>

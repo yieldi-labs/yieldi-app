@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
-import { useError } from "@/app/context/Error/ErrorContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { getNetworkConfig } from "@/app/network.config";
 import { Delegation, DelegationState } from "@/app/types/delegations";
-import { ErrorState } from "@/app/types/errors";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { signUnbondingTx } from "@/utils/delegations/signUnbondingTx";
 import { signWithdrawalTx } from "@/utils/delegations/signWithdrawalTx";
@@ -165,7 +163,6 @@ const Transactions: React.FC<{
   const [modalOpen, setModalOpen] = useState(false);
   const [txID, setTxID] = useState("");
   const [modalMode, setModalMode] = useState<MODE>();
-  const { showError } = useError();
 
   const handleModal = (txID: string, mode: MODE) => {
     setModalOpen(true);
@@ -226,6 +223,7 @@ const Transactions: React.FC<{
       !delegationsAPI ||
       !publicKeyNoCoord ||
       !btcWalletNetwork ||
+      !btcWallet ||
       !paramWithContext?.nextBlockParams?.currentVersion
     ) {
       Error("Missing required data to handle unbonding");
@@ -242,14 +240,12 @@ const Transactions: React.FC<{
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
       } catch (error: Error | any) {
-        showError({
-          error: {
-            message: error.message,
-            errorState: ErrorState.UNBONDING,
-            errorTime: new Date(),
-          },
-          retryAction: () => handleModal(id, MODE_UNBOND),
-        });
+        throw new Error(error.message);
+        // error: {
+        //   message: error.message,
+        //   errorState: ErrorState.UNBONDING,
+        //   errorTime: new Date(),
+        // });
       } finally {
         setModalOpen(false);
         setTxID("");
@@ -288,14 +284,15 @@ const Transactions: React.FC<{
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
       } catch (error: Error | any) {
-        showError({
-          error: {
-            message: error.message,
-            errorState: ErrorState.WITHDRAW,
-            errorTime: new Date(),
-          },
-          retryAction: () => handleModal(id, MODE_WITHDRAW),
-        });
+        throw new Error(error.message);
+        // showError({
+        //   error: {
+        //     message: error.message,
+        //     errorState: ErrorState.WITHDRAW,
+        //     errorTime: new Date(),
+        //   },
+        //   retryAction: () => handleModal(id, MODE_WITHDRAW),
+        // });
       } finally {
         setModalOpen(false);
         setTxID("");
@@ -318,7 +315,7 @@ const Transactions: React.FC<{
       <div className="hidden lg:block">
         <Table.Root>
           <Table.Header className="[--table-row-box-shadow:none]">
-            <Table.Row className="bg-[#F5F1EB]">
+            <Table.Row className="bg-yieldi-beige">
               <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
                 OPENED ON
               </Table.ColumnHeaderCell>
@@ -375,6 +372,12 @@ const Transactions: React.FC<{
               finalityProviderMoniker={finalityProviderMoniker}
               asset={asset}
               screenType="card"
+              onUnbond={() =>
+                handleModal(delegation.stakingTxHashHex, MODE_UNBOND)
+              }
+              onWithdraw={() =>
+                handleModal(delegation.stakingTxHashHex, MODE_WITHDRAW)
+              }
             />
           );
         })}

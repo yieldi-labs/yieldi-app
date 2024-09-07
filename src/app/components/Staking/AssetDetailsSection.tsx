@@ -36,7 +36,7 @@ const AssetDetailsSection: React.FC<{
           </div>
         </div>
         <Button
-          className={`hidden sm:block cursor-pointer w-[173px] h-[55px] bg-[#A1FD59] text-black rounded-none ${
+          className={`hidden sm:block cursor-pointer w-[173px] h-[55px] bg-yieldi-green text-black rounded-none ${
             !isConnected ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={!isConnected}

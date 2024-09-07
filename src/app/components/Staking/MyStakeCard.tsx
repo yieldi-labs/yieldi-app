@@ -6,7 +6,7 @@ const MyStakeCard: React.FC<{
   btcWalletBalanceSat: number;
   delegations: any;
   asset: any;
-}> = ({ btcWalletBalanceSat, delegations, asset }) => {
+}> = ({ btcWalletBalanceSat, delegations }) => {
   const balance = satoshiToBtc(btcWalletBalanceSat);
   let totalStakedSat = 0;
 

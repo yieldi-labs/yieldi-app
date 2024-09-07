@@ -73,6 +73,10 @@ const StakeBTCDetailPage = ({ params }: { params: { pk: string } }) => {
     publicKeyNoCoord,
     selectedFinalityProvider: selectedFinalityProvider,
     setDelegationsLocalStorage,
+    isOpen: false,
+    onCloseDialog: function (): void {
+      throw new Error("Function not implemented.");
+    },
   };
 
   return <Staking {...stakingProps} />;
