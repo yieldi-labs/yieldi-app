@@ -32,7 +32,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const errorLabel = "Staking amount";
   const generalErrorMessage = "You should input staking amount";
 
-  const { coinName } = getNetworkConfig();
+  const { coinSymbol } = getNetworkConfig();
 
   useEffect(() => {
     if (reset) {
@@ -67,11 +67,11 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         },
         {
           valid: satoshis >= minStakingAmountSat,
-          message: `${errorLabel} must be at least ${satoshiToBtc(minStakingAmountSat)} ${coinName}.`,
+          message: `${errorLabel} must be at least ${satoshiToBtc(minStakingAmountSat)} ${coinSymbol}.`,
         },
         {
           valid: satoshis <= maxStakingAmountSat,
-          message: `${errorLabel} must be no more than ${satoshiToBtc(maxStakingAmountSat)} ${coinName}.`,
+          message: `${errorLabel} must be no more than ${satoshiToBtc(maxStakingAmountSat)} ${coinSymbol}.`,
         },
         {
           valid: satoshis <= btcWalletBalanceSat,
@@ -98,7 +98,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       maxStakingAmountSat,
       btcWalletBalanceSat,
       onStakingAmountSatChange,
-      coinName,
+      coinSymbol,
       errorLabel,
       generalErrorMessage,
     ],
@@ -151,7 +151,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       <div className="flex justify-between mb-3">
         <span className="text-sm">AMOUNT</span>
         <span className="text-sm font-light">
-          Balance: {satoshiToBtc(btcWalletBalanceSat)} BTC
+          Balance: {satoshiToBtc(btcWalletBalanceSat)} {coinSymbol}
         </span>
       </div>
       <div className="flex justify-between items-center">
@@ -170,7 +170,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
             "text-right text-3xl font-bold w-full bg-transparent focus:outline-none font-gt-america-mono",
             error ? "text-red-500" : "",
           )}
-          placeholder={coinName}
+          placeholder="0.00"
           required
         />
       </div>

@@ -163,7 +163,7 @@ const StakeBTCPage = () => {
     <>
       <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
         <div className="flex items-baseline mb-4">
-          <h1 className="text-yieldi-brown text-2xl font-bold mr-4">
+          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 gt-america-ext">
             Choose Finality Provider
           </h1>
           <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3">
@@ -234,7 +234,7 @@ const StakeBTCPage = () => {
                 <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
                   Total Delegation
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
+                <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light text-center">
                   Commission
                 </Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-yieldi-brown-light text-xs font-light">
@@ -250,7 +250,7 @@ const StakeBTCPage = () => {
                       key={provider.btcPk}
                       className="mb-[5px] items-start gap-2.5 w-full border border-yieldi-gray-200 bg-white [--table-row-box-shadow:none]"
                     >
-                      <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <Table.Cell className="pl-6 py-4 whitespace-nowrap">
                         <div className="text-yieldi-brown text-xl font-medium">
                           {provider.description.moniker
                             ? provider.description.moniker
@@ -277,7 +277,7 @@ const StakeBTCPage = () => {
                         </div>
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-yieldi-brown text-xl font-normal">
+                        <div className="text-yieldi-brown text-xl font-normal text-center">
                           {provider.commission
                             ? `${(Number(provider.commission) * 100).toFixed(0)}%`
                             : "-"}
@@ -305,10 +305,10 @@ const StakeBTCPage = () => {
         </div>
         <div>
           {(delegations?.delegations || testDelegations) &&
-          finalityProvidersKV &&
-          btcWallet &&
-          paramWithContext?.nextBlockParams?.currentVersion &&
-          btcWalletNetwork ? (
+            finalityProvidersKV &&
+            btcWallet &&
+            paramWithContext?.nextBlockParams?.currentVersion &&
+            btcWalletNetwork ? (
             <Delegations
               finalityProvidersKV={finalityProvidersKV}
               delegationsAPI={

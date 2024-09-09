@@ -607,7 +607,7 @@ export const Staking: React.FC<StakingProps> = ({
               <Dialog.Title className="text-2xl font-bold text-yieldi-brown p-2">
                 Deposit Stake
               </Dialog.Title>
-              <Dialog.Close className="text-yieldi-brown border-x border-yieldi-gray-200 p-2">
+              <Dialog.Close className="text-yieldi-brown border-l border-yieldi-gray-200 p-2">
                 <Cross2Icon width={36} height={36} />
               </Dialog.Close>
             </div>
