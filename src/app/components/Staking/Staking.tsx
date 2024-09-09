@@ -3,6 +3,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -90,6 +91,9 @@ export const Staking: React.FC<StakingProps> = ({
     overTheCapRange: false,
     approachingCapRange: false,
   });
+
+  const pathname = usePathname();
+  const router = useRouter();
 
   const finalityProvider = selectedFinalityProvider;
   const handleOnClose = () => {
@@ -289,7 +293,7 @@ export const Staking: React.FC<StakingProps> = ({
           "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
         buttonTitle: "see my delegations",
         onButtonClick: function (): void {
-          throw new Error("Function not implemented.");
+          router.push(`${pathname}/details`);
         },
       });
       handleLocalStorageDelegations(stakingTxHex, stakingTerm);

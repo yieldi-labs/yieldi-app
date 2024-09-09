@@ -13,7 +13,7 @@ interface Duration {
 export const durationTillNow = (
   time: string,
   currentTime: number,
-  format: (keyof Duration)[] = ["days", "hours", "minutes"]
+  format: (keyof Duration)[] = ["days", "hours", "minutes"],
 ) => {
   if (!time || time.startsWith("000")) return "Ongoing";
 

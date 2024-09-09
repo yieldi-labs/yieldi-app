@@ -15,7 +15,7 @@ const MyStakeCard: React.FC<{
       .filter((delegation: any) => delegation?.state === "ACTIVE")
       .reduce(
         (accumulator: number, item: any) => accumulator + item?.stakingValueSat,
-        0
+        0,
       );
   }
 
@@ -23,8 +23,7 @@ const MyStakeCard: React.FC<{
     <div className="w-full mb-6 bg-white">
       <div className="border border-yieldi-gray-200 mb-4">
         <div className="border">
-
-        <h3 className="text-xl font-semibold p-2">My Stake</h3>
+          <h3 className="text-xl font-semibold p-2">My Stake</h3>
         </div>
         <div className="grid grid-cols-2">
           <div className="border border-yieldi-gray-200 p-2 flex-row">

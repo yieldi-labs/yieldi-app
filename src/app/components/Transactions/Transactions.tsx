@@ -1,21 +1,28 @@
 import { Card, Table, Button } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { AiOutlineInfoCircle } from "react-icons/ai";
+import { Tooltip } from "react-tooltip";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
+import { useDialog } from "@/app/context/DialogContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { getNetworkConfig } from "@/app/network.config";
 import { Delegation, DelegationState } from "@/app/types/delegations";
+import { ErrorState } from "@/app/types/errors";
+import { GlobalParamsVersion } from "@/app/types/globalParams";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { signUnbondingTx } from "@/utils/delegations/signUnbondingTx";
 import { signWithdrawalTx } from "@/utils/delegations/signWithdrawalTx";
+import { getErrorMessage, getErrorTitle } from "@/utils/errors";
 import { durationTillNow } from "@/utils/formatTime";
+import { getState, getStateTooltip } from "@/utils/getState";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
-import { signPsbtTransaction } from "@/utils/psbt";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { signPsbtTransaction } from "@/utils/psbt";
 import { trim } from "@/utils/trim";
 
 import {
@@ -33,6 +40,8 @@ const DelegationRow: React.FC<{
   screenType: "table" | "card";
   onUnbond: () => void;
   onWithdraw: () => void;
+  intermediateState?: string;
+  globalParamsVersion: GlobalParamsVersion | undefined;
 }> = ({
   delegation,
   finalityProviderMoniker,
@@ -40,40 +49,79 @@ const DelegationRow: React.FC<{
   screenType,
   onUnbond,
   onWithdraw,
+  intermediateState,
+  globalParamsVersion,
 }) => {
-  const { stakingValueSat, stakingTx, stakingTxHashHex, state } = delegation;
+  const { stakingValueSat, stakingTx, stakingTxHashHex, state, isOverflow } =
+    delegation;
   const { startTimestamp } = stakingTx;
   const currentTime = Date.now();
   const { mempoolApiUrl } = getNetworkConfig();
 
   const generateActionButton = () => {
-    if (state === "active") {
+    // This function generates the unbond or withdraw button
+    // based on the state of the delegation
+    // It also disables the button if the delegation
+    // is in an intermediate state (local storage)
+
+    if (state === DelegationState.ACTIVE) {
       return (
-        <Button
-          className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-green text-yieldi-beige text-sm font-medium"
-          onClick={onUnbond}
-        >
-          Unbond
-        </Button>
+        <div className="">
+          <button
+            className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-white text-sm font-medium"
+            onClick={() => onUnbond()}
+          >
+            Unbond
+          </button>
+        </div>
       );
-    } else if (state === "unbounded") {
+    } else if (state === DelegationState.UNBONDED) {
       return (
-        <Button
-          className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-beige text-yieldi-beige text-sm font-medium"
-          onClick={onWithdraw}
-        >
-          Withdraw
-        </Button>
+        <div className="">
+          <button
+            className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-white text-sm font-medium"
+            onClick={() => onWithdraw()}
+            disabled={
+              intermediateState === DelegationState.INTERMEDIATE_WITHDRAWAL
+            }
+          >
+            Withdraw
+          </button>
+        </div>
       );
     } else {
       return (
-        <Button
-          className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-yieldi-beige text-sm font-medium"
-          disabled
+        <button
+          className="opacity-50 flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-yieldi-beige text-sm font-medium"
+          disabled={
+            intermediateState === DelegationState.INTERMEDIATE_UNBONDING
+          }
         >
-          No Action Required
-        </Button>
+          Unbond
+        </button>
       );
+    }
+  };
+
+  const isActive =
+    intermediateState === DelegationState.ACTIVE ||
+    state === DelegationState.ACTIVE;
+
+  const renderState = () => {
+    // overflow should be shown only on active state
+    if (isOverflow && isActive) {
+      return getState(DelegationState.OVERFLOW);
+    } else {
+      return getState(intermediateState || state);
+    }
+  };
+
+  const renderStateTooltip = () => {
+    // overflow should be shown only on active state
+    if (isOverflow && isActive) {
+      return getStateTooltip(DelegationState.OVERFLOW, globalParamsVersion);
+    } else {
+      return getStateTooltip(intermediateState || state, globalParamsVersion);
     }
   };
 
@@ -114,9 +162,22 @@ const DelegationRow: React.FC<{
         <Table.Cell className="text-[#332B29] text-lg font-normal">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
           <span
-            className={`px-3 py-1 rounded-full ${state === "ACTIVE" ? "bg-green-500" : "bg-red-500"} text-white`}
+            className={` flex justify-center items-center rounded-full ${state === "active" ? "bg-yieldi-green text-black" : "bg-yieldi-red text-white"}`}
           >
-            {state}
+            <div className="flex justify-center items-center">
+              <p>{renderState()}</p>
+              <span
+                className="cursor-pointer text-xs"
+                data-tooltip-id={`tooltip-${stakingTxHashHex}`}
+                data-tooltip-content={renderStateTooltip()}
+                data-tooltip-place="top"
+              >
+                <AiOutlineInfoCircle />
+              </span>
+              <span>
+                <Tooltip id={`tooltip-${stakingTxHashHex}`} />
+              </span>
+            </div>
           </span>
         </Table.Cell>
         <Table.Cell>{generateActionButton()}</Table.Cell>
@@ -124,56 +185,64 @@ const DelegationRow: React.FC<{
     );
   } else {
     return (
-      <Card
-        className="p-4 border rounded-none"
-        key={delegation.finalityProviderPkHex}
-      >
-        <div className="grid grid-cols-2 justify-between border">
-          <div className="border font-semibold">
-            {finalityProviderMoniker}
-            <p className="text-xs text-gray-500">{trim(stakingTxHashHex)}</p>
+      <div className="w-full mb-6 bg-white">
+        <div
+          className="border border-yieldi-gray-200"
+          key={delegation.finalityProviderPkHex}
+        >
+          <div className="grid grid-cols-2 justify-between border">
+            <div className="border font-semibold">
+              {finalityProviderMoniker}
+              <p className="text-xs text-gray-500">{trim(stakingTxHashHex)}</p>
+            </div>
+            <div className="flex items-center ">
+              <div
+                className={` flex items-center rounded-full p-2 ${state === "active" ? "bg-yieldi-green text-black" : "bg-yieldi-red text-white"}`}
+              >
+                <p>{renderState()}</p>
+                <span
+                  className="cursor-pointer text-xs"
+                  data-tooltip-id={`tooltip-${stakingTxHashHex}`}
+                  data-tooltip-content={renderStateTooltip()}
+                  data-tooltip-place="top"
+                >
+                  <AiOutlineInfoCircle />
+                </span>
+                <span>
+                  <Tooltip id={`tooltip-${stakingTxHashHex}`} />
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex">
-            <Button
-              size="2"
-              className={`${
-                state === "ACTIVE"
-                  ? "bg-green-500 text-white"
-                  : "bg-red-500 text-white"
-              }}`}
-            >
-              {state}
-            </Button>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 border">
-          <div className="border rounded-none">
-            <p className="font-semibold text-sm">Amount</p>
-            {`$${satoshiToBtc(stakingValueSat) * (asset?.price || 1)}`}
-            <br />
-            {`${satoshiToBtc(stakingValueSat)} ${asset?.assetSymbol}`}{" "}
+          <div className="grid grid-cols-2 lg:grid-cols-3 border">
+            <div className="border rounded-none">
+              <p className="font-semibold text-sm">Amount</p>
+              {`$${maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4)}`}
+              <br />
+              {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
+            </div>
+            <div className="lg:col-span-1 border rounded-none">
+              <p className="font-semibold text-sm">Withdrawal Balance</p>
+              <p className="text-sm">0.0 BTC</p>
+              <p className="text-xs text-yellow-500">↘ $0.00 PENDING</p>
+            </div>
           </div>
-          <div className="lg:col-span-1 border rounded-none">
-            <p className="font-semibold text-sm">Withdrawal Balance</p>
-            <p className="text-sm">0.0 BTC</p>
-            <p className="text-xs text-yellow-500">↘ $0.00 PENDING</p>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 border">
-          <div className="border rounded-none">
-            <p className="font-semibold text-sm">Opened On</p>
-            <p className="text-sm">
-              {new Date(startTimestamp).toLocaleDateString()}
-            </p>
-            <p className="text-xs text-gray-500">
-              {durationTillNow(startTimestamp, currentTime)}
-            </p>
+          <div className="grid grid-cols-2 lg:grid-cols-3 border">
+            <div className="border rounded-none">
+              <p className="font-semibold text-sm">Opened On</p>
+              <p className="text-sm">
+                {new Date(startTimestamp).toLocaleDateString()}
+              </p>
+              <p className="text-xs text-gray-500">
+                {durationTillNow(startTimestamp, currentTime)}
+              </p>
+            </div>
+            <div>{generateActionButton()}</div>
           </div>
-          <div>{generateActionButton()}</div>
         </div>
-      </Card>
+      </div>
     );
   }
 };
@@ -203,14 +272,14 @@ const Transactions: React.FC<{
   }, [refreshKey]); // Add refreshKey as a dependency
 
   const delegationsAPI = delegations.delegations;
-  console.log(delegationsAPI);
 
   const intermediateDelegationsLocalStorageKey =
     getIntermediateDelegationsLocalStorageKey(publicKeyNoCoord);
 
-  const [_, setIntermediateDelegationsLocalStorage] = useLocalStorage<
-    Delegation[]
-  >(intermediateDelegationsLocalStorageKey, []);
+  const [
+    intermediateDelegationsLocalStorage,
+    setIntermediateDelegationsLocalStorage,
+  ] = useLocalStorage<Delegation[]>(intermediateDelegationsLocalStorageKey, []);
 
   const updateLocalStorage = (delegation: Delegation, newState: string) => {
     setIntermediateDelegationsLocalStorage((delegations) => [
@@ -221,11 +290,13 @@ const Transactions: React.FC<{
         delegation.stakingValueSat,
         delegation.stakingTx.txHex,
         delegation.stakingTx.timelock,
-        newState
+        newState,
       ),
       ...delegations,
     ]);
   };
+
+  const { showDialog } = useDialog();
 
   const { data: paramWithContext } = useQuery({
     queryKey: ["global params"],
@@ -252,38 +323,29 @@ const Transactions: React.FC<{
   // Handles unbonding requests for Active delegations that want to be withdrawn early
   // It constructs an unbonding transaction, creates a signature for it, and submits both to the back-end API
   const handleUnbond = async (id: string) => {
-    if (
-      !delegationsAPI ||
-      !publicKeyNoCoord ||
-      !btcWalletNetwork ||
-      !btcWallet ||
-      !paramWithContext?.nextBlockParams?.currentVersion
-    ) {
-      Error("Missing required data to handle unbonding");
-    } else {
+    // Sign the unbonding transaction
+    if (btcWallet && btcWalletNetwork) {
       try {
-        // Sign the unbonding transaction
         const { delegation } = await signUnbondingTx(
           id,
           delegationsAPI,
           publicKeyNoCoord,
           btcWalletNetwork,
-          signPsbtTransaction(btcWallet)
+          signPsbtTransaction(btcWallet),
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
       } catch (error: Error | any) {
-        throw new Error(error.message);
-        // error: {
-        //   message: error.message,
-        //   errorState: ErrorState.UNBONDING,
-        //   errorTime: new Date(),
-        // });
+        showDialog({
+          title: getErrorTitle(ErrorState.UNBONDING),
+          message: getErrorMessage(ErrorState.UNBONDING, error.message),
+          buttonTitle: "retry",
+          onButtonClick: () => handleModal(id, MODE_UNBOND),
+        });
       } finally {
         setModalOpen(false);
         setTxID("");
         setModalMode(undefined);
-        onRefresh();
       }
     }
   };
@@ -313,20 +375,19 @@ const Transactions: React.FC<{
           signPsbtTransaction(btcWallet),
           address,
           btcWallet.getNetworkFees,
-          btcWallet.pushTx
+          btcWallet.pushTx,
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
       } catch (error: Error | any) {
-        throw new Error(error.message);
-        // showError({
-        //   error: {
-        //     message: error.message,
-        //     errorState: ErrorState.WITHDRAW,
-        //     errorTime: new Date(),
-        //   },
-        //   retryAction: () => handleModal(id, MODE_WITHDRAW),
-        // });
+        showDialog({
+          title: getErrorTitle(ErrorState.WITHDRAW),
+          message: getErrorMessage(ErrorState.WITHDRAW, error.message),
+          buttonTitle: "retry",
+          onButtonClick: function (): void {
+            handleModal(id, MODE_WITHDRAW);
+          },
+        });
       } finally {
         setModalOpen(false);
         setTxID("");
@@ -337,6 +398,7 @@ const Transactions: React.FC<{
   };
 
   const handleOnProceed = (mode: MODE) => {
+    console.log("Proceeding with action", mode);
     if (mode === MODE_UNBOND) {
       handleUnbond(txID);
     } else if (mode === MODE_WITHDRAW) {
@@ -375,6 +437,11 @@ const Transactions: React.FC<{
             {delegations?.delegations?.map((delegation: any) => {
               const finalityProviderMoniker =
                 finalityProvidersKV[delegation.finalityProviderPkHex];
+              const intermediateDelegation =
+                intermediateDelegationsLocalStorage.find(
+                  (item) =>
+                    item.stakingTxHashHex === delegation.stakingTxHashHex,
+                );
               return (
                 <DelegationRow
                   key={delegation.stakingTxHashHex}
@@ -388,6 +455,10 @@ const Transactions: React.FC<{
                   onWithdraw={() =>
                     handleModal(delegation.stakingTxHashHex, MODE_WITHDRAW)
                   }
+                  intermediateState={intermediateDelegation?.state}
+                  globalParamsVersion={
+                    paramWithContext?.nextBlockParams?.currentVersion
+                  }
                 />
               );
             })}
@@ -400,6 +471,10 @@ const Transactions: React.FC<{
         {delegations?.delegations?.map((delegation: any) => {
           const finalityProviderMoniker =
             finalityProvidersKV[delegation.finalityProviderPkHex];
+          const intermediateDelegation =
+            intermediateDelegationsLocalStorage.find(
+              (item) => item.stakingTxHashHex === delegation.stakingTxHashHex,
+            );
           return (
             <DelegationRow
               key={delegation.stakingTxHashHex}
@@ -412,6 +487,10 @@ const Transactions: React.FC<{
               }
               onWithdraw={() =>
                 handleModal(delegation.stakingTxHashHex, MODE_WITHDRAW)
+              }
+              intermediateState={intermediateDelegation?.state}
+              globalParamsVersion={
+                paramWithContext?.nextBlockParams?.currentVersion
               }
             />
           );

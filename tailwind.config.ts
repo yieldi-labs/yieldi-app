@@ -14,6 +14,7 @@ const config: Config = {
         },
         "yieldi-beige": "#F5F1EB",
         "yieldi-green": "#A1FD59",
+        "yieldi-red": "#FF6656",
       },
       spacing: {
         "1": "0.25rem", // 4px
