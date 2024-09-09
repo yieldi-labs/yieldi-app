@@ -52,9 +52,9 @@ const config: Config = {
       },
     },
     fontFamily: {
-      "gt-america": ["GT America Trial", "sans-serif"],
-      "gt-america-mono": ["GT America Mono Trial", "monospace"],
-      "gt-america-ext": ["GT America Extended Trial", "sans-serif"]
+      "gt-america": ["GT America Trial"],
+      "gt-america-mono": ["GT America Mono Trial"],
+      "gt-america-ext": ["GT America Extended Trial"],
     },
   },
   plugins: [],

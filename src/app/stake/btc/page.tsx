@@ -163,7 +163,7 @@ const StakeBTCPage = () => {
     <>
       <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
         <div className="flex items-baseline mb-4">
-          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 gt-america-ext">
+          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 font-gt-america-ext">
             Choose Finality Provider
           </h1>
           <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3">
@@ -185,8 +185,8 @@ const StakeBTCPage = () => {
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-4 divide-x divide-yieldi-gray-200">
-              <div className="p-4 flex flex-col justify-end items-start self-stretch">
+            <div className="grid grid-cols-2 md:grid-cols-4 md:divide-x divide-yieldi-gray-200">
+              <div className="p-4 flex flex-col justify-end items-start self-stretch border-r border-b md:border-b-0 md:border-r-0 border-yieldi-gray-200">
                 <p className="text-yieldi-brown text-xs font-light leading-normal">
                   TVL
                 </p>
@@ -194,7 +194,7 @@ const StakeBTCPage = () => {
                   {satoshiToBtc(totalStakedSat)} BTC
                 </p>
               </div>
-              <div className="p-4 flex flex-col justify-end items-start self-stretch">
+              <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r md:border-b-0 border-b border-yieldi-gray-200">
                 <p className="text-yieldi-brown text-xs font-light leading-normal">
                   CAP
                 </p>
@@ -202,7 +202,7 @@ const StakeBTCPage = () => {
                   1.25K BTC
                 </p>
               </div>
-              <div className="p-4 flex flex-col justify-end items-start self-stretch">
+              <div className="p-4 flex flex-col justify-end items-start self-stretch border-r border-yieldi-gray-200">
                 <p className="text-yieldi-brown text-xs font-light leading-normal">
                   STAKING WINDOW
                 </p>
@@ -210,7 +210,7 @@ const StakeBTCPage = () => {
                   239 blocks
                 </p>
               </div>
-              <div className="p-4 flex flex-col justify-end items-start self-stretch">
+              <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r border-yieldi-gray-200">
                 <p className="text-yieldi-brown text-xs font-light leading-normal">
                   PRICE
                 </p>
@@ -305,10 +305,10 @@ const StakeBTCPage = () => {
         </div>
         <div>
           {(delegations?.delegations || testDelegations) &&
-            finalityProvidersKV &&
-            btcWallet &&
-            paramWithContext?.nextBlockParams?.currentVersion &&
-            btcWalletNetwork ? (
+          finalityProvidersKV &&
+          btcWallet &&
+          paramWithContext?.nextBlockParams?.currentVersion &&
+          btcWalletNetwork ? (
             <Delegations
               finalityProvidersKV={finalityProvidersKV}
               delegationsAPI={

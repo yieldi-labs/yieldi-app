@@ -40,7 +40,14 @@
 
 @font-face {
   font-family: "GT Americal Extended Trial";
-  src: url("/fonts/GT-America-Extended-Bold-Trial.woff");
+  src: url("/fonts/GT-America-Extended-Regular-Trial.woff") format("woff");
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "GT Americal Extended Trial";
+  src: url("/fonts/GT-America-Extended-Bold-Trial.woff") format("woff");
   font-style: normal;
   font-weight: bold;
 }
