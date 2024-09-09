@@ -1,4 +1,3 @@
-import { Card, Button } from "@radix-ui/themes";
 import Image from "next/image";
 
 const AssetDetailsSection: React.FC<{
@@ -17,65 +16,74 @@ const AssetDetailsSection: React.FC<{
   onStakeClick,
 }) => {
   return (
-    <Card variant="classic" className="p-6 mb-4">
-      {/* Asset Info */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-5">
-          <Image
-            src={`/${asset?.assetSymbol.toLowerCase()}.svg`}
-            alt={`${asset?.assetSymbol} Logo`}
-            width={0}
-            height={0}
-            className="size-12"
-          />
-          <div>
-            <h2 className="text-3xl font-bold">
-              {asset?.assetSymbol.toUpperCase()}
-            </h2>
-            <p>{asset?.assetName}</p>
+    <div className="w-full mb-6 bg-white">
+      <div className="border border-yieldi-gray-200">
+        <div className="flex justify-between p-4 border-b border-yieldi-gray-200">
+          <div className="flex items-center">
+            <div className="size-12 flex items-center justify-center mr-4">
+              <Image
+                src={`/${asset?.assetSymbol.toLowerCase()}.svg`}
+                alt={`${asset?.assetSymbol} Logo`}
+                width={65}
+                height={65}
+              />
+            </div>
+            <div className="flex items-center">
+              <h2 className="text-yieldi-brown text-4xl font-medium leading-normal mr-4">
+                {asset?.assetSymbol.toUpperCase()}
+              </h2>
+              <p className="text-yieldi-brown text-xl font-light leading-normal">
+                {asset?.assetName}
+              </p>
+            </div>
           </div>
+          <button
+            className={`hidden sm:block cursor-pointer px-24 py-2 m-8 
+            gap-2 shrink-0 rounded bg-yieldi-green text-yieldi-black text-base font-medium ${
+              !isConnected ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={!isConnected}
+            onClick={onStakeClick}
+          >
+            STAKE
+          </button>
         </div>
-        <Button
-          className={`hidden sm:block cursor-pointer w-[173px] h-[55px] bg-yieldi-green text-black rounded-none ${
-            !isConnected ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={!isConnected}
-          onClick={onStakeClick}
-        >
-          STAKE
-        </Button>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="p-2 mt-6">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 text-left">
-          <Card variant="ghost" className="border rounded-none">
-            <p className="">TVL</p>
-            <p className="text-lg font-semibold">
-              {confirmedTvl}
-              {" BTC"}
+        <div className="grid grid-cols-4 divide-x divide-yieldi-gray-200">
+          <div className="p-4 flex flex-col justify-end items-start self-stretch">
+            <p className="text-yieldi-brown text-xs font-light leading-normal">
+              TVL
             </p>
-          </Card>
-          <Card variant="ghost" className="border rounded-none">
-            <p>Cap</p>
-            <p className="text-lg font-semibold">
-              {stakingCap}
-              {" BTC"}
+            <p className="text-yieldi-brown text-xl font-medium leading-normal">
+              {confirmedTvl} {asset?.assetSymbol}
             </p>
-          </Card>
-          <Card variant="ghost" className="border rounded-none">
-            <p>Staking Window</p>
-            <p className="text-lg font-semibold">
+          </div>
+          <div className="p-4 flex flex-col justify-end items-start self-stretch">
+            <p className="text-yieldi-brown text-xs font-light leading-normal">
+              CAP
+            </p>
+            <p className="text-yieldi-brown text-xl font-medium leading-normal">
+              {stakingCap} {asset?.assetSymbol}
+            </p>
+          </div>
+          <div className="p-4 flex flex-col justify-end items-start self-stretch">
+            <p className="text-yieldi-brown text-xs font-light leading-normal">
+              STAKING WINDOW
+            </p>
+            <p className="text-yieldi-brown text-xl font-medium leading-normal">
               {remainingBlocks > 0 ? `${remainingBlocks} blocks` : "0 blocks"}
             </p>
-          </Card>
-          <Card variant="ghost" className="border rounded-none">
-            <p>Price</p>
-            <p className="text-lg font-semibold">$60,000</p>
-          </Card>
+          </div>
+          <div className="p-4 flex flex-col justify-end items-start self-stretch">
+            <p className="text-yieldi-brown text-xs font-light leading-normal">
+              PRICE
+            </p>
+            <p className="text-yieldi-brown text-xl font-medium leading-normal">
+              $60,000
+            </p>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

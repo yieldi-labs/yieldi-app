@@ -15,6 +15,7 @@ import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
 import { signPsbtTransaction } from "@/utils/psbt";
+import { maxDecimals } from "@/utils/maxDecimals";
 import { trim } from "@/utils/trim";
 
 import {
@@ -82,24 +83,33 @@ const DelegationRow: React.FC<{
         key={stakingTxHashHex}
         className="mb-2 items-start gap-4 border shadow-sm p-4"
       >
-        <Table.Cell className="text-[#332B29] text-lg font-medium">
-          {durationTillNow(startTimestamp, currentTime)}
+        <Table.Cell>
+          <p className="text-yieldi-brown text-xl font-medium leading-normal">
+            {durationTillNow(startTimestamp, currentTime, ["days"])}
+          </p>
+          <p className="text-yieldi-brown text-xs font-medium leading-normal">
+            {startTimestamp}
+          </p>
         </Table.Cell>
-        <Table.Cell className="text-[#6D655D] font-['GT_America_Mono_Trial'] text-sm font-normal">
-          {finalityProviderMoniker}{" "}
+        <Table.Cell>
+          <div className="text-yieldi-brown text-xl font-medium leading-normal">
+            {finalityProviderMoniker}{" "}
+          </div>
           <a
             href={`${mempoolApiUrl}/tx/${stakingTxHashHex}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
+            className="text-yieldi-brown text-xs hover:underline"
           >
             {trim(stakingTxHashHex)}
           </a>
         </Table.Cell>
-        <Table.Cell className="text-[#332B29] text-lg font-normal">
-          {`$${satoshiToBtc(stakingValueSat) * (asset?.price || 1)}`}
-          <br />
-          {`${satoshiToBtc(stakingValueSat)} ${asset?.assetSymbol}`}
+        <Table.Cell>
+          <div className="text-yieldi-brown text-m font-medium leading-normal">
+            {`$${maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4)}`}
+            <br />
+            {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
+          </div>
         </Table.Cell>
         <Table.Cell className="text-[#332B29] text-lg font-normal">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
@@ -193,6 +203,7 @@ const Transactions: React.FC<{
   }, [refreshKey]); // Add refreshKey as a dependency
 
   const delegationsAPI = delegations.delegations;
+  console.log(delegationsAPI);
 
   const intermediateDelegationsLocalStorageKey =
     getIntermediateDelegationsLocalStorageKey(publicKeyNoCoord);
@@ -210,7 +221,7 @@ const Transactions: React.FC<{
         delegation.stakingValueSat,
         delegation.stakingTx.txHex,
         delegation.stakingTx.timelock,
-        newState,
+        newState
       ),
       ...delegations,
     ]);
@@ -257,7 +268,7 @@ const Transactions: React.FC<{
           delegationsAPI,
           publicKeyNoCoord,
           btcWalletNetwork,
-          signPsbtTransaction(btcWallet),
+          signPsbtTransaction(btcWallet)
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
@@ -302,7 +313,7 @@ const Transactions: React.FC<{
           signPsbtTransaction(btcWallet),
           address,
           btcWallet.getNetworkFees,
-          btcWallet.pushTx,
+          btcWallet.pushTx
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
@@ -336,26 +347,26 @@ const Transactions: React.FC<{
   return (
     <>
       {/* Desktop Table View */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block pb-12">
         <Table.Root>
           <Table.Header className="[--table-row-box-shadow:none]">
             <Table.Row className="bg-yieldi-beige">
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 OPENED ON
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 PROVIDER
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 AMOUNT
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 WITHDRAWAL BALANCE
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 STATUS
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider text-[#6D655D] text-xs font-light">
+              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 ACTIONS
               </Table.ColumnHeaderCell>
             </Table.Row>
