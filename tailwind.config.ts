@@ -7,6 +7,7 @@ const config: Config = {
       colors: {
         "yieldi-gray": {
           200: "#DCD4C9",
+          light: "#D9D9D9",
         },
         "yieldi-brown": {
           DEFAULT: "#332B29",
@@ -15,6 +16,7 @@ const config: Config = {
         "yieldi-beige": "#F5F1EB",
         "yieldi-green": "#A1FD59",
         "yieldi-red": "#FF6656",
+        "yieldi-dark-gray": "#494949",
       },
       spacing: {
         "1": "0.25rem", // 4px

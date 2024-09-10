@@ -1,5 +1,3 @@
-import { Card } from "@radix-ui/themes";
-
 import { satoshiToBtc } from "@/utils/btcConversions";
 
 const MyStakeCard: React.FC<{

@@ -88,7 +88,7 @@ const StakePage: React.FC = () => {
                       height={32}
                     />
                   </button>
-                  <button className="bg-[#6D655D] text-white  ">
+                  <button className="bg-yieldi-brown-light text-white  ">
                     <Image
                       src="/upload.svg"
                       alt="Unstake asset"
