@@ -4,7 +4,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 
-import { ErrorProvider } from "./context/Error/ErrorContext";
+import { DialogProvider } from "./context/DialogContext";
 import { FinalityProvidersProvider } from "./context/FinalityProvidersContext";
 import { StakeProvider } from "./context/StakeContext";
 import { WalletProvider } from "./context/WalletContext";
@@ -14,7 +14,7 @@ function Providers({ children }: React.PropsWithChildren) {
   const queryClient = new QueryClient();
 
   return (
-    <ErrorProvider>
+    <DialogProvider>
       <QueryClientProvider client={queryClient}>
         <GlobalParamsProvider>
           <StakeProvider>
@@ -24,7 +24,7 @@ function Providers({ children }: React.PropsWithChildren) {
           </StakeProvider>
         </GlobalParamsProvider>
       </QueryClientProvider>
-    </ErrorProvider>
+    </DialogProvider>
   );
 }
 

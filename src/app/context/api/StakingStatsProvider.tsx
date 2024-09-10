@@ -2,9 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import React, { ReactNode, createContext, useContext, useEffect } from "react";
 
 import { getStats } from "@/app/api/getStats";
-import { ErrorState } from "@/app/types/errors";
 
-import { useError } from "../Error/ErrorContext";
+import { useDialog } from "../DialogContext";
 
 export interface StakingStats {
   activeTVLSat: number;
@@ -35,28 +34,26 @@ const StakingStatsContext =
 export const StakingStatsProvider: React.FC<StakingStatsProviderProps> = ({
   children,
 }) => {
-  const { isErrorOpen, showError } = useError();
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["API_STATS"],
     queryFn: async () => getStats(),
     refetchInterval: 60000, // 1 minute
     retry: (failureCount) => {
-      return !isErrorOpen && failureCount <= 3;
+      return failureCount <= 3;
     },
   });
+  const { showDialog } = useDialog();
 
   useEffect(() => {
     if (isError && error) {
-      showError({
-        error: {
-          message: error.message,
-          errorState: ErrorState.SERVER_ERROR,
-          errorTime: new Date(),
-        },
-        retryAction: refetch,
+      showDialog({
+        title: "Error",
+        message: error.message,
+        buttonTitle: "Retry",
+        onButtonClick: refetch,
       });
     }
-  }, [isError, error, showError, refetch]);
+  }, [isError, error, refetch, showDialog]);
 
   return (
     <StakingStatsContext.Provider value={{ data, isLoading }}>

@@ -4,7 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useLocalStorage } from "usehooks-ts";
 
 import { LoadingTableList } from "@/app/components/Loading/Loading";
-import { useError } from "@/app/context/Error/ErrorContext";
+import { useDialog } from "@/app/context/DialogContext";
 import { QueryMeta } from "@/app/types/api";
 import {
   Delegation as DelegationInterface,
@@ -14,6 +14,7 @@ import { ErrorState } from "@/app/types/errors";
 import { GlobalParamsVersion } from "@/app/types/globalParams";
 import { signUnbondingTx } from "@/utils/delegations/signUnbondingTx";
 import { signWithdrawalTx } from "@/utils/delegations/signWithdrawalTx";
+import { getErrorMessage, getErrorTitle } from "@/utils/errors";
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
 import { SignPsbtTransaction } from "@/utils/psbt";
@@ -58,7 +59,6 @@ export const Delegations: React.FC<DelegationsProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [txID, setTxID] = useState("");
   const [modalMode, setModalMode] = useState<MODE>();
-  const { showError } = useError();
 
   // Local storage state for intermediate delegations (withdrawing, unbonding)
   const intermediateDelegationsLocalStorageKey =
@@ -91,6 +91,8 @@ export const Delegations: React.FC<DelegationsProps> = ({
     ]);
   };
 
+  const { showDialog } = useDialog();
+
   // Handles unbonding requests for Active delegations that want to be withdrawn early
   // It constructs an unbonding transaction, creates a signature for it, and submits both to the back-end API
   const handleUnbond = async (id: string) => {
@@ -106,13 +108,11 @@ export const Delegations: React.FC<DelegationsProps> = ({
       // Update the local state with the new intermediate delegation
       updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
     } catch (error: Error | any) {
-      showError({
-        error: {
-          message: error.message,
-          errorState: ErrorState.UNBONDING,
-          errorTime: new Date(),
-        },
-        retryAction: () => handleModal(id, MODE_UNBOND),
+      showDialog({
+        title: getErrorTitle(ErrorState.UNBONDING),
+        message: getErrorMessage(ErrorState.UNBONDING, error.message),
+        buttonTitle: "retry",
+        onButtonClick: () => handleModal(id, MODE_UNBOND),
       });
     } finally {
       setModalOpen(false);
@@ -139,13 +139,13 @@ export const Delegations: React.FC<DelegationsProps> = ({
       // Update the local state with the new intermediate delegation
       updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
     } catch (error: Error | any) {
-      showError({
-        error: {
-          message: error.message,
-          errorState: ErrorState.WITHDRAW,
-          errorTime: new Date(),
+      showDialog({
+        title: getErrorTitle(ErrorState.WITHDRAW),
+        message: getErrorMessage(ErrorState.WITHDRAW, error.message),
+        buttonTitle: "retry",
+        onButtonClick: function (): void {
+          handleModal(id, MODE_WITHDRAW);
         },
-        retryAction: () => handleModal(id, MODE_WITHDRAW),
       });
     } finally {
       setModalOpen(false);

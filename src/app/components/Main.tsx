@@ -6,9 +6,7 @@ import { NextPage } from "next";
 import { ReactNode } from "react";
 
 import { ConnectModal } from "@/app/components/Modals/ConnectModal";
-import { ErrorModal } from "@/app/components/Modals/ErrorModal";
 import Navbar from "@/app/components/Navbar";
-import { useError } from "@/app/context/Error/ErrorContext";
 import { useWallet } from "@/app/context/WalletContext"; // Import the useWallet hook
 import QueryClientProvider from "@/lib/providers/QueryClientProvider";
 
@@ -22,15 +20,13 @@ const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
   useFetchFinalityProviders();
 
   const { connectWallet, connectModalOpen, setConnectModalOpen } = useWallet();
-  const { error, isErrorOpen, hideError, retryErrorAction } = useError();
-
   const handleConnectBTC = async (walletProvider: any) => {
     await connectWallet(walletProvider);
     setConnectModalOpen(false);
   };
 
   return (
-    <div>
+    <div className="bg-yieldi-beige">
       <Navbar setConnectModalOpen={setConnectModalOpen} />
       <QueryClientProvider>
         <main className="h-screen grow pt-24">{children}</main>
@@ -39,14 +35,6 @@ const Main: NextPage<MainProps> = ({ children }: { children: ReactNode }) => {
         open={connectModalOpen}
         onClose={() => setConnectModalOpen(false)}
         onConnect={handleConnectBTC}
-      />
-      <ErrorModal
-        open={isErrorOpen}
-        errorMessage={error?.message}
-        errorState={error?.errorState}
-        errorTime={error?.errorTime}
-        onClose={hideError}
-        onRetry={retryErrorAction}
       />
     </div>
   );

@@ -18,8 +18,3 @@ export interface ErrorHandlerParam {
   errorState: ErrorState;
   refetchFunction: () => void;
 }
-
-export interface ShowErrorParams {
-  error: ErrorType;
-  retryAction?: () => void;
-}

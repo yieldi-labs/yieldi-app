@@ -1,19 +1,16 @@
-import * as Form from "@radix-ui/react-form";
-import { Flex, Link } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { Tooltip } from "react-tooltip";
-import { useLocalStorage } from "usehooks-ts";
+import { twMerge } from "tailwind-merge";
 
 import {
   OVERFLOW_HEIGHT_WARNING_THRESHOLD,
   OVERFLOW_TVL_WARNING_THRESHOLD,
 } from "@/app/common/constants";
-import { FeedbackModal } from "@/app/components/Modals/FeedbackModal";
-import { PreviewModal } from "@/app/components/Modals/PreviewModal";
-import { useError } from "@/app/context/Error/ErrorContext";
+import { useDialog } from "@/app/context/DialogContext";
 import { useGlobalParams } from "@/app/context/api/GlobalParamsProvider";
 import { useStakingStats } from "@/app/context/api/StakingStatsProvider";
 import { Delegation } from "@/app/types/delegations";
@@ -24,6 +21,7 @@ import {
   createStakingTx,
   signStakingTx,
 } from "@/utils/delegations/signStakingTx";
+import { getErrorMessage, getErrorTitle } from "@/utils/errors";
 import { getFeeRateFromMempool } from "@/utils/getFeeRateFromMempool";
 import {
   ParamsWithContext,
@@ -32,20 +30,21 @@ import {
 import { isStakingSignReady } from "@/utils/isStakingSignReady";
 import { toLocalStorageDelegation } from "@/utils/local_storage/toLocalStorageDelegation";
 import { WalletProvider } from "@/utils/wallet/wallet_provider";
+import wBtcIcon from "@public/icons/wbtc.svg";
 
-import { StakingAmount } from "./Form/StakingAmount";
-import { StakingFee } from "./Form/StakingFee";
-import { StakingTime } from "./Form/StakingTime";
-import { Message } from "./Form/States/Message";
-import { WalletNotConnected } from "./Form/States/WalletNotConnected";
-import stakingCapReached from "./Form/States/staking-cap-reached.svg";
-import stakingNotStarted from "./Form/States/staking-not-started.svg";
-import stakingUpgrading from "./Form/States/staking-upgrading.svg";
+import { StakingAmount } from "./Dialog/StakingAmount";
+import { StakingFee } from "./Dialog/StakingFee";
+import { StakingTime } from "./Dialog/StakingTime";
+import { Message } from "./Dialog/States/Message";
+import { WalletNotConnected } from "./Dialog/States/WalletNotConnected";
+import stakingCapReached from "./Dialog/States/staking-cap-reached.svg";
+import stakingNotStarted from "./Dialog/States/staking-not-started.svg";
+import stakingUpgrading from "./Dialog/States/staking-upgrading.svg";
 
 interface OverflowProperties {
   isHeightCap: boolean;
   overTheCapRange: boolean;
-  approchingCapRange: boolean;
+  approachingCapRange: boolean;
 }
 
 export interface StakingProps {
@@ -59,6 +58,8 @@ export interface StakingProps {
   address: string | undefined;
   publicKeyNoCoord: string;
   setDelegationsLocalStorage: Dispatch<SetStateAction<Delegation[]>>;
+  isOpen: boolean;
+  onCloseDialog: () => void;
 }
 
 export const Staking: React.FC<StakingProps> = ({
@@ -72,33 +73,33 @@ export const Staking: React.FC<StakingProps> = ({
   setDelegationsLocalStorage,
   selectedFinalityProvider,
   btcWalletBalanceSat,
+  isOpen,
+  onCloseDialog,
 }) => {
   // Staking form state
   const [stakingAmountSat, setStakingAmountSat] = useState(0);
-  const [stakingTimeBlocks, setStakingTimeBlocks] = useState(0);
+  const [stakingTimeBlocks, setStakingTimeBlocks] = useState(150);
   // Selected fee rate, comes from the user input
   const [selectedFeeRate, setSelectedFeeRate] = useState(0);
-  const [previewModalOpen, setPreviewModalOpen] = useState(false);
-  const [resetFormInputs] = useState(false);
-  const [feedbackModal, setFeedbackModal] = useState<{
-    type: "success" | "cancel" | null;
-    isOpen: boolean;
-  }>({ type: null, isOpen: false });
-  const [successFeedbackModalOpened, setSuccessFeedbackModalOpened] =
-    useLocalStorage<boolean>("bbn-staking-successFeedbackModalOpened", false);
-  const [cancelFeedbackModalOpened, setCancelFeedbackModalOpened] =
-    useLocalStorage<boolean>("bbn-staking-cancelFeedbackModalOpened ", false);
+  const [resetFormInputs, setResetFormInputs] = useState(0);
   const [paramWithCtx, setParamWithCtx] = useState<
     ParamsWithContext | undefined
   >();
   const [overflow, setOverflow] = useState<OverflowProperties>({
     isHeightCap: false,
     overTheCapRange: false,
-    approchingCapRange: false,
+    approachingCapRange: false,
   });
 
   const finalityProvider = selectedFinalityProvider;
-  const router = useRouter();
+  const handleOnClose = () => {
+    setStakingAmountSat(0);
+    setSelectedFeeRate(0);
+    setResetFormInputs(Number.MAX_SAFE_INTEGER);
+    setSigning(false);
+    onCloseDialog();
+  };
+  const { showDialog } = useDialog();
 
   // Mempool fee rates, comes from the network
   // Fetch fee rates, sat/vB
@@ -117,7 +118,7 @@ export const Staking: React.FC<StakingProps> = ({
     enabled: !!btcWallet?.getNetworkFees,
     refetchInterval: 60000, // 1 minute
     retry: (failureCount) => {
-      return !isErrorOpen && failureCount <= 3;
+      return failureCount <= 3;
     },
   });
 
@@ -137,11 +138,12 @@ export const Staking: React.FC<StakingProps> = ({
     enabled: !!(btcWallet?.getUtxos && address),
     refetchInterval: 60000 * 5, // 5 minutes
     retry: (failureCount) => {
-      return !isErrorOpen && failureCount <= 3;
+      return failureCount <= 3;
     },
   });
 
   const stakingStats = useStakingStats();
+  const [signing, setSigning] = useState(false);
 
   // load global params and calculate the current staking params
   const globalParams = useGlobalParams();
@@ -176,7 +178,7 @@ export const Staking: React.FC<StakingProps> = ({
           We also don't take the confirmation depth into account here as majority
           of the delegation will be overflow after the cap is reached, unless btc fork happens but it's unlikely
         */
-        approchingCapRange:
+        approachingCapRange:
           nextBlockHeight >=
           stakingCapHeight - OVERFLOW_HEIGHT_WARNING_THRESHOLD,
       });
@@ -185,7 +187,7 @@ export const Staking: React.FC<StakingProps> = ({
       setOverflow({
         isHeightCap: false,
         overTheCapRange: stakingCapSat <= activeTVLSat,
-        approchingCapRange:
+        approachingCapRange:
           stakingCapSat * OVERFLOW_TVL_WARNING_THRESHOLD < unconfirmedTVLSat,
       });
     }
@@ -201,7 +203,11 @@ export const Staking: React.FC<StakingProps> = ({
       firstActivationHeight &&
       btcHeight + 1 < firstActivationHeight);
 
-  const { isErrorOpen, showError } = useError();
+  useEffect(() => {
+    if (resetFormInputs === Number.MAX_SAFE_INTEGER) {
+      setResetFormInputs(0);
+    }
+  }, [resetFormInputs]);
 
   useEffect(() => {
     const handleError = ({
@@ -211,13 +217,11 @@ export const Staking: React.FC<StakingProps> = ({
       refetchFunction,
     }: ErrorHandlerParam) => {
       if (hasError && error) {
-        showError({
-          error: {
-            message: error.message,
-            errorState,
-            errorTime: new Date(),
-          },
-          retryAction: refetchFunction,
+        showDialog({
+          title: getErrorTitle(errorState),
+          message: getErrorMessage(errorState, error.message),
+          buttonTitle: "Retry",
+          onButtonClick: refetchFunction,
         });
       }
     };
@@ -241,7 +245,7 @@ export const Staking: React.FC<StakingProps> = ({
     hasAvailableUTXOsError,
     refetchMempoolFeeRates,
     refetchAvailableUTXOs,
-    showError,
+    showDialog,
   ]);
 
   const { minFeeRate, defaultFeeRate } = getFeeRateFromMempool(mempoolFeeRates);
@@ -251,6 +255,7 @@ export const Staking: React.FC<StakingProps> = ({
 
   const handleSign = async () => {
     try {
+      setSigning(true);
       // Initial validation
       if (!btcWallet) throw new Error("Wallet is not connected");
       if (!address) throw new Error("Address is not set");
@@ -278,18 +283,27 @@ export const Staking: React.FC<StakingProps> = ({
         availableUTXOs,
       );
       // UI
-      handleFeedbackModal("success");
-      handleLocalStorageDelegations(stakingTxHex, stakingTerm);
-      router.push("/stake/btc");
-    } catch (error: Error | any) {
-      showError({
-        error: {
-          message: error.message,
-          errorState: ErrorState.STAKING,
-          errorTime: new Date(),
+      showDialog({
+        title: "Success",
+        message:
+          "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
+        buttonTitle: "see my delegations",
+        onButtonClick: function (): void {
+          throw new Error("Function not implemented.");
         },
-        retryAction: handleSign,
       });
+      handleLocalStorageDelegations(stakingTxHex, stakingTerm);
+      setSigning(false);
+    } catch (error: Error | any) {
+      showDialog({
+        title: getErrorTitle(ErrorState.STAKING),
+        message: getErrorMessage(ErrorState.STAKING, error.message),
+        buttonTitle: "Retry",
+        onButtonClick: handleSign,
+      });
+    } finally {
+      handleOnClose();
+      setSigning(false);
     }
   };
 
@@ -344,13 +358,11 @@ export const Staking: React.FC<StakingProps> = ({
         return stakingFeeSat;
       } catch (error: Error | any) {
         // fees + staking amount can be more than the balance
-        showError({
-          error: {
-            message: error.message,
-            errorState: ErrorState.STAKING,
-            errorTime: new Date(),
-          },
-          retryAction: () => setSelectedFeeRate(0),
+        showDialog({
+          title: getErrorTitle(ErrorState.STAKING),
+          message: getErrorMessage(ErrorState.STAKING, error.message),
+          buttonTitle: "Retry",
+          onButtonClick: () => setSelectedFeeRate(0),
         });
         setSelectedFeeRate(0);
         return 0;
@@ -363,15 +375,15 @@ export const Staking: React.FC<StakingProps> = ({
     address,
     publicKeyNoCoord,
     stakingAmountSat,
-    stakingTimeBlocks,
     finalityProvider,
     paramWithCtx,
     mempoolFeeRates,
-    selectedFeeRate,
     availableUTXOs,
-    showError,
-    defaultFeeRate,
+    selectedFeeRate,
     minFeeRate,
+    defaultFeeRate,
+    stakingTimeBlocks,
+    showDialog,
   ]);
 
   const handleStakingAmountSatChange = (inputAmountSat: number) => {
@@ -380,24 +392,6 @@ export const Staking: React.FC<StakingProps> = ({
 
   const handleStakingTimeBlocksChange = (inputTimeBlocks: number) => {
     setStakingTimeBlocks(inputTimeBlocks);
-  };
-
-  // Show feedback modal only once for each type
-  const handleFeedbackModal = (type: "success" | "cancel") => {
-    if (!feedbackModal.isOpen && feedbackModal.type !== type) {
-      const isFeedbackModalOpened =
-        type === "success"
-          ? successFeedbackModalOpened
-          : cancelFeedbackModalOpened;
-      if (!isFeedbackModalOpened) {
-        setFeedbackModal({ type, isOpen: true });
-      }
-    }
-  };
-
-  const handlePreviewModalClose = (isOpen: boolean) => {
-    setPreviewModalOpen(isOpen);
-    handleFeedbackModal("cancel");
   };
 
   const showOverflowWarning = (overflow: OverflowProperties) => {
@@ -428,17 +422,8 @@ export const Staking: React.FC<StakingProps> = ({
     }
   };
 
-  const handleCloseFeedbackModal = () => {
-    if (feedbackModal.type === "success") {
-      setSuccessFeedbackModalOpened(true);
-    } else if (feedbackModal.type === "cancel") {
-      setCancelFeedbackModalOpened(true);
-    }
-    setFeedbackModal({ type: null, isOpen: false });
-  };
-
   const showApproachingCapWarning = () => {
-    if (!overflow.approchingCapRange) {
+    if (!overflow.approachingCapRange) {
       return;
     }
     if (overflow.isHeightCap) {
@@ -455,17 +440,20 @@ export const Staking: React.FC<StakingProps> = ({
     );
   };
 
-  const renderStakingForm = () => {
+  const renderDialogContent = () => {
     // States of the staking form:
     // 1. Wallet is not connected
     if (!isWalletConnected) {
-      return <WalletNotConnected onConnect={onConnect} />;
+      return (
+        <WalletNotConnected
+          onConnect={() => {
+            onConnect();
+            handleOnClose();
+          }}
+        />
+      );
     }
-    // 2. Wallet is connected but we are still loading the staking params
-    // else if (isLoading) {
-    // return <LoadingView />;
-    // }
-    // 3. Staking has not started yet
+    // 2. Staking has not started yet
     else if (isBlockHeightUnderActivation) {
       return (
         <Message
@@ -477,7 +465,7 @@ export const Staking: React.FC<StakingProps> = ({
         />
       );
     }
-    // 4. Staking params upgrading
+    // 3. Staking params upgrading
     else if (isUpgrading) {
       return (
         <Message
@@ -489,11 +477,11 @@ export const Staking: React.FC<StakingProps> = ({
         />
       );
     }
-    // 5. Staking cap reached
+    // 4. Staking cap reached
     else if (overflow.overTheCapRange) {
       return showOverflowWarning(overflow);
     }
-    // 6. Staking form
+    // 5. Staking form
     else if (stakingParams) {
       const {
         minStakingAmountSat,
@@ -501,7 +489,6 @@ export const Staking: React.FC<StakingProps> = ({
         minStakingTimeBlocks,
         maxStakingTimeBlocks,
         unbondingTime,
-        confirmationDepth,
       } = stakingParams;
 
       // Staking time is fixed
@@ -513,109 +500,79 @@ export const Staking: React.FC<StakingProps> = ({
         : stakingTimeBlocks;
 
       // Check if the staking transaction is ready to be signed
-      const { isReady: signReady, reason: signNotReadyReason } =
-        isStakingSignReady(
-          minStakingAmountSat,
-          maxStakingAmountSat,
-          minStakingTimeBlocks,
-          maxStakingTimeBlocks,
-          stakingAmountSat,
-          stakingTimeBlocksWithFixed,
-          !!finalityProvider,
-        );
+      const { isReady: signReady } = isStakingSignReady(
+        minStakingAmountSat,
+        maxStakingAmountSat,
+        minStakingTimeBlocks,
+        maxStakingTimeBlocks,
+        stakingAmountSat,
+        stakingTimeBlocksWithFixed,
+        !!finalityProvider,
+      );
 
       const previewReady =
         signReady && feeRate && availableUTXOs && stakingAmountSat;
 
       return (
-        <>
-          <Form.Root
-            onSubmit={(e: React.FormEvent) => {
-              e.preventDefault();
-            }}
-            className="flex flex-1 flex-col border-gray-800 border bg-gray-100 
-            min-w-[368px] md:min-w-[472px] md:py-[42px] py-[24px] md:px-[8px] px-[4px]"
-          >
-            <div className="flex flex-1 flex-col">
-              <Flex direction="column" className="w-full bg-gray-100 mb-5">
-                <h3 className="text-xs font-medium mb-2 pl-2">
-                  FINALITY PROVIDER
-                </h3>
-                <Form.Field
-                  name="finality-provider"
-                  className="w-full bg-gray-200 lg:py-3 px-1 lg:px-2"
-                >
-                  <Flex justify="between" align="center">
-                    <span>{finalityProvider?.description.moniker}</span>
-                    <Link
-                      href="#"
-                      onClick={() => {
-                        router.push("/stake/btc");
-                      }}
-                      className="text-black text-sm underline decoration-black"
-                    >
-                      Change
-                    </Link>
-                  </Flex>
-                </Form.Field>
-              </Flex>
-              <StakingTime
-                minStakingTimeBlocks={minStakingTimeBlocks}
-                maxStakingTimeBlocks={maxStakingTimeBlocks}
-                unbondingTimeBlocks={stakingParams.unbondingTime}
-                onStakingTimeBlocksChange={handleStakingTimeBlocksChange}
-                reset={resetFormInputs}
-              />
-              <StakingAmount
-                minStakingAmountSat={minStakingAmountSat}
-                maxStakingAmountSat={maxStakingAmountSat}
-                btcWalletBalanceSat={btcWalletBalanceSat}
-                onStakingAmountSatChange={handleStakingAmountSatChange}
-                reset={resetFormInputs}
-              />
-              <StakingFee
-                mempoolFeeRates={mempoolFeeRates}
-                stakingFeeSat={stakingFeeSat}
-                selectedFeeRate={selectedFeeRate}
-                onSelectedFeeRateChange={setSelectedFeeRate}
-                reset={resetFormInputs}
-              />
+        <div className="text-yieldi-brown">
+          <div className="flex items-center mx-2 bg-white p-3 border border-yieldi-gray-200">
+            <div className="mr-3">
+              <Image src={wBtcIcon} alt="WBTC" width={65} height={65} />
             </div>
-            {showApproachingCapWarning()}
-            <div
-              className="cursor-pointer text-xs flex justify-center"
-              data-tooltip-id="tooltip-staking-preview"
-              data-tooltip-content={signNotReadyReason}
-              data-tooltip-place="top"
+            <div>
+              <div className="text-xl font-medium">BTC</div>
+              <div className="text-xs font-light">Native Bitcoin</div>
+            </div>
+          </div>
+
+          <div className="mb-2 mx-2 p-3 border-x border-b border-yieldi-gray-200 bg-white">
+            <div className="text-sm mb-1 font-light">Delegate</div>
+            <div className="text-xl font-medium">
+              {finalityProvider?.description.moniker}
+            </div>
+          </div>
+
+          <StakingAmount
+            minStakingAmountSat={minStakingAmountSat}
+            maxStakingAmountSat={maxStakingAmountSat}
+            btcWalletBalanceSat={btcWalletBalanceSat}
+            onStakingAmountSatChange={handleStakingAmountSatChange}
+            reset={resetFormInputs}
+          />
+
+          <StakingTime
+            minStakingTimeBlocks={minStakingTimeBlocks}
+            maxStakingTimeBlocks={maxStakingTimeBlocks}
+            unbondingTimeBlocks={unbondingTime}
+            onStakingTimeBlocksChange={handleStakingTimeBlocksChange}
+            reset={resetFormInputs}
+          />
+
+          <StakingFee
+            mempoolFeeRates={mempoolFeeRates}
+            stakingFeeSat={stakingFeeSat}
+            selectedFeeRate={selectedFeeRate}
+            onSelectedFeeRateChange={setSelectedFeeRate}
+            reset={resetFormInputs}
+          />
+
+          <div className="w-full px-2 pb-3">
+            <button
+              className={twMerge(
+                "w-full py-4 px-2 font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer border border-yieldi-gray-200",
+                signing ? "bg-gray-300" : "bg-yieldi-green",
+              )}
+              onClick={() => {
+                handleSign();
+              }}
+              disabled={!previewReady || signing}
             >
-              <button
-                className="btn-primary btn mt-2 l:w-[340px] w-[260px] l:h-11 h-9 bg-blue-400 font-medium"
-                type="button"
-                disabled={!previewReady}
-                onClick={() => {
-                  setPreviewModalOpen(true);
-                }}
-              >
-                Stake
-              </button>
-              <Tooltip id="tooltip-staking-preview" />
-            </div>
-            {previewReady ? (
-              <PreviewModal
-                open={previewModalOpen}
-                onClose={handlePreviewModalClose}
-                onSign={handleSign}
-                finalityProvider={finalityProvider?.description.moniker}
-                stakingAmountSat={stakingAmountSat}
-                stakingTimeBlocks={stakingTimeBlocksWithFixed}
-                stakingFeeSat={stakingFeeSat}
-                confirmationDepth={confirmationDepth}
-                feeRate={feeRate}
-                unbondingTimeBlocks={unbondingTime}
-              />
-            ) : null}
-          </Form.Root>
-        </>
+              {signing ? "Signing Transaction" : "DELEGATE STAKE"}
+            </button>
+          </div>
+
+          {showApproachingCapWarning()}
+        </div>
       );
     } else {
       return (
@@ -631,46 +588,33 @@ export const Staking: React.FC<StakingProps> = ({
   };
 
   return (
-    <div className="card flex flex-col gap-2 bg-base-300 p-4 shadow-sm items-center">
-      <div className="flex flex-row px-4 py-2 sm:px-6 md:px-8 items-center w-[320px] md:w-[500px] mb-2">
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={() => {
-            router.push("/stake/btc");
-          }}
-        >
-          <svg
-            className="size-3 sm:size-4"
-            viewBox="0 0 15 15"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+    <>
+      <Dialog.Root
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleOnClose();
+          }
+        }}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+          <Dialog.Content
+            className="fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 
+            border-2 border-yieldi-gray-200 bg-yieldi-beige shadow-lg md:min-w-dialog size-full md:size-auto top-0 left-0"
           >
-            <path
-              d="M6.85355 3.14645C7.04882 3.34171 7.04882 3.65829 6.85355 3.85355L3.70711 7H12.5C12.7761 7 13 7.22386 13 7.5C13 7.77614 12.7761 8 12.5 8H3.70711L6.85355 11.1464C7.04882 11.3417 7.04882 11.6583 6.85355 11.8536C6.65829 12.0488 6.34171 12.0488 6.14645 11.8536L2.14645 7.85355C1.95118 7.65829 1.95118 7.34171 2.14645 7.14645L6.14645 3.14645C6.34171 2.95118 6.65829 2.95118 6.85355 3.14645Z"
-              fill="currentColor"
-              fillRule="evenodd"
-              clipRule="evenodd"
-            />
-          </svg>
-          <button className="btn btn-ghost btn-sm ml-1 sm:ml-2 text-xs sm:text-sm">
-            Back
-          </button>
-        </div>
-        <h3 className="font-bold text-sm sm:text-base md:text-lg absolute left-1/2 -translate-x-1/2">
-          Stake
-        </h3>
-      </div>
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="divider m-0 lg:divider-horizontal lg:m-0" />
-        <div className="flex flex-1 flex-col gap-4 lg:basis-2/5 xl:basis-1/3">
-          {renderStakingForm()}
-        </div>
-      </div>
-      <FeedbackModal
-        open={feedbackModal.isOpen}
-        onClose={handleCloseFeedbackModal}
-        type={feedbackModal.type}
-      />
-    </div>
+            <div className="flex justify-between items-center mb-4 border-b border-yieldi-gray-200">
+              <Dialog.Title className="text-2xl font-bold text-yieldi-brown p-2">
+                Deposit Stake
+              </Dialog.Title>
+              <Dialog.Close className="text-yieldi-brown border-l border-yieldi-gray-200 p-2">
+                <Cross2Icon width={36} height={36} />
+              </Dialog.Close>
+            </div>
+            {renderDialogContent()}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   );
 };

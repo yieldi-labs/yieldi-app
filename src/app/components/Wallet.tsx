@@ -58,7 +58,7 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
           <>
             <Button
               variant="soft"
-              className="cursor-pointer"
+              className="cursor-pointer w-[173px] h-[55px] rounded-none bg-yieldi-green text-black"
               onClick={() => setConnectModalOpen(true)}
             >
               Connect Wallet
