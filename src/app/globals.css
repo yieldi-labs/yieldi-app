@@ -5,28 +5,49 @@
 
 @font-face {
   font-family: "GT America Trial";
-  src: url("/fonts/GT-America-Standard-Light-Trial.otf") format("opentype");
+  src: url("/fonts/GT-America-Standard-Light-Trial.woff") format("woff");
   font-style: normal;
   font-weight: 300;
 }
 
 @font-face {
   font-family: "GT America Trial";
-  src: url("/fonts/GT-America-Standard-Regular-Trial.otf") format("opentype");
+  src: url("/fonts/GT-America-Standard-Regular-Trial.woff") format("woff");
   font-style: normal;
   font-weight: normal;
 }
 
 @font-face {
   font-family: "GT America Trial";
-  src: url("/fonts/GT-America-Standard-Medium-Trial.otf") format("opentype");
+  src: url("/fonts/GT-America-Standard-Medium-Trial.woff") format("woff");
   font-style: normal;
   font-weight: 500;
 }
 
 @font-face {
   font-family: "GT America Trial";
-  src: url("/fonts/GT-America-Standard-Bold-Trial.otf") format("opentype");
+  src: url("/fonts/GT-America-Standard-Bold-Trial.woff") format("woff");
+  font-style: normal;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "GT America Mono Trial";
+  src: url("/fonts/GT-America-Mono-Regular-Trial.woff") format("woff");
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "GT Americal Extended Trial";
+  src: url("/fonts/GT-America-Extended-Regular-Trial.woff") format("woff");
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "GT Americal Extended Trial";
+  src: url("/fonts/GT-America-Extended-Bold-Trial.woff") format("woff");
   font-style: normal;
   font-weight: bold;
 }

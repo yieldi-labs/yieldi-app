@@ -26,13 +26,13 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
   const [updateTimeout, setUpdateTimeout] = useState<NodeJS.Timeout | null>(
-    null,
+    null
   );
 
   const errorLabel = "Staking amount";
   const generalErrorMessage = "You should input staking amount";
 
-  const { coinName } = getNetworkConfig();
+  const { coinSymbol } = getNetworkConfig();
 
   useEffect(() => {
     if (reset) {
@@ -67,11 +67,11 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         },
         {
           valid: satoshis >= minStakingAmountSat,
-          message: `${errorLabel} must be at least ${satoshiToBtc(minStakingAmountSat)} ${coinName}.`,
+          message: `${errorLabel} must be at least ${satoshiToBtc(minStakingAmountSat)} ${coinSymbol}.`,
         },
         {
           valid: satoshis <= maxStakingAmountSat,
-          message: `${errorLabel} must be no more than ${satoshiToBtc(maxStakingAmountSat)} ${coinName}.`,
+          message: `${errorLabel} must be no more than ${satoshiToBtc(maxStakingAmountSat)} ${coinSymbol}.`,
         },
         {
           valid: satoshis <= btcWalletBalanceSat,
@@ -98,10 +98,10 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       maxStakingAmountSat,
       btcWalletBalanceSat,
       onStakingAmountSatChange,
-      coinName,
+      coinSymbol,
       errorLabel,
       generalErrorMessage,
-    ],
+    ]
   );
 
   const debouncedValidateAndSetAmount = useCallback(
@@ -114,7 +114,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       }, 500);
       setUpdateTimeout(timeout);
     },
-    [updateTimeout, validateAndSetAmount],
+    [updateTimeout, validateAndSetAmount]
   );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +138,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
 
     const maxAmount = Math.min(
       safeMaxStakingAmountSat,
-      safeBtcWalletBalanceSat,
+      safeBtcWalletBalanceSat
     );
     const maxAmountBtc = satoshiToBtc(maxAmount);
     const newValue = maxDecimals(maxAmountBtc, 8).toString();
@@ -151,7 +151,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       <div className="flex justify-between mb-3">
         <span className="text-sm">AMOUNT</span>
         <span className="text-sm font-light">
-          Balance: {satoshiToBtc(btcWalletBalanceSat)} BTC
+          Balance: {satoshiToBtc(btcWalletBalanceSat)} {coinSymbol}
         </span>
       </div>
       <div className="flex justify-between items-center">
@@ -168,9 +168,9 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
           onChange={handleChange}
           className={twMerge(
             "text-right text-3xl font-bold w-full bg-transparent focus:outline-none font-gt-america-mono",
-            error ? "text-red-500" : "",
+            error ? "text-red-500" : ""
           )}
-          placeholder={coinName}
+          placeholder="0.00"
           required
         />
       </div>
