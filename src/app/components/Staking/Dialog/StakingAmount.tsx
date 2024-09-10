@@ -26,7 +26,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
   const [updateTimeout, setUpdateTimeout] = useState<NodeJS.Timeout | null>(
-    null
+    null,
   );
 
   const errorLabel = "Staking amount";
@@ -101,7 +101,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       coinSymbol,
       errorLabel,
       generalErrorMessage,
-    ]
+    ],
   );
 
   const debouncedValidateAndSetAmount = useCallback(
@@ -114,7 +114,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       }, 500);
       setUpdateTimeout(timeout);
     },
-    [updateTimeout, validateAndSetAmount]
+    [updateTimeout, validateAndSetAmount],
   );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +138,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
 
     const maxAmount = Math.min(
       safeMaxStakingAmountSat,
-      safeBtcWalletBalanceSat
+      safeBtcWalletBalanceSat,
     );
     const maxAmountBtc = satoshiToBtc(maxAmount);
     const newValue = maxDecimals(maxAmountBtc, 8).toString();
@@ -168,7 +168,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
           onChange={handleChange}
           className={twMerge(
             "text-right text-3xl font-bold w-full bg-transparent focus:outline-none font-gt-america-mono",
-            error ? "text-red-500" : ""
+            error ? "text-red-500" : "",
           )}
           placeholder="0.00"
           required

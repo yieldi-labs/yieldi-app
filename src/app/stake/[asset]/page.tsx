@@ -106,7 +106,7 @@ const StakeBTCPage = () => {
         ([height, _network]) => {
           setBtcHeight(height);
           // setBtcWalletNetwork(toNetwork(network));
-        }
+        },
       );
     }
   }, [btcWallet]);
@@ -133,7 +133,7 @@ const StakeBTCPage = () => {
       const { areDelegationsDifferent, delegations: newDelegations } =
         await calculateDelegationsDiff(
           delegations.delegations,
-          delegationsLocalStorage
+          delegationsLocalStorage,
         );
       if (areDelegationsDifferent) {
         setDelegationsLocalStorage(newDelegations);
@@ -146,7 +146,7 @@ const StakeBTCPage = () => {
   // Finality providers key-value map { pk: moniker }
   const finalityProvidersKV = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {}
+    {},
   );
 
   let totalStakedSat = 0;
@@ -156,7 +156,7 @@ const StakeBTCPage = () => {
       .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
       .reduce(
         (accumulator: number, item) => accumulator + item?.stakingValueSat,
-        0
+        0,
       );
   }
 
@@ -302,7 +302,7 @@ const StakeBTCPage = () => {
                       key={provider.btcPk}
                       className="w-full h-[6px] border-none shadow-none"
                     ></Table.Row>
-                  )
+                  ),
               )}
             </Table.Body>
           </Table.Root>

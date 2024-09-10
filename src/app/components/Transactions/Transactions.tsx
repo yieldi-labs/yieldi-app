@@ -159,7 +159,7 @@ const DelegationRow: React.FC<{
             {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
           </div>
         </Table.Cell>
-        <Table.Cell className="text-[#332B29] text-lg font-normal">{`$0.00 PENDING`}</Table.Cell>
+        <Table.Cell className="text-yieldi-brown text-lg font-normal">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
           <span
             className={` flex justify-center items-center rounded-full ${state === "active" ? "bg-yieldi-green text-black" : "bg-yieldi-red text-white"}`}
@@ -290,7 +290,7 @@ const Transactions: React.FC<{
         delegation.stakingValueSat,
         delegation.stakingTx.txHex,
         delegation.stakingTx.timelock,
-        newState,
+        newState
       ),
       ...delegations,
     ]);
@@ -331,7 +331,7 @@ const Transactions: React.FC<{
           delegationsAPI,
           publicKeyNoCoord,
           btcWalletNetwork,
-          signPsbtTransaction(btcWallet),
+          signPsbtTransaction(btcWallet)
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
@@ -375,7 +375,7 @@ const Transactions: React.FC<{
           signPsbtTransaction(btcWallet),
           address,
           btcWallet.getNetworkFees,
-          btcWallet.pushTx,
+          btcWallet.pushTx
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
@@ -440,7 +440,7 @@ const Transactions: React.FC<{
               const intermediateDelegation =
                 intermediateDelegationsLocalStorage.find(
                   (item) =>
-                    item.stakingTxHashHex === delegation.stakingTxHashHex,
+                    item.stakingTxHashHex === delegation.stakingTxHashHex
                 );
               return (
                 <DelegationRow
@@ -473,7 +473,7 @@ const Transactions: React.FC<{
             finalityProvidersKV[delegation.finalityProviderPkHex];
           const intermediateDelegation =
             intermediateDelegationsLocalStorage.find(
-              (item) => item.stakingTxHashHex === delegation.stakingTxHashHex,
+              (item) => item.stakingTxHashHex === delegation.stakingTxHashHex
             );
           return (
             <DelegationRow
