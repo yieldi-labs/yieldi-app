@@ -49,7 +49,7 @@ const AssetDetailsSection: React.FC<{
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 md:divide-x divide-yieldi-gray-200">
-          <div className="p-4 flex flex-col justify-end items-start self-stretch border-r border-b md:border-b-0 md:border-r-0 border-yieldi-gray-200">
+          <div className="p-4 flex flex-col items-start self-stretch border-r border-b md:border-b-0 md:border-r-0 border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               TVL
             </p>
@@ -57,7 +57,7 @@ const AssetDetailsSection: React.FC<{
               {confirmedTvl} {asset?.assetSymbol}
             </p>
           </div>
-          <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r md:border-b-0 border-b border-yieldi-gray-200">
+          <div className="p-4 flex flex-col items-start self-stretch md:border-r md:border-b-0 border-b border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               CAP
             </p>
@@ -65,7 +65,7 @@ const AssetDetailsSection: React.FC<{
               {stakingCap} {asset?.assetSymbol}
             </p>
           </div>
-          <div className="p-4 flex flex-col justify-end items-start self-stretch border-r border-yieldi-gray-200">
+          <div className="p-4 flex flex-col items-start self-stretch border-r border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               STAKING WINDOW
             </p>
@@ -73,7 +73,7 @@ const AssetDetailsSection: React.FC<{
               {remainingBlocks > 0 ? `${remainingBlocks} blocks` : "0 blocks"}
             </p>
           </div>
-          <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r border-yieldi-gray-200">
+          <div className="p-4 flex flex-col items-start self-stretch md:border-r border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               PRICE
             </p>
