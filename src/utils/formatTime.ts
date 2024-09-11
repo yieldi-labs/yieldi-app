@@ -10,14 +10,17 @@ interface Duration {
   seconds?: number;
 }
 
-export const durationTillNow = (time: string, currentTime: number) => {
+export const durationTillNow = (
+  time: string,
+  currentTime: number,
+  format: (keyof Duration)[] = ["days", "hours", "minutes"],
+) => {
   if (!time || time.startsWith("000")) return "Ongoing";
 
   const duration = intervalToDuration({
     end: currentTime,
     start: new Date(time),
   });
-  const format: (keyof Duration)[] = ["days", "hours", "minutes"];
 
   if (!duration.days && !duration.hours && !duration.minutes) {
     format.push("seconds");

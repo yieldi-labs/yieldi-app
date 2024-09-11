@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/stake/btc",
+        destination: "/stake",
         permanent: false,
       },
     ];
