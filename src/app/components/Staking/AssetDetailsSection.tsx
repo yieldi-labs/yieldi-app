@@ -18,7 +18,7 @@ const AssetDetailsSection: React.FC<{
   return (
     <div className="w-full mb-6 bg-white">
       <div className="border border-yieldi-gray-200">
-        <div className="flex flex-wrap justify-between">
+        <div className="p-4 flex flex-wrap justify-between">
           {/* Asset symbol and name section */}
           <div className="p-4 flex items-center space-x-4">
             <div className="size-12 justify-center mr-4">
@@ -42,7 +42,7 @@ const AssetDetailsSection: React.FC<{
           {/* Stake button section */}
           <div className="p-4 flex items-center w-full md:w-auto">
             <button
-              className={`w-full cursor-pointer px-20 py-2 gap-2 rounded bg-yieldi-green text-yieldi-black text-base font-medium ${
+              className={` hidden md:block w-full cursor-pointer px-20 py-2 gap-2 rounded bg-yieldi-green text-yieldi-black text-base font-medium ${
                 !isConnected ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={!isConnected}

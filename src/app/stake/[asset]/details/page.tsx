@@ -139,7 +139,7 @@ const StakedAssetDetails: React.FC = () => {
         </>
       ) : null}
 
-      <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white p-4 shadow-lg">
+      <div className="md:hidden fixed bottom-0 inset-x-0 bg-white p-4 shadow-lg">
         <Button
           className={`w-full bg-yieldi-green text-black rounded-none ${
             !isConnected ? "opacity-50 cursor-not-allowed" : ""
