@@ -11,24 +11,32 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
   const pathName = usePathname();
 
   return (
-    <header className="fixed top-0 w-full z-40">
-      <nav className="flex items-center justify-between pl-8 text-white bg-yieldi-gray-light h-[55px]">
-        <div className="flex items-center pl-2 text-black">
+    <header className="fixed top-0 w-full z-40 border">
+      <nav className="flex items-center justify-between pl-8 text-white bg-yieldi-beige h-[55px]">
+        <div className="flex items-center pl-2 text-black border">
           <Brand />
-          <span
-            className={`hidden md:flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
-              pathName === "/dashboard" ? "border-b-2 border-black pb-2" : ""
-            }`}
-          >
-            <Link href="/dashboard">DASHBOARD</Link>
-          </span>
-          <span
-            className={`hidden md:flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
-              pathName.includes("/stake") ? "border-b-2 border-black pb-2" : ""
-            }`}
-          >
-            <Link href="/stake">STAKE</Link>
-          </span>
+          <div className="border">
+            <span
+              className={`hidden md:flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
+                pathName === "/dashboard"
+                  ? "border-b-2 border-black pb-2 font-bold"
+                  : ""
+              }`}
+            >
+              <Link href="/dashboard">DASHBOARD</Link>
+            </span>
+          </div>
+          <div className="border">
+            <span
+              className={`hidden md:flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
+                pathName.includes("/stake")
+                  ? "border-b-2 border-black pb-2 font-bold"
+                  : ""
+              }`}
+            >
+              <Link href="/stake">STAKE</Link>
+            </span>
+          </div>
         </div>
         <div className="flex justify-center">
           <Wallet setConnectModalOpen={setConnectModalOpen} />

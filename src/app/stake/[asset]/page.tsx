@@ -307,35 +307,6 @@ const StakeBTCPage = () => {
             </Table.Body>
           </Table.Root>
         </div>
-        <div>
-          {(delegations?.delegations || testDelegations) &&
-          finalityProvidersKV &&
-          btcWallet &&
-          paramWithContext?.nextBlockParams?.currentVersion &&
-          btcWalletNetwork ? (
-            <Delegations
-              finalityProvidersKV={finalityProvidersKV}
-              delegationsAPI={
-                inTestMode ? testDelegations : (delegations?.delegations ?? [])
-              }
-              delegationsLocalStorage={delegationsLocalStorage}
-              publicKeyNoCoord={publicKeyNoCoord}
-              address={address}
-              globalParamsVersion={
-                paramWithContext.nextBlockParams.currentVersion
-              }
-              btcWalletNetwork={btcWalletNetwork}
-              signPsbtTx={signPsbtTransaction(btcWallet)}
-              pushTx={btcWallet.pushTx}
-              queryMeta={{
-                next: fetchNextDelegationsPage,
-                hasMore: hasNextDelegationsPage,
-                isFetchingMore: isFetchingNextDelegationsPage,
-              }}
-              getNetworkFees={btcWallet.getNetworkFees}
-            />
-          ) : null}
-        </div>
       </div>
       <Staking {...stakingProps} />
     </>

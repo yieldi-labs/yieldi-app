@@ -18,9 +18,10 @@ const AssetDetailsSection: React.FC<{
   return (
     <div className="w-full mb-6 bg-white">
       <div className="border border-yieldi-gray-200">
-        <div className="flex justify-between p-4 border-b border-yieldi-gray-200">
-          <div className="flex items-center">
-            <div className="size-12 flex items-center justify-center mr-4">
+        <div className="flex flex-wrap justify-between">
+          {/* Asset symbol and name section */}
+          <div className="p-4 flex items-center space-x-4">
+            <div className="size-12 justify-center mr-4">
               <Image
                 src={`/${asset?.assetSymbol.toLowerCase()}.svg`}
                 alt={`${asset?.assetSymbol} Logo`}
@@ -28,8 +29,8 @@ const AssetDetailsSection: React.FC<{
                 height={65}
               />
             </div>
-            <div className="flex items-center">
-              <h2 className="text-yieldi-brown text-4xl font-medium leading-normal mr-4">
+            <div className="flex items-center space-x-2">
+              <h2 className="text-yieldi-brown text-4xl font-medium leading-normal">
                 {asset?.assetSymbol.toUpperCase()}
               </h2>
               <p className="text-yieldi-brown text-xl font-light leading-normal">
@@ -37,19 +38,23 @@ const AssetDetailsSection: React.FC<{
               </p>
             </div>
           </div>
-          <button
-            className={`hidden sm:block cursor-pointer px-24 py-2 m-8 
-            gap-2 shrink-0 rounded bg-yieldi-green text-yieldi-black text-base font-medium ${
-              !isConnected ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={!isConnected}
-            onClick={onStakeClick}
-          >
-            STAKE
-          </button>
+
+          {/* Stake button section */}
+          <div className="p-4 flex items-center w-full md:w-auto">
+            <button
+              className={`w-full cursor-pointer px-20 py-2 gap-2 rounded bg-yieldi-green text-yieldi-black text-base font-medium ${
+                !isConnected ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={!isConnected}
+              onClick={onStakeClick}
+            >
+              STAKE
+            </button>
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 md:divide-x divide-yieldi-gray-200">
-          <div className="p-4 flex flex-col items-start self-stretch border-r border-b md:border-b-0 md:border-r-0 border-yieldi-gray-200">
+        <div className="flex flex-wrap border-t border-yieldi-gray-200">
+          {/* TVL Section */}
+          <div className="p-4 flex-1 border-r border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               TVL
             </p>
@@ -57,7 +62,9 @@ const AssetDetailsSection: React.FC<{
               {confirmedTvl} {asset?.assetSymbol}
             </p>
           </div>
-          <div className="p-4 flex flex-col items-start self-stretch md:border-r md:border-b-0 border-b border-yieldi-gray-200">
+
+          {/* CAP Section */}
+          <div className="p-4 flex-1 border-r border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               CAP
             </p>
@@ -65,7 +72,9 @@ const AssetDetailsSection: React.FC<{
               {stakingCap} {asset?.assetSymbol}
             </p>
           </div>
-          <div className="p-4 flex flex-col items-start self-stretch border-r border-yieldi-gray-200">
+
+          {/* Staking Window Section */}
+          <div className="p-4 flex-1 border-r border-yieldi-gray-200">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               STAKING WINDOW
             </p>
@@ -73,7 +82,9 @@ const AssetDetailsSection: React.FC<{
               {remainingBlocks > 0 ? `${remainingBlocks} blocks` : "0 blocks"}
             </p>
           </div>
-          <div className="p-4 flex flex-col items-start self-stretch md:border-r border-yieldi-gray-200">
+
+          {/* Price Section */}
+          <div className="p-4 flex-1">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               PRICE
             </p>

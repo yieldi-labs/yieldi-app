@@ -129,9 +129,9 @@ const DelegationRow: React.FC<{
     return (
       <Table.Row
         key={stakingTxHashHex}
-        className="mb-2 items-start gap-4 border shadow-sm p-4"
+        className="mb-2 items-start gap-4 border shadow-sm hover:bg-gray-50"
       >
-        <Table.Cell>
+        <Table.Cell className="p-4">
           <p className="text-yieldi-brown text-xl font-medium leading-normal">
             {durationTillNow(startTimestamp, currentTime, ["days"])}
           </p>
@@ -139,7 +139,7 @@ const DelegationRow: React.FC<{
             {startTimestamp}
           </p>
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell className="p-4">
           <div className="text-yieldi-brown text-xl font-medium leading-normal">
             {finalityProviderMoniker}{" "}
           </div>
@@ -152,14 +152,14 @@ const DelegationRow: React.FC<{
             {trim(stakingTxHashHex)}
           </a>
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell className="p-4">
           <div className="text-yieldi-brown text-m font-medium leading-normal">
             {`$${maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4)}`}
             <br />
             {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
           </div>
         </Table.Cell>
-        <Table.Cell className="text-yieldi-brown text-lg font-normal">{`$0.00 PENDING`}</Table.Cell>
+        <Table.Cell className="text-yieldi-brown text-lg font-normal p-4">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
           <span
             className={` flex justify-center items-center rounded-full ${state === "active" ? "bg-yieldi-green text-black" : "bg-yieldi-red text-white"}`}
@@ -413,27 +413,27 @@ const Transactions: React.FC<{
         <Table.Root>
           <Table.Header className="[--table-row-box-shadow:none]">
             <Table.Row className="bg-yieldi-beige">
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
+              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 OPENED ON
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
+              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 PROVIDER
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
+              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 AMOUNT
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
+              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 WITHDRAWAL BALANCE
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
+              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 STATUS
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
+              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 ACTIONS
               </Table.ColumnHeaderCell>
             </Table.Row>
           </Table.Header>
-          <Table.Body className="space-y-1.5 bg-white border-b hover:bg-gray-50 cursor-pointer">
+          <Table.Body className="space-y-1.5 bg-white border-b">
             {delegations?.delegations?.map((delegation: any) => {
               const finalityProviderMoniker =
                 finalityProvidersKV[delegation.finalityProviderPkHex];
