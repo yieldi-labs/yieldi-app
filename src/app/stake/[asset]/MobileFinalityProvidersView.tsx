@@ -14,7 +14,7 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
 }) => (
   <div className="mb-4 bg-white border-yieldi-gray-200 border-2">
     <div>
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-5 text-left">
         <Card variant="ghost" className="col-span-3 rounded-none p-6">
           <h3 className="text-yieldi-brown text-xl font-medium mb-1 truncate">
             {provider.description.moniker || "Unknown"}
@@ -23,7 +23,7 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
             {provider.btcPk.slice(0, 5)}...{provider.btcPk.slice(-5)}
           </span>
         </Card>
-        <div className="text-right rounded-none border-yieldi-gray-200 border-l-2 p-4 col-span-2">
+        <div className="rounded-none border-yieldi-gray-200 border-l-2 p-4 col-span-2">
           <p className="text-yieldi-brown-light text-xs uppercase">My Stake</p>
           <p className="text-yieldi-brown text-lg font-medium">0.00 BTC</p>
         </div>
@@ -37,11 +37,11 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
             {provider.totalDelegations} BTC
           </p>
         </Card>
-        <div className="text-right rounded-none border-l-2 border-yieldi-gray-200 p-4 col-span-2">
+        <div className="rounded-none border-l-2 border-yieldi-gray-200 p-4 col-span-2">
           <p className="text-yieldi-brown-light text-xs uppercase">
             Commission
           </p>
-          <p className="text-yieldi-brown text-lg font-medium">
+          <p className=" text-yieldi-brown text-lg font-medium">
             {provider.commission
               ? `${(Number(provider.commission) * 100).toFixed(0)}%`
               : "-"}
