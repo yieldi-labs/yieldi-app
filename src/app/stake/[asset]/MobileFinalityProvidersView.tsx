@@ -1,20 +1,27 @@
 import { Card } from "@radix-ui/themes";
-import React from 'react';
+import React from "react";
 
-import { FinalityProvider } from '@/app/types/finalityProviders';
+import { FinalityProvider } from "@/app/types/finalityProviders";
 
 interface MobileFinalityProviderCardProps {
   provider: FinalityProvider;
   handleSelectProvider: (provider: FinalityProvider) => void;
 }
 
-const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({ provider, handleSelectProvider }) => (
+const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
+  provider,
+  handleSelectProvider,
+}) => (
   <div className="mb-4 bg-white border-yieldi-gray-200 border-2">
     <div>
       <div className="grid grid-cols-5">
         <Card variant="ghost" className="col-span-3 rounded-none p-6">
-          <h3 className="text-yieldi-brown text-xl font-medium mb-1 truncate">{provider.description.moniker || "Unknown"}</h3>
-          <span className="text-yieldi-brown-light text-xs font-mono">{provider.btcPk.slice(0, 5)}...{provider.btcPk.slice(-5)}</span>
+          <h3 className="text-yieldi-brown text-xl font-medium mb-1 truncate">
+            {provider.description.moniker || "Unknown"}
+          </h3>
+          <span className="text-yieldi-brown-light text-xs font-mono">
+            {provider.btcPk.slice(0, 5)}...{provider.btcPk.slice(-5)}
+          </span>
         </Card>
         <div className="text-right rounded-none border-yieldi-gray-200 border-l-2 p-4 col-span-2">
           <p className="text-yieldi-brown-light text-xs uppercase">My Stake</p>
@@ -23,13 +30,21 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
       </div>
       <div className="grid grid-cols-5 mb-4 border-yieldi-gray-200 border-y-2">
         <Card variant="ghost" className="col-span-3 rounded-none p-6">
-          <p className="text-yieldi-brown-light text-xs uppercase">Total Delegation</p>
-          <p className="text-yieldi-brown text-lg font-medium">{provider.totalDelegations} BTC</p>
+          <p className="text-yieldi-brown-light text-xs uppercase">
+            Total Delegation
+          </p>
+          <p className="text-yieldi-brown text-lg font-medium">
+            {provider.totalDelegations} BTC
+          </p>
         </Card>
         <div className="text-right rounded-none border-l-2 border-yieldi-gray-200 p-4 col-span-2">
-          <p className="text-yieldi-brown-light text-xs uppercase">Commission</p>
+          <p className="text-yieldi-brown-light text-xs uppercase">
+            Commission
+          </p>
           <p className="text-yieldi-brown text-lg font-medium">
-            {provider.commission ? `${(Number(provider.commission) * 100).toFixed(0)}%` : "-"}
+            {provider.commission
+              ? `${(Number(provider.commission) * 100).toFixed(0)}%`
+              : "-"}
           </p>
         </div>
       </div>
@@ -38,7 +53,8 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
       <button
         onClick={() => handleSelectProvider(provider)}
         className="flex w-full rounded-[4px] p-[10px_21px] justify-center items-center 
-          gap-[10px] flex-[1_0_0] bg-[#332B29] text-white text-sm font-medium my-4">
+          gap-[10px] flex-[1_0_0] bg-[#332B29] text-white text-sm font-medium my-4"
+      >
         Select Provider
       </button>
     </div>
@@ -50,12 +66,14 @@ interface MobileFinalityProvidersViewProps {
   handleSelectProvider: (provider: FinalityProvider) => void;
 }
 
-const MobileFinalityProvidersView: React.FC<MobileFinalityProvidersViewProps> = ({ finalityProviders, handleSelectProvider }) => (
+const MobileFinalityProvidersView: React.FC<
+  MobileFinalityProvidersViewProps
+> = ({ finalityProviders, handleSelectProvider }) => (
   <div className="md:hidden">
     {finalityProviders?.map((provider) => (
-      <MobileFinalityProviderCard 
-        key={provider.btcPk} 
-        provider={provider} 
+      <MobileFinalityProviderCard
+        key={provider.btcPk}
+        provider={provider}
         handleSelectProvider={handleSelectProvider}
       />
     ))}

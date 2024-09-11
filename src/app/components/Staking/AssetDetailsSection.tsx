@@ -56,8 +56,9 @@ const AssetDetailsSection: React.FC<{
         <MetricsGrid
           confirmedTvl={confirmedTvl}
           stakingCap={stakingCap}
-          remainingBlocks={remainingBlocks} 
-          assetSymbol={asset?.assetSymbol} />
+          remainingBlocks={remainingBlocks}
+          assetSymbol={asset?.assetSymbol}
+        />
       </div>
     </div>
   );

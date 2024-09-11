@@ -112,7 +112,12 @@ const StakeBTCPage = () => {
                 </p>
               </div>
             </div>
-            <MetricsGrid confirmedTvl={'0'} stakingCap={0} remainingBlocks={0} assetSymbol={""} />
+            <MetricsGrid
+              confirmedTvl={"0"}
+              stakingCap={0}
+              remainingBlocks={0}
+              assetSymbol={""}
+            />
           </div>
         </div>
 
@@ -200,11 +205,10 @@ const StakeBTCPage = () => {
           </Table.Root>
 
           {/* Mobile Finality Providers */}
-          <MobileFinalityProvidersView 
-            finalityProviders={finalityProviders} 
+          <MobileFinalityProvidersView
+            finalityProviders={finalityProviders}
             handleSelectProvider={handleSelectProvider}
           />
-
         </div>
       </div>
       <Staking {...stakingProps} />

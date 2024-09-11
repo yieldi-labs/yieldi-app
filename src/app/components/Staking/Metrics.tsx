@@ -19,7 +19,7 @@ const MetricsGrid: React.FC<{
           CAP
         </p>
         <p className="text-yieldi-brown text-xl font-medium leading-normal">
-          {stakingCap} {assetSymbol} 
+          {stakingCap} {assetSymbol}
         </p>
       </div>
       <div className="p-4 flex flex-col justify-end items-start self-stretch border-r-2 border-yieldi-gray-200">
