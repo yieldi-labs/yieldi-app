@@ -55,9 +55,9 @@ const config: Config = {
       },
     },
     fontFamily: {
-      "gt-america": ["GT America Trial"],
-      "gt-america-mono": ["GT America Mono Trial"],
-      "gt-america-ext": ["GT America Extended Trial"],
+      "gt-america": ["GT-America"],
+      "gt-america-mono": ["GT-America-Mono"],
+      "gt-america-ext": ["GT-America-Extended"],
     },
   },
   plugins: [],

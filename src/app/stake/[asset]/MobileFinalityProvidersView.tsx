@@ -53,7 +53,7 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
       <button
         onClick={() => handleSelectProvider(provider)}
         className="flex w-full rounded-[4px] p-[10px_21px] justify-center items-center 
-          gap-[10px] flex-[1_0_0] bg-[#332B29] text-white text-sm font-medium my-4"
+          gap-[10px] flex-[1_0_0] bg-yieldi-brown text-white text-sm font-medium my-4 uppercase"
       >
         Select Provider
       </button>
