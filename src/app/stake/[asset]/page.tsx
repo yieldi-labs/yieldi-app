@@ -1,16 +1,11 @@
 "use client";
 
 import { Table } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
-import { getGlobalParams } from "@/app/api/getGlobalParams";
-import { getDelegations_testData } from "@/app/api/testData/getDelegations_testData";
 import BackButton from "@/app/components/BackButton";
-import { Delegations } from "@/app/components/Delegations/Delegations";
 import { Staking, StakingProps } from "@/app/components/Staking/Staking";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
@@ -19,10 +14,7 @@ import { useGetDelegations } from "@/app/hooks/useGetDelegations";
 import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
 import { satoshiToBtc } from "@/utils/btcConversions";
-import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
-import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
-import { signPsbtTransaction } from "@/utils/psbt";
 import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
 
@@ -45,35 +37,14 @@ const StakeBTCPage = () => {
     setConnectModalOpen,
   } = useWallet();
 
-  const { data: paramWithContext } = useQuery({
-    queryKey: ["global params"],
-    queryFn: async () => {
-      const [height, versions] = await Promise.all([
-        btcWallet!.getBTCTipHeight(),
-        getGlobalParams(),
-      ]);
-      return {
-        // The staking parameters are retrieved based on the current height + 1
-        // so this verification should take this into account.
-        currentHeight: height,
-        nextBlockParams: getCurrentGlobalParamsVersion(height + 1, versions),
-      };
-    },
-    refetchInterval: 60000, // 1 minute
-    // Should be enabled only when the wallet is connected
-    enabled: !!btcWallet,
-    retry: (failureCount: number) => {
-      return failureCount <= 3;
-    },
-  });
-
   const { finalityProviders } = useFinalityProviders();
   const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
   const delegationsLocalStorageKey =
     getDelegationsLocalStorageKey(publicKeyNoCoord);
-  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<
-    Delegation[]
-  >(delegationsLocalStorageKey, []);
+  const [_, setDelegationsLocalStorage] = useLocalStorage<Delegation[]>(
+    delegationsLocalStorageKey,
+    [],
+  );
   const [selectedFinalityProvider, setSelectedFinalityProvider] = useState<
     FinalityProvider | undefined
   >(undefined);
@@ -111,43 +82,7 @@ const StakeBTCPage = () => {
     }
   }, [btcWallet]);
 
-  const {
-    delegations,
-    fetchNextDelegationsPage,
-    hasNextDelegationsPage,
-    isFetchingNextDelegationsPage,
-  } = useGetDelegations(address, publicKeyNoCoord);
-
-  const inTestMode = useSearchParams().get("mockData") === "true";
-  let testDelegations: Delegation[] = [];
-  if (inTestMode) {
-    testDelegations = getDelegations_testData.delegations;
-  }
-
-  useEffect(() => {
-    if (!delegations?.delegations) {
-      return;
-    }
-
-    const updateDelegationsLocalStorage = async () => {
-      const { areDelegationsDifferent, delegations: newDelegations } =
-        await calculateDelegationsDiff(
-          delegations.delegations,
-          delegationsLocalStorage,
-        );
-      if (areDelegationsDifferent) {
-        setDelegationsLocalStorage(newDelegations);
-      }
-    };
-
-    updateDelegationsLocalStorage();
-  }, [delegations, setDelegationsLocalStorage, delegationsLocalStorage]);
-
-  // Finality providers key-value map { pk: moniker }
-  const finalityProvidersKV = finalityProviders?.reduce(
-    (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {},
-  );
+  const { delegations } = useGetDelegations(address, publicKeyNoCoord);
 
   let totalStakedSat = 0;
 
