@@ -43,15 +43,15 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
             </DropdownMenu.Content>
           </>
         ) : (
-          <>
+          <div className="border border-yieldi-gray-200">
             <Button
               variant="soft"
-              className="cursor-pointer w-[173px] h-[55px] rounded-none bg-yieldi-green text-black"
+              className="cursor-pointer w-[166px] h-[55px] rounded-none bg-yieldi-green text-black"
               onClick={() => setConnectModalOpen(true)}
             >
               Connect Wallet
             </Button>
-          </>
+          </div>
         )}
       </DropdownMenu.Root>
     </>
