@@ -52,13 +52,6 @@
   font-weight: bold;
 }
 
-@font-face {
-  font-family: "GT America Mono Trial";
-  src: url("/fonts/GT-America-Mono-Regular-Trial.otf") format("opentype");
-  font-style: normal;
-  font-weight: normal;
-}
-
 body {
   font-family: "GT America Trial", sans-serif;
   background-color: #f5f1eb;

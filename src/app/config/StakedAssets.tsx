@@ -1,3 +1,5 @@
+// @TODO: Remove this file and replace with API/env file to get the staked assets. This is currently mock data
+
 import { StakeAsset } from "../types/stakeAsset";
 
 export const assets: StakeAsset[] = [
