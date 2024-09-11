@@ -563,7 +563,7 @@ export const Staking: React.FC<StakingProps> = ({
           <div className="w-full px-2 pb-3">
             <button
               className={twMerge(
-                "w-full py-4 px-2 font-['GT_America_Mono_Trial'] text-sm font-medium cursor-pointer border border-yieldi-gray-200",
+                "w-full py-4 px-2 font-gt-america-mono text-sm font-medium cursor-pointer border border-yieldi-gray-200",
                 signing ? "bg-gray-300" : "bg-yieldi-green",
               )}
               onClick={() => {
@@ -608,7 +608,7 @@ export const Staking: React.FC<StakingProps> = ({
             border-2 border-yieldi-gray-200 bg-yieldi-beige shadow-lg md:min-w-dialog size-full md:size-auto top-0 left-0"
           >
             <div className="flex justify-between items-center mb-4 border-b border-yieldi-gray-200">
-              <Dialog.Title className="text-2xl font-bold text-yieldi-brown p-2">
+              <Dialog.Title className="text-2xl font-bold text-yieldi-brown p-2 font-gt-america-ext">
                 Deposit Stake
               </Dialog.Title>
               <Dialog.Close className="text-yieldi-brown border-x border-yieldi-gray-200 p-2">

@@ -90,7 +90,7 @@ const StakeBTCPage = () => {
           <BackButton text="STAKE DETAILS" />
         </div>
         <div className="flex items-baseline mb-4">
-          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 font-gt-america">
+          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 font-gt-america-ext">
             Choose Finality Provider
           </h1>
           <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3">
@@ -157,7 +157,7 @@ const StakeBTCPage = () => {
                             ? provider.description.moniker
                             : "Unknown"}
                         </div>
-                        <div className="text-yieldi-brown-light font-['GT_America_Mono_Trial'] text-sm font-normal">
+                        <div className="text-yieldi-brown-light font-gt-america-mono text-sm font-normal">
                           {truncateMiddle(provider.btcPk, 5)}
                         </div>
                       </Table.Cell>
