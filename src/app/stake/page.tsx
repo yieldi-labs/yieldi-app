@@ -79,7 +79,7 @@ const StakePage: React.FC = () => {
                 <Table.Cell className="w-1/5 p-2 hidden lg:block">
                   {asset.remainingBalance}
                 </Table.Cell>
-                <Table.Cell className="flex w-1/4 p-2 flex gap-2">
+                <Table.Cell className="flex w-1/4 p-2 gap-2">
                   <button className="bg-yieldi-green text-black  ">
                     <Image
                       src="/download.svg"

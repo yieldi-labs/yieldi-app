@@ -1,29 +1,42 @@
-import { Card } from "@radix-ui/themes";
-
 const MetricsGrid: React.FC<{
   confirmedTvl: string;
   stakingCap: number;
   remainingBlocks: number;
-}> = ({ confirmedTvl, stakingCap, remainingBlocks }) => {
+  assetSymbol: string;
+}> = ({ confirmedTvl, stakingCap, remainingBlocks, assetSymbol }) => {
   return (
-    <div className="p-2 mt-6">
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 text-left">
-        <Card variant="ghost" className="border rounded-none">
-          <p className="">TVL</p>
-          <p className="text-lg font-semibold">{confirmedTvl} BTC</p>
-        </Card>
-        <Card variant="ghost" className="border rounded-none">
-          <p>Cap</p>
-          <p className="text-lg font-semibold">{stakingCap} BTC</p>
-        </Card>
-        <Card variant="ghost" className="border rounded-none">
-          <p>Staking Window</p>
-          <p className="text-lg font-semibold">{remainingBlocks} blocks</p>
-        </Card>
-        <Card variant="ghost" className="border rounded-none">
-          <p>Price</p>
-          <p className="text-lg font-semibold">$60,000</p>
-        </Card>
+    <div className="grid grid-cols-2 md:grid-cols-4 md:divide-x-2 divide-yieldi-gray-200">
+      <div className="p-4 flex flex-col justify-end items-start self-stretch border-r-2 border-b-2 md:border-b-0 md:border-r-0 border-yieldi-gray-200">
+        <p className="text-yieldi-brown text-xs font-light leading-normal">
+          TVL
+        </p>
+        <p className="text-yieldi-brown text-xl font-medium leading-normal">
+          {confirmedTvl} {assetSymbol}
+        </p>
+      </div>
+      <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r-2 md:border-b-0 border-b-2 border-yieldi-gray-200">
+        <p className="text-yieldi-brown text-xs font-light leading-normal">
+          CAP
+        </p>
+        <p className="text-yieldi-brown text-xl font-medium leading-normal">
+          {stakingCap} {assetSymbol}
+        </p>
+      </div>
+      <div className="p-4 flex flex-col justify-end items-start self-stretch border-r-2 border-yieldi-gray-200">
+        <p className="text-yieldi-brown text-xs font-light leading-normal">
+          STAKING WINDOW
+        </p>
+        <p className="text-yieldi-brown text-xl font-medium leading-normal">
+          {remainingBlocks} blocks
+        </p>
+      </div>
+      <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r-2 border-yieldi-gray-200">
+        <p className="text-yieldi-brown text-xs font-light leading-normal">
+          PRICE
+        </p>
+        <p className="text-yieldi-brown text-xl font-medium leading-normal">
+          $60,000
+        </p>
       </div>
     </div>
   );

@@ -6,17 +6,18 @@ import { Suspense, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import BackButton from "@/app/components/BackButton";
+import MetricsGrid from "@/app/components/Staking/Metrics";
 import { Staking, StakingProps } from "@/app/components/Staking/Staking";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
 import { useWallet } from "@/app/context/WalletContext";
-import { useGetDelegations } from "@/app/hooks/useGetDelegations";
-import { Delegation, DelegationState } from "@/app/types/delegations";
+import { Delegation } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
-import { satoshiToBtc } from "@/utils/btcConversions";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
+
+import MobileFinalityProvidersView from "./MobileFinalityProvidersView";
 
 const StakeBTCPage = () => {
   const { setSelectedDelegation } = useStake();
@@ -82,19 +83,6 @@ const StakeBTCPage = () => {
     }
   }, [btcWallet]);
 
-  const { delegations } = useGetDelegations(address, publicKeyNoCoord);
-
-  let totalStakedSat = 0;
-
-  if (delegations) {
-    totalStakedSat = delegations.delegations
-      .filter((delegation) => delegation?.state === DelegationState.ACTIVE)
-      .reduce(
-        (accumulator: number, item) => accumulator + item?.stakingValueSat,
-        0,
-      );
-  }
-
   return (
     <>
       <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
@@ -102,16 +90,16 @@ const StakeBTCPage = () => {
           <BackButton text="STAKE DETAILS" />
         </div>
         <div className="flex items-baseline mb-4">
-          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 font-gt-america">
+          <h1 className="text-yieldi-brown text-2xl font-bold mr-4 font-gt-america-ext">
             Choose Finality Provider
           </h1>
-          <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3">
+          <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3 hidden md:block">
             Select to delegate stake
           </p>
         </div>
         <div className="w-full mb-6 bg-white">
-          <div className="border border-yieldi-gray-200">
-            <div className="flex items-center p-4 border-b border-yieldi-gray-200">
+          <div className="border-2 border-yieldi-gray-200">
+            <div className="flex items-center p-4 border-b-2 border-yieldi-gray-200">
               <div className="size-12 flex items-center justify-center mr-4">
                 <Image src={wBtcIcon} alt="WBTC" width={65} height={65} />
               </div>
@@ -124,44 +112,18 @@ const StakeBTCPage = () => {
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 md:divide-x divide-yieldi-gray-200">
-              <div className="p-4 flex flex-col justify-end items-start self-stretch border-r border-b md:border-b-0 md:border-r-0 border-yieldi-gray-200">
-                <p className="text-yieldi-brown text-xs font-light leading-normal">
-                  TVL
-                </p>
-                <p className="text-yieldi-brown text-xl font-medium leading-normal">
-                  {satoshiToBtc(totalStakedSat)} BTC
-                </p>
-              </div>
-              <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r md:border-b-0 border-b border-yieldi-gray-200">
-                <p className="text-yieldi-brown text-xs font-light leading-normal">
-                  CAP
-                </p>
-                <p className="text-yieldi-brown text-xl font-medium leading-normal">
-                  1.25K BTC
-                </p>
-              </div>
-              <div className="p-4 flex flex-col justify-end items-start self-stretch border-r border-yieldi-gray-200">
-                <p className="text-yieldi-brown text-xs font-light leading-normal">
-                  STAKING WINDOW
-                </p>
-                <p className="text-yieldi-brown text-xl font-medium leading-normal">
-                  239 blocks
-                </p>
-              </div>
-              <div className="p-4 flex flex-col justify-end items-start self-stretch md:border-r border-yieldi-gray-200">
-                <p className="text-yieldi-brown text-xs font-light leading-normal">
-                  PRICE
-                </p>
-                <p className="text-yieldi-brown text-xl font-medium leading-normal">
-                  $60,000
-                </p>
-              </div>
-            </div>
+            <MetricsGrid
+              confirmedTvl={"0"}
+              stakingCap={0}
+              remainingBlocks={0}
+              assetSymbol={""}
+            />
           </div>
         </div>
+
+        {/* Desktop Finality Providers Table */}
         <div className="pb-12">
-          <Table.Root>
+          <Table.Root className="hidden md:block">
             <Table.Header className="[--table-row-box-shadow:none]">
               <Table.Row>
                 <Table.ColumnHeaderCell className="px-6 py-3 uppercase tracking-wider flex self-stretch text-yieldi-brown-light text-xs font-light">
@@ -195,7 +157,7 @@ const StakeBTCPage = () => {
                             ? provider.description.moniker
                             : "Unknown"}
                         </div>
-                        <div className="text-yieldi-brown-light font-['GT_America_Mono_Trial'] text-sm font-normal">
+                        <div className="text-yieldi-brown-light font-gt-america-mono text-sm font-normal">
                           {truncateMiddle(provider.btcPk, 5)}
                         </div>
                       </Table.Cell>
@@ -241,6 +203,12 @@ const StakeBTCPage = () => {
               )}
             </Table.Body>
           </Table.Root>
+
+          {/* Mobile Finality Providers */}
+          <MobileFinalityProvidersView
+            finalityProviders={finalityProviders}
+            handleSelectProvider={handleSelectProvider}
+          />
         </div>
       </div>
       <Staking {...stakingProps} />

@@ -28,7 +28,7 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({
           border-2 border-yieldi-gray-200 bg-yieldi-beige shadow-lg w-[90%] max-w-dialog text-yieldi-brown"
         >
           <div className="flex justify-between items-center mb-4 border-b border-yieldi-gray-200">
-            <Dialog.Title className="text-2xl font-bold p-2">
+            <Dialog.Title className="text-2xl font-bold p-2 font-gt-america-ext">
               {title}
             </Dialog.Title>
             <Dialog.Close className="border-x border-yieldi-gray-200 p-2">
