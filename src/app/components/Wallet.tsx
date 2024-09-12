@@ -27,7 +27,7 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
         {isConnected && btcWallet ? (
           <>
             <DropdownMenu.Trigger>
-              <Button className="cursor-pointer w-[173px] h-[55px] bg-yieldi-dark-gray text-white rounded-none">
+              <Button className="cursor-pointer w-[173px] h-[56px] bg-yieldi-dark-gray text-white rounded-none">
                 <span>{truncateMiddle(address, 5)}</span>
               </Button>
             </DropdownMenu.Trigger>
@@ -43,15 +43,15 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
             </DropdownMenu.Content>
           </>
         ) : (
-          <>
+          <div className="md:justify-end flex border-x border-yieldi-gray-200 flex-1 md:flex-none">
             <Button
               variant="soft"
-              className="cursor-pointer w-[173px] h-[55px] rounded-none bg-yieldi-green text-black"
+              className="cursor-pointer md:w-[166px] h-[56px] rounded-none bg-yieldi-green text-black w-full uppercase font-gt-america-mono"
               onClick={() => setConnectModalOpen(true)}
             >
               Connect Wallet
             </Button>
-          </>
+          </div>
         )}
       </DropdownMenu.Root>
     </>
