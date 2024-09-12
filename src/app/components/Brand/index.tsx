@@ -8,7 +8,14 @@ const Brand = () => (
       alt="Yieldi Logo"
       width={0}
       height={0}
-      className="w-24 h-auto"
+      className="w-24 h-auto hidden md:block"
+    />
+    <Image
+      src="/logo_mobile.svg"
+      alt="Yieldi Logo"
+      width={0}
+      height={0}
+      className="w-auto h-[35px] md:hidden"
     />
   </Link>
 );

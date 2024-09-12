@@ -18,27 +18,27 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="fixed top-0 w-full z-40 border border-yieldi-gray-200">
-      <nav className="flex items-center justify-between pl-8 text-white bg-yieldi-beige h-[55px]">
-        <div className="flex items-center pl-2 text-black">
+    <header className="fixed top-0 w-full z-40 border-b border-yieldi-gray-200 flex flex-col">
+      <nav className="flex items-center justify-between md:pl-8 text-white bg-yieldi-beige h-[55px] flex-1">
+        <div className="flex items-center pl-2 text-black flex-shrink-0">
           <Brand />
           <div className="hidden md:flex">
-            <div className="border">
+            <div className="border-yieldi-gray-200 border-x">
               <span
                 className={`flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
                   pathName === "/dashboard"
-                    ? "border-b-2 border-yieldi-gray-200 pb-2 font-bold"
+                    ? "pb-2 font-bold border-b-2 border-black"
                     : ""
                 }`}
               >
                 <Link href="/dashboard">DASHBOARD</Link>
               </span>
             </div>
-            <div className="border border-yieldi-gray-200">
+            <div className="border-yieldi-gray-200 border-r">
               <span
                 className={`flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
                   pathName.includes("/stake")
-                    ? "border-b-2 border-yieldi-gray-200 pb-2 font-bold"
+                    ? "pb-2 font-bold border-b-2 border-black"
                     : ""
                 }`}
               >
@@ -47,10 +47,11 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
             </div>
           </div>
         </div>
-        <div className="flex justify-center">
+        <div className="flex md:justify-end justify-center flex-grow">
           <Wallet setConnectModalOpen={setConnectModalOpen} />
-          <button
-            className="flex w-[56px] justify-center items-center gap-[10px] self-stretch"
+        </div>
+        <button
+            className="flex flex-shrink-0 w-[56px] justify-center items-center gap-[10px] self-stretch"
             onClick={toggleMenu}
           >
             <Image
@@ -60,8 +61,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
               height={0}
               className="flex w-[38px] h-[41px] px-[4.75px] py-[10.25px] flex-col justify-center items-center shrink-0"
             />
-          </button>
-        </div>
+        </button> 
       </nav>
       <div className={`${isMenuOpen ? "block" : "hidden"}`}>
         <div className="md:hidden">

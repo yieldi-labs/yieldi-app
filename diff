@@ -1,0 +1,123 @@
+diff --git a/src/app/components/Brand/index.tsx b/src/app/components/Brand/index.tsx
+index 0200500..ee75ee4 100644
+--- a/src/app/components/Brand/index.tsx
++++ b/src/app/components/Brand/index.tsx
+@@ -8,7 +8,14 @@ const Brand = () => (
+       alt="Yieldi Logo"
+       width={0}
+       height={0}
+-      className="w-24 h-auto"
++      className="w-24 h-auto hidden md:block"
++    />
++    <Image
++      src="/logo_mobile.svg"
++      alt="Yieldi Logo"
++      width={0}
++      height={0}
++      className="w-auto h-[35px] md:hidden"
+     />
+   </Link>
+ );
+diff --git a/src/app/components/Navbar/DesktopMenu.tsx b/src/app/components/Navbar/DesktopMenu.tsx
+index 2d09e7d..78c1a82 100644
+--- a/src/app/components/Navbar/DesktopMenu.tsx
++++ b/src/app/components/Navbar/DesktopMenu.tsx
+@@ -8,7 +8,7 @@ interface DesktopMenuProps {
+ 
+ const DesktopMenu: React.FC<DesktopMenuProps> = ({ onClose }) => {
+   return (
+-    <div className="flex flex-row items-center py-[30px] px-2.5 bg-yieldi-beige border-y border-l border-yieldi-gray-200 w-56 absolute right-0 justify-center">
++    <div className="flex flex-row items-center py-[30px] px-2.5 bg-[#FAF9F5] border-y border-l border-yieldi-gray-200 w-56 absolute right-0 justify-center">
+       <div className="flex flex-row items-center justify-center gap-6">
+         <SocialIcons onClose={onClose} />
+       </div>
+diff --git a/src/app/components/Navbar/index.tsx b/src/app/components/Navbar/index.tsx
+index 684ee83..0423b18 100644
+--- a/src/app/components/Navbar/index.tsx
++++ b/src/app/components/Navbar/index.tsx
+@@ -18,27 +18,27 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+ 
+   return (
+-    <header className="fixed top-0 w-full z-40 border border-yieldi-gray-200">
+-      <nav className="flex items-center justify-between pl-8 text-white bg-yieldi-beige h-[55px]">
+-        <div className="flex items-center pl-2 text-black">
++    <header className="fixed top-0 w-full z-40 border-b border-yieldi-gray-200 flex flex-col">
++      <nav className="flex items-center justify-between md:pl-8 text-white bg-yieldi-beige h-[55px] flex-1">
++        <div className="flex items-center pl-2 text-black flex-shrink-0">
+           <Brand />
+           <div className="hidden md:flex">
+-            <div className="border">
++            <div className="border-yieldi-gray-200 border-x">
+               <span
+                 className={`flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
+                   pathName === "/dashboard"
+-                    ? "border-b-2 border-yieldi-gray-200 pb-2 font-bold"
++                    ? "pb-2 font-bold border-b-2 border-black"
+                     : ""
+                 }`}
+               >
+                 <Link href="/dashboard">DASHBOARD</Link>
+               </span>
+             </div>
+-            <div className="border border-yieldi-gray-200">
++            <div className="border-yieldi-gray-200 border-r">
+               <span
+                 className={`flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
+                   pathName.includes("/stake")
+-                    ? "border-b-2 border-yieldi-gray-200 pb-2 font-bold"
++                    ? "pb-2 font-bold border-b-2 border-black"
+                     : ""
+                 }`}
+               >
+@@ -47,10 +47,11 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+             </div>
+           </div>
+         </div>
+-        <div className="flex justify-center">
++        <div className="flex md:justify-end justify-center flex-grow">
+           <Wallet setConnectModalOpen={setConnectModalOpen} />
+-          <button
+-            className="flex w-[56px] justify-center items-center gap-[10px] self-stretch"
++        </div>
++        <button
++            className="flex flex-shrink-0 w-[56px] justify-center items-center gap-[10px] self-stretch"
+             onClick={toggleMenu}
+           >
+             <Image
+@@ -60,8 +61,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+               height={0}
+               className="flex w-[38px] h-[41px] px-[4.75px] py-[10.25px] flex-col justify-center items-center shrink-0"
+             />
+-          </button>
+-        </div>
++        </button> 
+       </nav>
+       <div className={`${isMenuOpen ? "block" : "hidden"}`}>
+         <div className="md:hidden">
+diff --git a/src/app/components/Wallet.tsx b/src/app/components/Wallet.tsx
+index e9f84db..f8955fa 100644
+--- a/src/app/components/Wallet.tsx
++++ b/src/app/components/Wallet.tsx
+@@ -27,7 +27,7 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+         {isConnected && btcWallet ? (
+           <>
+             <DropdownMenu.Trigger>
+-              <Button className="cursor-pointer w-[173px] h-[55px] bg-yieldi-dark-gray text-white rounded-none">
++              <Button className="cursor-pointer w-[173px] h-[56px] bg-yieldi-dark-gray text-white rounded-none">
+                 <span>{truncateMiddle(address, 5)}</span>
+               </Button>
+             </DropdownMenu.Trigger>
+@@ -43,10 +43,10 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+             </DropdownMenu.Content>
+           </>
+         ) : (
+-          <div className="border border-yieldi-gray-200">
++          <div className="md:justify-end flex border-x border-yieldi-gray-200 flex-1 md:flex-none">
+             <Button
+               variant="soft"
+-              className="cursor-pointer w-[166px] h-[55px] rounded-none bg-yieldi-green text-black"
++              className="cursor-pointer md:w-[166px] h-[56px] rounded-none bg-yieldi-green text-black w-full uppercase font-gt-america-mono"
+               onClick={() => setConnectModalOpen(true)}
+             >
+               Connect Wallet
