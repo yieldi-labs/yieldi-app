@@ -93,7 +93,7 @@ const StakeBTCPage = () => {
           <h1 className="text-yieldi-brown text-2xl font-bold mr-4 font-gt-america">
             Choose Finality Provider
           </h1>
-          <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3">
+          <p className="text-yieldi-brown/80 text-lg font-light border-l border-yieldi-brown ps-3 hidden md:block">
             Select to delegate stake
           </p>
         </div>
