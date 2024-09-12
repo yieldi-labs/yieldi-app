@@ -19,8 +19,8 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
 
   return (
     <header className="fixed top-0 w-full z-40 border-b border-yieldi-gray-200 flex flex-col">
-      <nav className="flex items-center justify-between md:pl-8 text-white bg-yieldi-beige h-[55px] flex-1">
-        <div className="flex items-center pl-2 text-black shrink-0">
+      <nav className="flex items-center justify-between text-white bg-yieldi-beige h-[55px] flex-1">
+        <div className="flex items-center text-black shrink-0">
           <Brand />
           <div className="hidden md:flex">
             <div className="border-yieldi-gray-200 border-x">
