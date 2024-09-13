@@ -10,7 +10,9 @@ export type SignPsbtTransaction = (psbtHex: string) => Promise<Transaction>;
 // old implementation of signPsbt where the wallet.signPsbt method returns
 // the signed transaction in hex
 export const signPsbtTransaction = (wallet: WalletProvider) => {
+  console.log("here i am");
   return async (psbtHex: string) => {
+    console.log("psbtHex", psbtHex);
     const signedHex = await wallet.signPsbt(psbtHex);
     const providerName = await wallet.getWalletProviderName();
     if (SIGN_PSBT_NOT_COMPATIBLE_WALLETS.includes(providerName)) {
