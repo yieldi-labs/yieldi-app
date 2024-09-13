@@ -119,16 +119,16 @@ const StakePage: React.FC = () => {
                       <Image
                         src="/download.svg"
                         alt="Stake asset"
-                        width={38}
-                        height={38}
+                        width={28}
+                        height={28}
                       />
                     </button>
                     <button className="bg-yieldi-brown-light text-white items-center rounded">
                       <Image
                         src="/upload.svg"
                         alt="Unstake asset"
-                        width={38}
-                        height={38}
+                        width={28}
+                        height={28}
                       />
                     </button>
                   </Table.Cell>
