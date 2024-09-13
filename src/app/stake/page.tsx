@@ -51,87 +51,93 @@ const StakePage: React.FC = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body className="space-y-1.5">
-            {assets?.map((asset: StakeAsset) => (
-              <Table.Row
-                key={asset.assetName}
-                className="mb-[5px] gap-2.5 w-full border border-yieldi-gray-200 bg-white hover:bg-gray-50 [--table-row-box-shadow:none]"
-                onClick={handleOnClick(asset.assetSymbol)}
-              >
-                <Table.Cell className="p-4 whitespace-nowrap">
-                  <div className="flex items-center ">
-                    <Image
-                      src={`/${asset.assetSymbol.toLocaleLowerCase()}.svg`}
-                      alt={`${asset.assetName} Logo`}
-                      width={50}
-                      height={50}
-                      className="rounded-full pr-2"
-                    />
-                    <span className="flex-col items-center">
-                      <span className="text-yieldi-brown font-gt-america text-xl font-normal">
-                        {asset.assetSymbol}
-                      </span>
-                      <br />
-                      <span className="text-yieldi-brown-light font-gt-america text-sm font-normal">
-                        {asset.assetName}
-                      </span>
-                    </span>
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="px-6 py-4 items-center h-full ">
-                  <div className="text-yieldi-brown text-xl font-normal ">
-                    $0.00
-                  </div>
-                  <div className="text-yieldi-brown-light text-sm font-normal">
-                    0.0 {asset.assetSymbol}
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="px-6 py-4 ">
-                  <div className="text-yieldi-brown text-xl font-normal flex items-center h-full  ">
-                    0.00 {asset.assetSymbol}
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="px-6 py-4">
-                  <div className="text-yieldi-brown text-xl font-normal flex items-center h-full">
-                    {asset.totalBalance} {asset.assetSymbol}
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="px-6 py-4 ">
-                  <div className="text-yieldi-brown text-xl font-normal  ">
-                    {asset.totalBalance} {asset.assetSymbol}
-                    <div className="flex text-yieldi-brown-light text-sm font-normal items-center h-full">
+            {assets?.map((asset: StakeAsset, index: number) => (
+              <>
+                <Table.Row
+                  key={asset.assetName}
+                  className="mb-[5px] gap-2.5 w-full border border-yieldi-gray-200 bg-white hover:bg-gray-50 [--table-row-box-shadow:none]"
+                  onClick={handleOnClick(asset.assetSymbol)}
+                >
+                  <Table.Cell className="p-4 whitespace-nowrap">
+                    <div className="flex items-center ">
                       <Image
-                        src="/arrowTurnedDown.svg"
-                        alt="Stake asset"
-                        width={16}
-                        height={16}
-                        className="pr-1"
+                        src={`/${asset.assetSymbol.toLocaleLowerCase()}.svg`}
+                        alt={`${asset.assetName} Logo`}
+                        width={50}
+                        height={50}
+                        className="rounded-full pr-2"
                       />
-                      <p className="text-xs pr-1">0.0 {asset.assetSymbol}</p>
-                      <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
-                        PENDING
-                      </p>
+                      <span className="flex-col items-center">
+                        <span className="text-yieldi-brown font-gt-america text-xl font-normal">
+                          {asset.assetSymbol}
+                        </span>
+                        <br />
+                        <span className="text-yieldi-brown-light font-gt-america text-sm font-normal">
+                          {asset.assetName}
+                        </span>
+                      </span>
                     </div>
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="px-6 py-4 whitespace-nowrap ">
-                  <button className="bg-yieldi-green text-black items-center rounded mr-5 ">
-                    <Image
-                      src="/download.svg"
-                      alt="Stake asset"
-                      width={38}
-                      height={38}
-                    />
-                  </button>
-                  <button className="bg-yieldi-brown-light text-white items-center rounded">
-                    <Image
-                      src="/upload.svg"
-                      alt="Unstake asset"
-                      width={38}
-                      height={38}
-                    />
-                  </button>
-                </Table.Cell>
-              </Table.Row>
+                  </Table.Cell>
+                  <Table.Cell className="px-6 py-4 items-center h-full ">
+                    <div className="text-yieldi-brown text-xl font-normal ">
+                      $0.00
+                    </div>
+                    <div className="text-yieldi-brown-light text-sm font-normal">
+                      0.0 {asset.assetSymbol}
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="px-6 py-4 ">
+                    <div className="text-yieldi-brown text-xl font-normal flex items-center h-full  ">
+                      0.00 {asset.assetSymbol}
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="px-6 py-4">
+                    <div className="text-yieldi-brown text-xl font-normal flex items-center h-full">
+                      {asset.totalBalance} {asset.assetSymbol}
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="px-6 py-4 ">
+                    <div className="text-yieldi-brown text-xl font-normal  ">
+                      {asset.totalBalance} {asset.assetSymbol}
+                      <div className="flex text-yieldi-brown-light text-sm font-normal items-center h-full">
+                        <Image
+                          src="/arrowTurnedDown.svg"
+                          alt="Stake asset"
+                          width={16}
+                          height={16}
+                          className="pr-1"
+                        />
+                        <p className="text-xs pr-1">0.0 {asset.assetSymbol}</p>
+                        <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
+                          PENDING
+                        </p>
+                      </div>
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="px-6 py-4 whitespace-nowrap ">
+                    <button className="bg-yieldi-green text-black items-center rounded mr-5 ">
+                      <Image
+                        src="/download.svg"
+                        alt="Stake asset"
+                        width={38}
+                        height={38}
+                      />
+                    </button>
+                    <button className="bg-yieldi-brown-light text-white items-center rounded">
+                      <Image
+                        src="/upload.svg"
+                        alt="Unstake asset"
+                        width={38}
+                        height={38}
+                      />
+                    </button>
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row
+                  key={index}
+                  className="w-full h-[6px] border-none shadow-none"
+                ></Table.Row>
+              </>
             ))}
           </Table.Body>
         </Table.Root>
