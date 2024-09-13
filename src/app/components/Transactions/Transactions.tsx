@@ -462,9 +462,7 @@ const Transactions: React.FC<{
                     }
                   />
                   <Table.Row
-                    key={
-                      delegation.startTimestamp + delegation.stakingTxHashHex
-                    }
+                    key={delegation.stakingTxHashHex}
                     className="w-full h-[6px] border-none shadow-none"
                   ></Table.Row>
                 </>
