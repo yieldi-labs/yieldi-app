@@ -290,7 +290,7 @@ const Transactions: React.FC<{
         delegation.stakingValueSat,
         delegation.stakingTx.txHex,
         delegation.stakingTx.timelock,
-        newState
+        newState,
       ),
       ...delegations,
     ]);
@@ -331,7 +331,7 @@ const Transactions: React.FC<{
           delegationsAPI,
           publicKeyNoCoord,
           btcWalletNetwork,
-          signPsbtTransaction(btcWallet)
+          signPsbtTransaction(btcWallet),
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_UNBONDING);
@@ -375,7 +375,7 @@ const Transactions: React.FC<{
           signPsbtTransaction(btcWallet),
           address,
           btcWallet.getNetworkFees,
-          btcWallet.pushTx
+          btcWallet.pushTx,
         );
         // Update the local state with the new intermediate delegation
         updateLocalStorage(delegation, DelegationState.INTERMEDIATE_WITHDRAWAL);
@@ -440,7 +440,7 @@ const Transactions: React.FC<{
               const intermediateDelegation =
                 intermediateDelegationsLocalStorage.find(
                   (item) =>
-                    item.stakingTxHashHex === delegation.stakingTxHashHex
+                    item.stakingTxHashHex === delegation.stakingTxHashHex,
                 );
               return (
                 <>
@@ -481,7 +481,7 @@ const Transactions: React.FC<{
             finalityProvidersKV[delegation.finalityProviderPkHex];
           const intermediateDelegation =
             intermediateDelegationsLocalStorage.find(
-              (item) => item.stakingTxHashHex === delegation.stakingTxHashHex
+              (item) => item.stakingTxHashHex === delegation.stakingTxHashHex,
             );
           return (
             <DelegationRow
