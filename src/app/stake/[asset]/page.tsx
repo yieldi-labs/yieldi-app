@@ -57,7 +57,7 @@ const StakeBTCPage = () => {
     btcWalletNetwork,
     btcWalletBalanceSat,
     isWalletConnected: isConnected,
-    onConnect: function (): void {
+    onConnect: function(): void {
       setConnectModalOpen(true);
     },
     address,
