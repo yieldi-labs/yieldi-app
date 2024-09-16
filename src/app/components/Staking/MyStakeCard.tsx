@@ -20,11 +20,13 @@ const MyStakeCard: React.FC<{
   return (
     <div className="w-full mb-6 bg-white">
       <div className="border border-yieldi-gray-200 mb-4">
-        <div className="border p-4">
-          <h3 className="text-xl font-semibold font-gt-america">MY STAKE</h3>
+        <div className="p-4">
+          <h3 className="text-sm font-semibold font-gt-america-ext">
+            MY STAKE
+          </h3>
         </div>
         <div className="grid grid-cols-2">
-          <div className="border border-yieldi-gray-200 p-4 flex-row">
+          <div className="border-t border-yieldi-gray-200 p-4 flex-row">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               WALLET BALANCE
             </p>
@@ -35,7 +37,7 @@ const MyStakeCard: React.FC<{
               {"$"} {balance * asset?.price} {"USD"}
             </p>
           </div>
-          <div className="border border-yieldi-gray-200 p-4 flex-row">
+          <div className="border-l border-t border-yieldi-gray-200 p-4 flex-row">
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               STAKED BALANCE
             </p>

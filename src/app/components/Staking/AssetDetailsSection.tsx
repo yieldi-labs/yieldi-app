@@ -19,8 +19,8 @@ const AssetDetailsSection: React.FC<{
 }) => {
   return (
     <div className="w-full mb-6 bg-white">
-      <div className="border-2 border-yieldi-gray-200">
-        <div className="flex justify-between p-4 border-b-2 border-yieldi-gray-200">
+      <div className="border border-yieldi-gray-200">
+        <div className="flex justify-between p-4 border-b border-yieldi-gray-200">
           <div className="flex items-center">
             <div className="size-12 flex items-center justify-center mr-4">
               <Image
