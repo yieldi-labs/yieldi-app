@@ -177,7 +177,7 @@ const StakeBTCPage = () => {
                           {provider.totalDelegations} BTC
                         </div>
                       </Table.Cell>
-                      <Table.Cell className="px-6 py-4 whitespace-nowrap">
+                      <Table.Cell className="px-6 py-4 whitespace-nowrap align-middle">
                         <div className="text-yieldi-brown text-xl font-normal text-center">
                           {provider.commission
                             ? `${(Number(provider.commission) * 100).toFixed(0)}%`
