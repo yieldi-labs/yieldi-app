@@ -116,7 +116,7 @@ const StakeBTCPage = () => {
               confirmedTvl={"0"}
               stakingCap={0}
               remainingBlocks={0}
-              assetSymbol={""}
+              assetSymbol={"BTC"}
             />
           </div>
         </div>

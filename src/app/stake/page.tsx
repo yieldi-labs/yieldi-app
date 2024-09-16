@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import { assets } from "@/app/config/StakedAssets";
+import { useAssets } from "@/app/context/AssetContext";
 
 import { StakeAsset } from "../types/stakeAsset";
 
@@ -13,6 +13,7 @@ import { MobileAssetInfo } from "./mobileAssetInfo";
 
 const StakePage: React.FC = () => {
   const router = useRouter();
+  const assets = useAssets().assets;
   const handleOnClick = (assetSymbol: string) => () => {
     router.push(`/stake/${assetSymbol.toLocaleLowerCase()}/details`);
   };

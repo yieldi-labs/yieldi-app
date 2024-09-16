@@ -1,9 +1,14 @@
+import { useAssets } from "@/app/context/AssetContext";
+
 const MetricsGrid: React.FC<{
   confirmedTvl: string;
   stakingCap: number;
   remainingBlocks: number;
   assetSymbol: string;
 }> = ({ confirmedTvl, stakingCap, remainingBlocks, assetSymbol }) => {
+  const asset = useAssets().assets.find(
+    (asset) => asset.assetSymbol === assetSymbol,
+  );
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 md:divide-x-2 divide-yieldi-gray-200">
       <div className="p-4 flex flex-col justify-end items-start self-stretch border-r-2 border-b-2 md:border-b-0 md:border-r-0 border-yieldi-gray-200">
@@ -35,7 +40,7 @@ const MetricsGrid: React.FC<{
           PRICE
         </p>
         <p className="text-yieldi-brown text-xl font-medium leading-normal">
-          $60,000
+          {asset?.price} USD
         </p>
       </div>
     </div>
