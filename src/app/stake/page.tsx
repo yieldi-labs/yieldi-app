@@ -9,6 +9,8 @@ import { assets } from "@/app/config/StakedAssets";
 
 import { StakeAsset } from "../types/stakeAsset";
 
+import { MobileAssetInfo } from "./mobileAssetInfo";
+
 const StakePage: React.FC = () => {
   const router = useRouter();
   const handleOnClick = (assetSymbol: string) => () => {
@@ -26,7 +28,7 @@ const StakePage: React.FC = () => {
         </p>
       </div>
 
-      <div className="pb-12">
+      <div className="pb-12 hidden md:block">
         <Table.Root className="hidden md:block">
           <Table.Header className="[--table-row-box-shadow:none]">
             <Table.Row>
@@ -141,6 +143,18 @@ const StakePage: React.FC = () => {
             ))}
           </Table.Body>
         </Table.Root>
+      </div>
+
+      {/** Mobile Asset Info */}
+      <div className="md:hidden">
+        {assets?.map((asset: StakeAsset) => (
+          <span
+            key={asset.assetName + asset.assetSymbol}
+            onClick={handleOnClick(asset.assetSymbol)}
+          >
+            <MobileAssetInfo asset={asset} />
+          </span>
+        ))}
       </div>
     </div>
   );
