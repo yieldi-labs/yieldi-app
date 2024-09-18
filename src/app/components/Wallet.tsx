@@ -24,26 +24,26 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
   return (
     <>
       <DropdownMenu.Root modal={false}>
-        {isConnected && btcWallet ? (
-          <>
-            <DropdownMenu.Trigger>
-              <Button className="cursor-pointer w-[173px] h-[56px] bg-yieldi-dark-gray text-white rounded-none">
-                <span>{truncateMiddle(address, 5)}</span>
-              </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content className="z-50">
-              <DropdownMenu.Sub>
-                <DropdownMenu.Item
-                  className="cursor-pointer"
-                  onClick={disconnectWallet}
-                >
-                  Disconnect
-                </DropdownMenu.Item>
-              </DropdownMenu.Sub>
-            </DropdownMenu.Content>
-          </>
-        ) : (
-          <div className="md:justify-end flex border-x border-yieldi-gray-200 flex-1 md:flex-none">
+        <div className="md:justify-end flex border-x border-yieldi-gray-200 flex-1 md:flex-none">
+          {isConnected && btcWallet ? (
+            <>
+              <DropdownMenu.Trigger>
+                <Button className="cursor-pointer md:w-[166px] h-[56px] bg-yieldi-dark-gray text-white rounded-none w-full font-gt-america-mono">
+                  <span>{truncateMiddle(address, 5)}</span>
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content className="z-50">
+                <DropdownMenu.Sub>
+                  <DropdownMenu.Item
+                    className="cursor-pointer"
+                    onClick={disconnectWallet}
+                  >
+                    Disconnect
+                  </DropdownMenu.Item>
+                </DropdownMenu.Sub>
+              </DropdownMenu.Content>
+            </>
+          ) : (
             <Button
               variant="soft"
               className="cursor-pointer md:w-[166px] h-[56px] rounded-none bg-yieldi-green text-black w-full uppercase font-gt-america-mono"
@@ -51,8 +51,8 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
             >
               Connect Wallet
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </DropdownMenu.Root>
     </>
   );
