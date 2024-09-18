@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import Brand from "@/app/components/Brand";
 
@@ -14,6 +14,28 @@ import MobileMenu from "./MobileMenu";
 const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
   const pathName = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          menuRef.current &&
+          !menuRef.current.contains(event.target as Node) &&
+          menuButtonRef.current &&
+          !menuButtonRef.current.contains(event.target as Node)
+        ) {
+          setIsMenuOpen(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -51,6 +73,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
           <Wallet setConnectModalOpen={setConnectModalOpen} />
         </div>
         <button
+          ref={menuButtonRef}
           className="flex shrink-0 w-[56px] justify-center items-center gap-[10px] self-stretch"
           onClick={toggleMenu}
         >
@@ -63,7 +86,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
           />
         </button>
       </nav>
-      <div className={`${isMenuOpen ? "block" : "hidden"}`}>
+      <div ref={menuRef} className={`${isMenuOpen ? "block" : "hidden"}`}>
         <div className="md:hidden">
           <MobileMenu
             onClose={() => {
