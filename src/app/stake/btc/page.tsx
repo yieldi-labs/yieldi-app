@@ -96,7 +96,7 @@ const StakedAssetDetails: React.FC = () => {
   );
 
   const handleOnClick = () => {
-    router.push(`/stake/${assetSymbol}`);
+    router.push(`/stake/${assetSymbol}/providers`);
   };
 
   // Function to trigger a refresh of the transactions table

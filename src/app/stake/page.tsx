@@ -17,7 +17,7 @@ const StakePage: React.FC = () => {
   const router = useRouter();
   const assets = useAssets().assets;
   const handleOnClick = (assetSymbol: string) => () => {
-    router.push(`/stake/${assetSymbol.toLocaleLowerCase()}/details`);
+    router.push(`/stake/${assetSymbol.toLocaleLowerCase()}`);
   };
 
   const { btcWalletBalanceSat, isConnected } = useWallet();
