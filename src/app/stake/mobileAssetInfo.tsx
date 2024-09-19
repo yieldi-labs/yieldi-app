@@ -3,7 +3,6 @@ import Image from "next/image";
 import React from "react";
 
 import { StakeAsset } from "@/app/types/stakeAsset";
-
 import { Formatter } from "@/utils/numberFormatter";
 export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({
   asset,

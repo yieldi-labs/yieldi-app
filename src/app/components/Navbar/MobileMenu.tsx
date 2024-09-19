@@ -20,13 +20,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose }) => {
   return (
     <div className="w-full bg-yieldi-beige border-y border-yieldi-gray-200 flex flex-col items-start justify-start text-left text-xl text-yieldi-brown font-gt-america">
       <div className="self-stretch border-b border-yieldi-gray-200 flex flex-col items-start justify-start py-[30px] px-2.5 gap-4">
-        <Link
+        {/* <Link
           href="/dashboard"
           className="w-[370px] flex items-center text-xl font-medium"
           onClick={handleLinkClick}
         >
           DASHBOARD
-        </Link>
+        </Link> */}
         <Link
           href="/stake"
           className="w-[370px] flex items-center text-xl font-medium"
