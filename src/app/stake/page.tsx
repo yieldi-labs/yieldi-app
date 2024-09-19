@@ -8,11 +8,12 @@ import React from "react";
 import { useAssets } from "@/app/context/AssetContext";
 import { useData } from "@/app/context/DataContext";
 import { useWallet } from "@/app/context/WalletContext";
+import { useGetDelegations } from "@/app/hooks/useGetDelegations";
+import { Delegation, DelegationState } from "@/app/types/delegations";
+import { StakeAsset } from "@/app/types/stakeAsset";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { maxDecimals } from "@/utils/maxDecimals";
 import { Formatter } from "@/utils/numberFormatter";
-
-import { StakeAsset } from "../types/stakeAsset";
 
 import { MobileAssetInfo } from "./mobileAssetInfo";
 
@@ -20,7 +21,30 @@ const StakePage: React.FC = () => {
   const router = useRouter();
   const assets = useAssets().assets;
   const { statsData } = useData();
-  const { btcWalletBalanceSat, isConnected } = useWallet();
+  const { address, publicKeyNoCoord, isConnected, btcWalletBalanceSat } =
+    useWallet();
+  const delegation = useGetDelegations(address, publicKeyNoCoord);
+  let totalStake = 0;
+  let pendingBalance = 0;
+  let withdrawalBalance = 0;
+  if (isConnected && delegation?.delegations) {
+    const filteredDelegation = delegation.delegations;
+    filteredDelegation.delegations.map((item: Delegation) => {
+      if (item?.state === DelegationState.ACTIVE) {
+        totalStake += item?.stakingValueSat;
+      }
+      if (
+        item?.state === DelegationState.UNBONDING ||
+        item?.state === DelegationState.UNBONDED ||
+        item?.state === DelegationState.PENDING
+      ) {
+        pendingBalance += item?.stakingValueSat;
+      }
+      if (item?.state === DelegationState.WITHDRAWN) {
+        withdrawalBalance += item?.stakingValueSat;
+      }
+    });
+  }
   const handleOnClick = (assetSymbol: string) => () => {
     router.push(`/stake/${assetSymbol.toLocaleLowerCase()}`);
   };
@@ -117,12 +141,12 @@ const StakePage: React.FC = () => {
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4">
                     <div className="text-yieldi-brown text-xl font-normal flex items-center h-full">
-                      {asset.totalBalance} {asset.assetSymbol}
+                      {satoshiToBtc(totalStake)} {asset.assetSymbol}
                     </div>
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4 ">
                     <div className="text-yieldi-brown text-xl font-normal  ">
-                      {asset.totalBalance} {asset.assetSymbol}
+                      {satoshiToBtc(withdrawalBalance)} {asset.assetSymbol}
                       <div className="flex text-yieldi-brown-light text-sm font-normal items-center h-full">
                         <Image
                           src="/arrowTurnedDown.svg"
@@ -131,7 +155,9 @@ const StakePage: React.FC = () => {
                           height={16}
                           className="pr-1"
                         />
-                        <p className="text-xs pr-1">0.0 {asset.assetSymbol}</p>
+                        <p className="text-xs pr-1">
+                          {satoshiToBtc(pendingBalance)} {asset.assetSymbol}
+                        </p>
                         <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
                           PENDING
                         </p>
@@ -178,9 +204,9 @@ const StakePage: React.FC = () => {
               asset={asset}
               TVL={confirmedTvl}
               walletBalance={satoshiToBtc(btcWalletBalanceSat)}
-              stakedBalance={0}
-              withdrawalBalance={0}
-              pendingBalance={0}
+              stakedBalance={satoshiToBtc(totalStake)}
+              withdrawalBalance={satoshiToBtc(withdrawalBalance)}
+              pendingBalance={satoshiToBtc(pendingBalance)}
             />
           </span>
         ))}

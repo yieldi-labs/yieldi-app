@@ -38,7 +38,7 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({
             TVL ${Formatter.format((TVL as number) * asset.price)}
           </p>
           <p className="flex text-yieldi-brown-light text-sm font-light shrink-0">
-            {asset.amount} {asset.assetSymbol}
+            {TVL as number} {asset.assetSymbol}
           </p>
         </div>
       </div>

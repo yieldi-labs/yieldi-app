@@ -10,7 +10,6 @@ import BackButton from "@/app/components/BackButton";
 import AssetDetailsSection from "@/app/components/Staking/AssetDetailsSection";
 import MyStakeCard from "@/app/components/Staking/MyStakeCard";
 import Transactions from "@/app/components/Transactions/Transactions";
-import { assets } from "@/app/config/StakedAssets";
 import { useData } from "@/app/context/DataContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useWallet } from "@/app/context/WalletContext";
@@ -18,6 +17,7 @@ import { useGetDelegations } from "@/app/hooks/useGetDelegations";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { useAssets } from "@/app/context/AssetContext";
 
 const StakedAssetDetails: React.FC = () => {
   const pathname = usePathname();
@@ -35,6 +35,7 @@ const StakedAssetDetails: React.FC = () => {
     isConnected,
     btcWalletBalanceSat,
   } = useWallet();
+  const assets = useAssets().assets;
   const asset = assets.find(
     (asset) => asset.assetSymbol.toLowerCase() === assetSymbol,
   );

@@ -11,7 +11,7 @@ const MyStakeCard: React.FC<{
 
   if (delegations) {
     totalStakedSat = delegations.delegations
-      .filter((delegation: any) => delegation?.state === "ACTIVE")
+      .filter((delegation: any) => delegation?.state === "active")
       .reduce(
         (accumulator: number, item: any) => accumulator + item?.stakingValueSat,
         0,
@@ -41,10 +41,12 @@ const MyStakeCard: React.FC<{
               STAKED BALANCE
             </p>
             <p className="text-yieldi-brown text-xl font-medium leading-normal">
-              {totalStakedSat} {asset?.assetSymbol}
+              {satoshiToBtc(totalStakedSat)} {asset?.assetSymbol}
             </p>
             <p className="text-yieldi-brown text-xs font-medium leading-normal">
-              {"$"} {Formatter.format(totalStakedSat * asset?.price)} {"USD"}
+              {"$"}{" "}
+              {Formatter.format(satoshiToBtc(totalStakedSat) * asset?.price)}{" "}
+              {"USD"}
             </p>
           </div>
         </div>
