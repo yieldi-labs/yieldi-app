@@ -68,7 +68,9 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
                   height={16}
                   className="pr-1"
                 />
-                <p className="text-xs pr-1 pt-1">0.0 {asset.assetSymbol}</p>
+                <p className="text-xs pr-1 pt-1">
+                  {asset.amount} {asset.assetSymbol}
+                </p>
                 <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
                   PENDING
                 </p>

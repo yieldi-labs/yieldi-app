@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 import { useAssets } from "@/app/context/AssetContext";
+import { useWallet } from "@/app/context/WalletContext";
+import { satoshiToBtc } from "@/utils/btcConversions";
 
 import { StakeAsset } from "../types/stakeAsset";
 
@@ -17,6 +19,12 @@ const StakePage: React.FC = () => {
   const handleOnClick = (assetSymbol: string) => () => {
     router.push(`/stake/${assetSymbol.toLocaleLowerCase()}/details`);
   };
+
+  const { btcWalletBalanceSat, isConnected } = useWallet();
+
+  const filteredAssets = assets.filter((asset) =>
+    process.env.NEXT_PUBLIC_ASSETS?.includes(asset.assetSymbol),
+  );
 
   return (
     <div className="lg:w-3/4 mx-auto px-4 md:px-16 lg:px-0">
@@ -54,12 +62,15 @@ const StakePage: React.FC = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body className="space-y-1.5">
-            {assets?.map((asset: StakeAsset, index: number) => (
+            {filteredAssets?.map((asset: StakeAsset, index: number) => (
               <>
                 <Table.Row
                   key={asset.assetName}
                   className="mb-[5px] gap-2.5 w-full border border-yieldi-gray-200 bg-white hover:bg-gray-50 [--table-row-box-shadow:none]"
                   onClick={handleOnClick(asset.assetSymbol)}
+                  data-tooltip-id={`tooltip-${asset.assetName}`}
+                  data-tooltip-content={`View ${asset.assetName} details`}
+                  data-tooltip-place="top"
                 >
                   <Table.Cell className="p-4 whitespace-nowrap">
                     <div className="flex items-center ">
@@ -86,12 +97,20 @@ const StakePage: React.FC = () => {
                       $0.00
                     </div>
                     <div className="text-yieldi-brown-light text-sm font-normal">
-                      0.0 {asset.assetSymbol}
+                      {isConnected
+                        ? (
+                            satoshiToBtc(btcWalletBalanceSat) * asset.price
+                          ).toString()
+                        : "-"}
                     </div>
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4 ">
                     <div className="text-yieldi-brown text-xl font-normal flex items-center h-full  ">
-                      0.00 {asset.assetSymbol}
+                      {isConnected
+                        ? (
+                            satoshiToBtc(btcWalletBalanceSat) * asset.price
+                          ).toString()
+                        : "-"}{" "}
                     </div>
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4">
@@ -148,7 +167,7 @@ const StakePage: React.FC = () => {
 
       {/** Mobile Asset Info */}
       <div className="md:hidden">
-        {assets?.map((asset: StakeAsset) => (
+        {filteredAssets?.map((asset: StakeAsset) => (
           <span
             key={asset.assetName + asset.assetSymbol}
             onClick={handleOnClick(asset.assetSymbol)}

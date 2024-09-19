@@ -312,7 +312,7 @@ const Transactions: React.FC<{
         nextBlockParams: getCurrentGlobalParamsVersion(height + 1, versions),
       };
     },
-    refetchInterval: 300000, // 1 minute
+    refetchInterval: 60000, // 1 minute
     // Should be enabled only when the wallet is connected
     enabled: !!btcWallet,
     retry: (failureCount: number) => {
