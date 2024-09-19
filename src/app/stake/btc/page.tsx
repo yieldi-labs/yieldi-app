@@ -6,12 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
-import { getStats } from "@/app/api/getStats";
 import BackButton from "@/app/components/BackButton";
 import AssetDetailsSection from "@/app/components/Staking/AssetDetailsSection";
 import MyStakeCard from "@/app/components/Staking/MyStakeCard";
 import Transactions from "@/app/components/Transactions/Transactions";
 import { assets } from "@/app/config/StakedAssets";
+import { useData } from "@/app/context/DataContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { useGetDelegations } from "@/app/hooks/useGetDelegations";
@@ -37,8 +37,14 @@ const StakedAssetDetails: React.FC = () => {
     btcWalletBalanceSat,
   } = useWallet();
   const asset = assets.find(
-    (asset) => asset.assetSymbol.toLowerCase() === assetSymbol,
+    (asset) => asset.assetSymbol.toLowerCase() === assetSymbol
   );
+
+  const { statsData } = useData();
+
+  const confirmedTvl = statsData?.totalTVLSat
+    ? `${maxDecimals(satoshiToBtc(statsData.activeTVLSat), 8)}`
+    : "0";
 
   // Fetch global params and stats
   const { data: paramWithContext } = useQuery({
@@ -68,31 +74,24 @@ const StakedAssetDetails: React.FC = () => {
         ([height]) => {
           setBtcHeight(height);
           setRemainingBlocks(activationHeight - height);
-        },
+        }
       );
     }
   }, [activationHeight, btcHeight, btcWallet, remainingBlocks]);
 
   const { delegations } = useGetDelegations(address, publicKeyNoCoord);
-  const { data } = useQuery({
-    queryKey: ["API_STATS"],
-    queryFn: async () => getStats(),
-    refetchInterval: 60000,
-  });
-  const confirmedTvl = data?.totalTVLSat
-    ? `${maxDecimals(satoshiToBtc(data.activeTVLSat), 8)}`
-    : "0";
+
   const stakingCap = maxDecimals(
     satoshiToBtc(
       paramWithContext?.nextBlockParams?.currentVersion?.maxStakingAmountSat ||
-        0,
+        0
     ),
-    8,
+    8
   );
   const { finalityProviders } = useFinalityProviders();
   const finalityProvidersKV: Record<string, string> = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
-    {},
+    {}
   );
 
   const handleOnClick = () => {

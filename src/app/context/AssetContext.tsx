@@ -16,13 +16,13 @@ type AssetsContextType = {
 const AssetsContext = createContext<AssetsContextType | undefined>(undefined);
 
 export const AssetsProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: priceData, isLoading, error } = useData();
+  const { cryptoPrices, cryptoLoading, cryptoError } = useData();
 
   const updatedAssets = useMemo(() => {
-    if (!priceData) return initialAssets;
+    if (!cryptoPrices) return initialAssets;
 
     return initialAssets.map((asset) => {
-      const priceInfo = priceData[asset.assetPriceSymbol];
+      const priceInfo = cryptoPrices[asset.assetPriceSymbol];
       const price = priceInfo?.usd ?? asset.price;
 
       return {
@@ -30,10 +30,16 @@ export const AssetsProvider = ({ children }: { children: React.ReactNode }) => {
         price,
       };
     });
-  }, [priceData]);
+  }, [cryptoPrices]);
 
   return (
-    <AssetsContext.Provider value={{ assets: updatedAssets, isLoading, error }}>
+    <AssetsContext.Provider
+      value={{
+        assets: updatedAssets,
+        isLoading: cryptoLoading,
+        error: cryptoError,
+      }}
+    >
       {children}
     </AssetsContext.Provider>
   );

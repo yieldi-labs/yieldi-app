@@ -1,13 +1,16 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { createContext, useContext } from "react";
 
+import { getStats } from "@/app/api/getStats";
+
 type DataContextType = {
-  data: any;
-  isLoading: boolean;
-  error: any;
+  cryptoPrices: any;
+  cryptoLoading: boolean;
+  cryptoError: any;
+  statsData: any;
+  statsLoading: boolean;
+  statsError: any;
 };
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -21,7 +24,11 @@ export const DataProvider = ({
   refreshInterval?: number;
   assets?: string[];
 }) => {
-  const { data, isLoading, error } = useQuery({
+  const {
+    data: cryptoPrices,
+    isLoading: cryptoLoading,
+    error: cryptoError,
+  } = useQuery({
     queryKey: ["cryptoPrices", assets],
     queryFn: async () => {
       const ids = assets.join(",");
@@ -32,7 +39,7 @@ export const DataProvider = ({
             ids,
             vs_currencies: "usd",
           },
-        },
+        }
       );
       return response.data;
     },
@@ -40,8 +47,27 @@ export const DataProvider = ({
     refetchOnWindowFocus: false,
   });
 
+  const {
+    data: statsData,
+    isLoading: statsLoading,
+    error: statsError,
+  } = useQuery({
+    queryKey: ["API_STATS"],
+    queryFn: async () => getStats(),
+    refetchInterval: 60000,
+  });
+
   return (
-    <DataContext.Provider value={{ data, isLoading, error }}>
+    <DataContext.Provider
+      value={{
+        cryptoPrices,
+        cryptoLoading,
+        cryptoError,
+        statsData,
+        statsLoading,
+        statsError,
+      }}
+    >
       {children}
     </DataContext.Provider>
   );

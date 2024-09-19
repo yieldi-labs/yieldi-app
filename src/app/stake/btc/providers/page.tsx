@@ -8,12 +8,15 @@ import { useLocalStorage } from "usehooks-ts";
 import BackButton from "@/app/components/BackButton";
 import MetricsGrid from "@/app/components/Staking/Metrics";
 import { Staking, StakingProps } from "@/app/components/Staking/Staking";
+import { useData } from "@/app/context/DataContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { Delegation } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
+import { satoshiToBtc } from "@/utils/btcConversions";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
+import { maxDecimals } from "@/utils/maxDecimals";
 import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
 
@@ -44,7 +47,7 @@ const StakeBTCPage = () => {
     getDelegationsLocalStorageKey(publicKeyNoCoord);
   const [_, setDelegationsLocalStorage] = useLocalStorage<Delegation[]>(
     delegationsLocalStorageKey,
-    [],
+    []
   );
   const [selectedFinalityProvider, setSelectedFinalityProvider] = useState<
     FinalityProvider | undefined
@@ -78,10 +81,16 @@ const StakeBTCPage = () => {
         ([height, _network]) => {
           setBtcHeight(height);
           // setBtcWalletNetwork(toNetwork(network));
-        },
+        }
       );
     }
   }, [btcWallet]);
+
+  const { statsData } = useData();
+
+  const confirmedTvl = statsData?.totalTVLSat
+    ? `${maxDecimals(satoshiToBtc(statsData.activeTVLSat), 8)}`
+    : "0";
 
   return (
     <>
@@ -113,7 +122,7 @@ const StakeBTCPage = () => {
               </div>
             </div>
             <MetricsGrid
-              confirmedTvl={"0"}
+              confirmedTvl={confirmedTvl}
               stakingCap={0}
               remainingBlocks={0}
               assetSymbol={"BTC"}
@@ -199,7 +208,7 @@ const StakeBTCPage = () => {
                       key={provider.btcPk}
                       className="w-full h-[6px] border-none shadow-none"
                     ></Table.Row>
-                  ),
+                  )
               )}
             </Table.Body>
           </Table.Root>
