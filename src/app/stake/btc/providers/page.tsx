@@ -47,7 +47,7 @@ const StakeBTCPage = () => {
     getDelegationsLocalStorageKey(publicKeyNoCoord);
   const [_, setDelegationsLocalStorage] = useLocalStorage<Delegation[]>(
     delegationsLocalStorageKey,
-    []
+    [],
   );
   const [selectedFinalityProvider, setSelectedFinalityProvider] = useState<
     FinalityProvider | undefined
@@ -81,7 +81,7 @@ const StakeBTCPage = () => {
         ([height, _network]) => {
           setBtcHeight(height);
           // setBtcWalletNetwork(toNetwork(network));
-        }
+        },
       );
     }
   }, [btcWallet]);
@@ -208,7 +208,7 @@ const StakeBTCPage = () => {
                       key={provider.btcPk}
                       className="w-full h-[6px] border-none shadow-none"
                     ></Table.Row>
-                  )
+                  ),
               )}
             </Table.Body>
           </Table.Root>
