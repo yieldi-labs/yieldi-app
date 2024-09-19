@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
+import { twMerge } from "tailwind-merge";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
@@ -52,7 +53,6 @@ const DelegationRow: React.FC<{
   onUnbond,
   onWithdraw,
   intermediateState,
-  globalParamsVersion,
 }) => {
   const { stakingValueSat, stakingTx, stakingTxHashHex, state, isOverflow } =
     delegation;
@@ -91,7 +91,7 @@ const DelegationRow: React.FC<{
           </button>
         </div>
       );
-    } else {
+    } else if (state === DelegationState.UNBONDING) {
       return (
         <button
           className="opacity-50 flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-yieldi-beige text-sm font-medium"
@@ -102,6 +102,8 @@ const DelegationRow: React.FC<{
           Unbond
         </button>
       );
+    } else {
+      return <></>;
     }
   };
 
@@ -121,9 +123,19 @@ const DelegationRow: React.FC<{
   const renderStateTooltip = () => {
     // overflow should be shown only on active state
     if (isOverflow && isActive) {
-      return getStateTooltip(DelegationState.OVERFLOW, globalParamsVersion);
+      return getStateTooltip(DelegationState.OVERFLOW);
     } else {
-      return getStateTooltip(intermediateState || state, globalParamsVersion);
+      return getStateTooltip(intermediateState || state);
+    }
+  };
+
+  const getStateBgColor = () => {
+    if (state === DelegationState.ACTIVE) {
+      return "bg-yieldi-green";
+    } else if (state === DelegationState.WITHDRAWN) {
+      return "bg-yieldi-gray-200";
+    } else {
+      return "bg-yieldi-yellow";
     }
   };
 
@@ -164,18 +176,18 @@ const DelegationRow: React.FC<{
         <Table.Cell className="text-yieldi-brown text-lg font-normal p-4">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
           <span
-            className={` flex justify-center items-center rounded-full ${state === "active" ? "bg-yieldi-green text-black" : "bg-yieldi-red text-white"}`}
+            className={twMerge(
+              "flex items-center justify-center w-[86px] h-[33px] px-2.5 py-3 gap-2.5 rounded-full text-primary font-medium text-[10px] font-gt-america-mono leading-3",
+              getStateBgColor(),
+            )}
           >
-            <div className="flex justify-center items-center">
-              <p>{renderState()}</p>
-              <span
-                className="cursor-pointer text-xs"
-                data-tooltip-id={`tooltip-${stakingTxHashHex}`}
-                data-tooltip-content={renderStateTooltip()}
-                data-tooltip-place="top"
-              >
-                <AiOutlineInfoCircle />
-              </span>
+            <div
+              className="flex justify-center items-center cursor-pointer"
+              data-tooltip-id={`tooltip-${stakingTxHashHex}`}
+              data-tooltip-content={renderStateTooltip()}
+              data-tooltip-place="top"
+            >
+              <p className="uppercase">{renderState()}</p>
               <span>
                 <Tooltip id={`tooltip-${stakingTxHashHex}`} />
               </span>
