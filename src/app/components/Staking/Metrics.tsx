@@ -7,7 +7,6 @@ import { useBtcHeight } from "@/app/context/mempool/BtcHeightProvider";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
 import { maxDecimals } from "@/utils/maxDecimals";
-
 import { Formatter } from "@/utils/numberFormatter";
 
 const MetricsGrid: React.FC<{
