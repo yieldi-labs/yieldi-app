@@ -45,6 +45,8 @@ const StakePage: React.FC = () => {
       }
     });
   }
+
+  const shouldShowPendingBalance = pendingBalance > 0;
   const handleOnClick = (assetSymbol: string) => () => {
     router.push(`/stake/${assetSymbol.toLocaleLowerCase()}`);
   };
@@ -141,27 +143,38 @@ const StakePage: React.FC = () => {
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4">
                     <div className="text-yieldi-brown text-xl font-normal flex items-center h-full">
-                      {satoshiToBtc(totalStake)} {asset.assetSymbol}
+                      {isConnected
+                        ? `${satoshiToBtc(totalStake)} ${asset.assetSymbol}`
+                        : "-"}{" "}
                     </div>
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4 ">
-                    <div className="text-yieldi-brown text-xl font-normal  ">
-                      {satoshiToBtc(withdrawalBalance)} {asset.assetSymbol}
-                      <div className="flex text-yieldi-brown-light text-sm font-normal items-center h-full">
-                        <Image
-                          src="/arrowTurnedDown.svg"
-                          alt="Stake asset"
-                          width={16}
-                          height={16}
-                          className="pr-1"
-                        />
-                        <p className="text-xs pr-1">
-                          {satoshiToBtc(pendingBalance)} {asset.assetSymbol}
-                        </p>
-                        <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
-                          PENDING
-                        </p>
-                      </div>
+                    <div className="text-yieldi-brown text-xl font-normal flex items-center h-full">
+                      {isConnected ? (
+                        <div className="text-yieldi-brown text-xl font-normal  ">
+                          {satoshiToBtc(withdrawalBalance)} {asset.assetSymbol}
+                          {shouldShowPendingBalance ? (
+                            <div className="flex text-yieldi-brown-light text-sm font-normal items-center h-full">
+                              <Image
+                                src="/arrowTurnedDown.svg"
+                                alt="Stake asset"
+                                width={16}
+                                height={16}
+                                className="pr-1"
+                              />
+                              <p className="text-xs pr-1">
+                                {satoshiToBtc(pendingBalance)}{" "}
+                                {asset.assetSymbol}
+                              </p>
+                              <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
+                                PENDING
+                              </p>
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : (
+                        "-"
+                      )}
                     </div>
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4 whitespace-nowrap ">
