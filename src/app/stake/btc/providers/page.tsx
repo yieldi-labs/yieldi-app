@@ -121,12 +121,7 @@ const StakeBTCPage = () => {
                 </p>
               </div>
             </div>
-            <MetricsGrid
-              confirmedTvl={confirmedTvl}
-              stakingCap={0}
-              remainingBlocks={0}
-              assetSymbol={"BTC"}
-            />
+            <MetricsGrid confirmedTvl={confirmedTvl} assetSymbol={"BTC"} />
           </div>
         </div>
 

@@ -6,17 +6,8 @@ const AssetDetailsSection: React.FC<{
   asset: any;
   isConnected: boolean;
   confirmedTvl: string;
-  stakingCap: number;
-  remainingBlocks: number;
   onStakeClick: () => void;
-}> = ({
-  asset,
-  isConnected,
-  confirmedTvl,
-  stakingCap,
-  remainingBlocks,
-  onStakeClick,
-}) => {
+}> = ({ asset, isConnected, confirmedTvl, onStakeClick }) => {
   return (
     <div className="w-full mb-6 bg-white">
       <div className="border-2 border-yieldi-gray-200">
@@ -55,8 +46,6 @@ const AssetDetailsSection: React.FC<{
         </div>
         <MetricsGrid
           confirmedTvl={confirmedTvl}
-          stakingCap={stakingCap}
-          remainingBlocks={remainingBlocks}
           assetSymbol={asset?.assetSymbol}
         />
       </div>

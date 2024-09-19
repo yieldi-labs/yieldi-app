@@ -4,7 +4,15 @@ import React from "react";
 
 import { StakeAsset } from "@/app/types/stakeAsset";
 
-export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
+import { Formatter } from "@/utils/numberFormatter";
+export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({
+  asset,
+  TVL,
+  stakedBalance,
+  walletBalance,
+  withdrawalBalance,
+  pendingBalance,
+}) => {
   return (
     <div className="mb-4 bg-white border-2">
       <div className="grid grid-cols-7 border-yieldi-gray-200 border">
@@ -27,7 +35,9 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
           </div>
         </Card>
         <div className="rounded-none p-4 col-span-3">
-          <p className="text-yieldi-brown text-lg uppercase">TVL $1.4B</p>
+          <p className="text-yieldi-brown text-lg uppercase">
+            TVL ${Formatter.format((TVL as number) * asset.price)}
+          </p>
           <p className="flex text-yieldi-brown-light text-sm font-light shrink-0">
             {asset.amount} {asset.assetSymbol}
           </p>
@@ -40,7 +50,7 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
               Staked Balance
             </div>
             <span className="text-yieldi-brown text-xl font-medium">
-              {asset.remainingBalance} {asset.assetSymbol}
+              {stakedBalance} {asset.assetSymbol}
             </span>
           </Card>
           <div className="rounded-none border-yieldi-gray-200 border-l-2 p-4 col-span-3">
@@ -48,8 +58,7 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
               Wallet Balance
             </p>
             <p className="text-yieldi-brown text-xl font-medium">
-              {asset.remainingBalance}
-              {asset.assetSymbol}
+              {walletBalance} {asset.assetSymbol}
             </p>
           </div>
         </div>
@@ -59,7 +68,7 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
               Withdrawal Balance
             </p>
             <div className="text-yieldi-brown text-xl font-medium  ">
-              {asset.totalBalance} {asset.assetSymbol}
+              {withdrawalBalance} {asset.assetSymbol}
               <div className="flex text-yieldi-brown-light text-sm font-normal items-center ">
                 <Image
                   src="/arrowTurnedDown.svg"
@@ -69,7 +78,7 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
                   className="pr-1"
                 />
                 <p className="text-xs pr-1 pt-1">
-                  {asset.amount} {asset.assetSymbol}
+                  {pendingBalance} {asset.assetSymbol}
                 </p>
                 <p className="flex justify-center items-center px-3 gap-2.5 text-xxs rounded-full bg-yieldi-yellow text-yieldi-brown-light">
                   PENDING
@@ -108,4 +117,9 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({ asset }) => {
 
 interface MobileStakeAssetInfo {
   asset: StakeAsset;
+  TVL: string | number;
+  walletBalance: number;
+  stakedBalance: number;
+  withdrawalBalance: number;
+  pendingBalance?: number;
 }

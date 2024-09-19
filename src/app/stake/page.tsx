@@ -6,8 +6,11 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 import { useAssets } from "@/app/context/AssetContext";
+import { useData } from "@/app/context/DataContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { satoshiToBtc } from "@/utils/btcConversions";
+import { maxDecimals } from "@/utils/maxDecimals";
+import { Formatter } from "@/utils/numberFormatter";
 
 import { StakeAsset } from "../types/stakeAsset";
 
@@ -16,11 +19,15 @@ import { MobileAssetInfo } from "./mobileAssetInfo";
 const StakePage: React.FC = () => {
   const router = useRouter();
   const assets = useAssets().assets;
+  const { statsData } = useData();
+  const { btcWalletBalanceSat, isConnected } = useWallet();
   const handleOnClick = (assetSymbol: string) => () => {
     router.push(`/stake/${assetSymbol.toLocaleLowerCase()}`);
   };
 
-  const { btcWalletBalanceSat, isConnected } = useWallet();
+  const confirmedTvl = statsData?.totalTVLSat
+    ? `${maxDecimals(satoshiToBtc(statsData.activeTVLSat), 8)}`
+    : 0;
 
   const filteredAssets = assets.filter((asset) =>
     process.env.NEXT_PUBLIC_ASSETS?.includes(asset.assetSymbol),
@@ -94,22 +101,17 @@ const StakePage: React.FC = () => {
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4 items-center h-full ">
                     <div className="text-yieldi-brown text-xl font-normal ">
-                      $0.00
+                      ${" "}
+                      {Formatter.format((confirmedTvl as number) * asset.price)}
                     </div>
                     <div className="text-yieldi-brown-light text-sm font-normal">
-                      {isConnected
-                        ? (
-                            satoshiToBtc(btcWalletBalanceSat) * asset.price
-                          ).toString()
-                        : "-"}
+                      {confirmedTvl} {asset.assetSymbol}
                     </div>
                   </Table.Cell>
                   <Table.Cell className="px-6 py-4 ">
                     <div className="text-yieldi-brown text-xl font-normal flex items-center h-full  ">
                       {isConnected
-                        ? (
-                            satoshiToBtc(btcWalletBalanceSat) * asset.price
-                          ).toString()
+                        ? `${satoshiToBtc(btcWalletBalanceSat)} ${asset.assetSymbol}`
                         : "-"}{" "}
                     </div>
                   </Table.Cell>
@@ -172,7 +174,14 @@ const StakePage: React.FC = () => {
             key={asset.assetName + asset.assetSymbol}
             onClick={handleOnClick(asset.assetSymbol)}
           >
-            <MobileAssetInfo asset={asset} />
+            <MobileAssetInfo
+              asset={asset}
+              TVL={confirmedTvl}
+              walletBalance={satoshiToBtc(btcWalletBalanceSat)}
+              stakedBalance={0}
+              withdrawalBalance={0}
+              pendingBalance={0}
+            />
           </span>
         ))}
       </div>

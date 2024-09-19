@@ -25,7 +25,6 @@ const StakedAssetDetails: React.FC = () => {
   const assetSymbol = pathParts.length > 2 ? pathParts[2] : null;
   const router = useRouter();
   const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
-  const [remainingBlocks, setRemainingBlocks] = useState<number>(0);
   // This state variable will force a re-render when its value changes
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -64,30 +63,18 @@ const StakedAssetDetails: React.FC = () => {
     enabled: !!btcWallet,
   });
 
-  const activationHeight =
-    paramWithContext?.nextBlockParams?.currentVersion?.activationHeight;
-
-  // Update remainingBlocks based on activationHeight and current Bitcoin height
   useEffect(() => {
-    if (btcWallet && activationHeight && btcHeight !== undefined) {
+    if (btcWallet) {
       Promise.all([btcWallet.getBTCTipHeight(), btcWallet.getNetwork()]).then(
         ([height]) => {
           setBtcHeight(height);
-          setRemainingBlocks(activationHeight - height);
         },
       );
     }
-  }, [activationHeight, btcHeight, btcWallet, remainingBlocks]);
+  }, [btcHeight, btcWallet]);
 
   const { delegations } = useGetDelegations(address, publicKeyNoCoord);
 
-  const stakingCap = maxDecimals(
-    satoshiToBtc(
-      paramWithContext?.nextBlockParams?.currentVersion?.maxStakingAmountSat ||
-        0,
-    ),
-    8,
-  );
   const { finalityProviders } = useFinalityProviders();
   const finalityProvidersKV: Record<string, string> = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
@@ -112,8 +99,6 @@ const StakedAssetDetails: React.FC = () => {
         asset={asset}
         isConnected={isConnected}
         confirmedTvl={confirmedTvl}
-        stakingCap={stakingCap}
-        remainingBlocks={remainingBlocks}
         onStakeClick={handleOnClick}
       />
 
