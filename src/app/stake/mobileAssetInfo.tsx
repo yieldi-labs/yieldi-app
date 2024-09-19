@@ -89,21 +89,21 @@ export const MobileAssetInfo: React.FC<MobileStakeAssetInfo> = ({
             <p className="text-yieldi-brown text-xs font-light leading-normal">
               Actions
             </p>
-            <div className="flex items-center justify-center self-stretch p-2">
-              <button className="bg-yieldi-green text-black items-center rounded mr-5 ">
+            <div className="flex items-center self-stretch gap-3 h-full">
+              <button className="bg-yieldi-green text-black items-center rounded pl-1 pr-[5px] py-[5px] ">
                 <Image
                   src="/download.svg"
                   alt="Stake asset"
-                  width={38}
-                  height={38}
+                  width={28}
+                  height={28}
                 />
               </button>
-              <button className="bg-yieldi-brown-light text-white items-center rounded">
+              <button className="bg-yieldi-brown-light text-white items-center rounded p-[5px]">
                 <Image
                   src="/upload.svg"
                   alt="Unstake asset"
-                  width={38}
-                  height={38}
+                  width={28}
+                  height={28}
                 />
               </button>
             </div>

@@ -177,23 +177,25 @@ const StakePage: React.FC = () => {
                       )}
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="px-6 py-4 whitespace-nowrap ">
-                    <button className="bg-yieldi-green text-black items-center rounded mr-5 ">
-                      <Image
-                        src="/download.svg"
-                        alt="Stake asset"
-                        width={28}
-                        height={28}
-                      />
-                    </button>
-                    <button className="bg-yieldi-brown-light text-white items-center rounded">
-                      <Image
-                        src="/upload.svg"
-                        alt="Unstake asset"
-                        width={28}
-                        height={28}
-                      />
-                    </button>
+                  <Table.Cell className="whitespace-nowrap ">
+                    <div className="flex items-center self-stretch gap-3 h-full">
+                      <button className="bg-yieldi-green text-black items-center rounded pl-1 pr-[5px] py-[5px] ">
+                        <Image
+                          src="/download.svg"
+                          alt="Stake asset"
+                          width={28}
+                          height={28}
+                        />
+                      </button>
+                      <button className="bg-yieldi-brown-light text-white items-center rounded p-[5px]">
+                        <Image
+                          src="/upload.svg"
+                          alt="Unstake asset"
+                          width={28}
+                          height={28}
+                        />
+                      </button>
+                    </div>
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row
