@@ -290,7 +290,7 @@ export const Staking: React.FC<StakingProps> = ({
       showDialog({
         title: "Success",
         message:
-          "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
+          "Bitcoin staked with success. Click the button below to see your delegations or close the dialog to continue on this page.",
         buttonTitle: "see my delegations",
         onButtonClick: function (): void {
           router.back();
