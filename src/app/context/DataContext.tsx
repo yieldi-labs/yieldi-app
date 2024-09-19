@@ -39,7 +39,7 @@ export const DataProvider = ({
             ids,
             vs_currencies: "usd",
           },
-        }
+        },
       );
       return response.data;
     },

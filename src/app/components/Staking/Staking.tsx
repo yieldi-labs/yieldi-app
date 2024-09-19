@@ -3,7 +3,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, networks } from "bitcoinjs-lib";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -92,7 +92,6 @@ export const Staking: React.FC<StakingProps> = ({
     approachingCapRange: false,
   });
 
-  const pathname = usePathname();
   const router = useRouter();
 
   const finalityProvider = selectedFinalityProvider;
@@ -157,7 +156,7 @@ export const Staking: React.FC<StakingProps> = ({
     }
     const paramCtx = getCurrentGlobalParamsVersion(
       btcHeight + 1,
-      globalParams.data
+      globalParams.data,
     );
     setParamWithCtx(paramCtx);
   }, [btcHeight, globalParams]);
@@ -284,13 +283,13 @@ export const Staking: React.FC<StakingProps> = ({
         address,
         publicKeyNoCoord,
         feeRate,
-        availableUTXOs
+        availableUTXOs,
       );
       // UI
       showDialog({
         title: "Success",
         message:
-          "You've staked your corn. Click the button below to see your delegations or close the dialog to continue on this page.",
+          "Bitcoin staked with success. Click the button below to see your delegations or close the dialog to continue on this page.",
         buttonTitle: "see my delegations",
         onButtonClick: function (): void {
           router.back();
@@ -314,7 +313,7 @@ export const Staking: React.FC<StakingProps> = ({
   // Save the delegation to local storage
   const handleLocalStorageDelegations = (
     signedTxHex: string,
-    stakingTerm: number
+    stakingTerm: number,
   ) => {
     setDelegationsLocalStorage((delegations) => [
       toLocalStorageDelegation(
@@ -323,7 +322,7 @@ export const Staking: React.FC<StakingProps> = ({
         finalityProvider!.btcPk,
         stakingAmountSat,
         signedTxHex,
-        stakingTerm
+        stakingTerm,
       ),
       ...delegations,
     ]);
@@ -357,7 +356,7 @@ export const Staking: React.FC<StakingProps> = ({
           address,
           publicKeyNoCoord,
           memoizedFeeRate,
-          availableUTXOs
+          availableUTXOs,
         );
         return stakingFeeSat;
       } catch (error: Error | any) {
@@ -511,7 +510,7 @@ export const Staking: React.FC<StakingProps> = ({
         maxStakingTimeBlocks,
         stakingAmountSat,
         stakingTimeBlocksWithFixed,
-        !!finalityProvider
+        !!finalityProvider,
       );
 
       const previewReady =
@@ -564,7 +563,7 @@ export const Staking: React.FC<StakingProps> = ({
             <button
               className={twMerge(
                 "w-full py-4 px-2 font-gt-america-mono text-sm font-medium cursor-pointer border border-yieldi-gray-200",
-                signing ? "bg-gray-300" : "bg-yieldi-green"
+                signing ? "bg-gray-300" : "bg-yieldi-green",
               )}
               onClick={() => {
                 handleSign();

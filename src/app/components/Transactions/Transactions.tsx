@@ -19,6 +19,8 @@ import { getErrorMessage, getErrorTitle } from "@/utils/errors";
 import { durationTillNow } from "@/utils/formatTime";
 import { getState, getStateTooltip } from "@/utils/getState";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
+import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
+import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
 import { maxDecimals } from "@/utils/maxDecimals";
@@ -273,6 +275,14 @@ const Transactions: React.FC<{
 
   const delegationsAPI = delegations.delegations;
 
+  // Local storage state for delegations
+  const delegationsLocalStorageKey =
+    getDelegationsLocalStorageKey(publicKeyNoCoord);
+
+  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<
+    Delegation[]
+  >(delegationsLocalStorageKey, []);
+
   const intermediateDelegationsLocalStorageKey =
     getIntermediateDelegationsLocalStorageKey(publicKeyNoCoord);
 
@@ -295,6 +305,32 @@ const Transactions: React.FC<{
       ...delegations,
     ]);
   };
+
+  // Clean up the local storage delegations
+  useEffect(() => {
+    if (!delegations?.delegations) {
+      return;
+    }
+
+    const updateDelegationsLocalStorage = async () => {
+      const { areDelegationsDifferent, delegations: newDelegations } =
+        await calculateDelegationsDiff(
+          delegations.delegations,
+          delegationsLocalStorage,
+        );
+      if (areDelegationsDifferent) {
+        setDelegationsLocalStorage(newDelegations);
+      }
+    };
+
+    updateDelegationsLocalStorage();
+  }, [delegations, setDelegationsLocalStorage, delegationsLocalStorage]);
+
+  // combine delegations from the API and local storage, prioritizing API data
+  const combinedDelegationsData = delegationsAPI
+    ? [...delegationsLocalStorage, ...delegationsAPI]
+    : // if no API data, fallback to using only local storage delegations
+      delegationsLocalStorage;
 
   const { showDialog } = useDialog();
 
@@ -434,7 +470,7 @@ const Transactions: React.FC<{
             </Table.Row>
           </Table.Header>
           <Table.Body className="space-y-1.5 bg-white border-b">
-            {delegations?.delegations?.map((delegation: any) => {
+            {combinedDelegationsData?.map((delegation: any) => {
               const finalityProviderMoniker =
                 finalityProvidersKV[delegation.finalityProviderPkHex];
               const intermediateDelegation =
