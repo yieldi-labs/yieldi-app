@@ -168,10 +168,12 @@ const DelegationRow: React.FC<{
           </a>
         </Table.Cell>
         <Table.Cell className="p-4">
-          <div className="text-yieldi-brown text-m font-medium leading-normal">
+          <div className="text-xl font-gt-america text-body font-normal">
             {`$${Formatter.format(maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4))}`}
             <br />
-            {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
+            <span className="font-gt-america text-sm font-normal text-yieldi-brown-light">
+              {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
+            </span>
           </div>
         </Table.Cell>
         <Table.Cell className="text-yieldi-brown text-lg font-normal p-4">{`$0.00 PENDING`}</Table.Cell>
@@ -183,7 +185,7 @@ const DelegationRow: React.FC<{
             )}
           >
             <div
-              className="flex justify-center items-center cursor-pointer"
+              className="flex justify-center items-center cursor-pointer align-middle"
               data-tooltip-id={`tooltip-${stakingTxHashHex}`}
               data-tooltip-content={renderStateTooltip()}
               data-tooltip-place="top"
@@ -470,9 +472,6 @@ const Transactions: React.FC<{
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 AMOUNT
-              </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
-                WITHDRAWAL BALANCE
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 STATUS
