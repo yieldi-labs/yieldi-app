@@ -27,21 +27,27 @@ const StakePage: React.FC = () => {
   let totalStake = 0;
   let pendingBalance = 0;
   let withdrawalBalance = 0;
+
+  /*
+  active = staked
+  withdrawal = unbonded and not yet withdrawan
+  pending = withdrawing (waiting for btc confirmation)
+  */
   if (isConnected && delegation?.delegations) {
     const filteredDelegation = delegation.delegations;
     filteredDelegation.delegations.map((item: Delegation) => {
-      if (item?.state === DelegationState.ACTIVE) {
-        totalStake += item?.stakingValueSat;
-      }
-      if (
-        item?.state === DelegationState.UNBONDING ||
-        item?.state === DelegationState.UNBONDED ||
-        item?.state === DelegationState.PENDING
-      ) {
-        pendingBalance += item?.stakingValueSat;
-      }
-      if (item?.state === DelegationState.WITHDRAWN) {
-        withdrawalBalance += item?.stakingValueSat;
+      switch (item?.state) {
+        case DelegationState.ACTIVE:
+          totalStake += item?.stakingValueSat;
+          break;
+        case DelegationState.PENDING:
+          pendingBalance += item?.stakingValueSat;
+          break;
+        case DelegationState.UNBONDED:
+          withdrawalBalance += item?.stakingValueSat;
+          break;
+        default:
+          break;
       }
     });
   }

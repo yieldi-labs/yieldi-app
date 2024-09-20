@@ -8,15 +8,18 @@ import { useLocalStorage } from "usehooks-ts";
 import BackButton from "@/app/components/BackButton";
 import MetricsGrid from "@/app/components/Staking/Metrics";
 import { Staking, StakingProps } from "@/app/components/Staking/Staking";
+import { useAssets } from "@/app/context/AssetContext";
 import { useData } from "@/app/context/DataContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useStake } from "@/app/context/StakeContext";
 import { useWallet } from "@/app/context/WalletContext";
-import { Delegation } from "@/app/types/delegations";
+import { useGetDelegations } from "@/app/hooks/useGetDelegations";
+import { Delegation, DelegationState } from "@/app/types/delegations";
 import { FinalityProvider } from "@/app/types/finalityProviders";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { Formatter } from "@/utils/numberFormatter";
 import { truncateMiddle } from "@/utils/strings";
 import wBtcIcon from "@public/icons/wbtc.svg";
 
@@ -41,6 +44,23 @@ const StakeBTCPage = () => {
     setConnectModalOpen,
   } = useWallet();
 
+  const delegation = useGetDelegations(address, publicKeyNoCoord);
+
+  let activeDelegations: Delegation[] = [];
+
+  if (delegation?.delegations?.delegations) {
+    activeDelegations = delegation.delegations.delegations.filter(
+      (item: Delegation) => item.state === DelegationState.ACTIVE,
+    );
+  }
+
+  const simplifiedDelegations = activeDelegations.map((item) => ({
+    finalityProviderPkHex: item.finalityProviderPkHex,
+    stakingValueSat: item.stakingValueSat,
+  }));
+
+  const { assets } = useAssets();
+  const asset = assets.find((asset) => asset.assetSymbol === "BTC");
   const { finalityProviders } = useFinalityProviders();
   const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
   const delegationsLocalStorageKey =
@@ -166,16 +186,45 @@ const StakeBTCPage = () => {
                         </div>
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-yieldi-brown text-xl font-normal">
-                          $0.00
-                        </div>
-                        <div className="text-yieldi-brown-light text-sm font-normal">
-                          0.0 BTC
-                        </div>
+                        {(() => {
+                          const delegation = simplifiedDelegations.find(
+                            (d) => d.finalityProviderPkHex === provider.btcPk,
+                          );
+
+                          if (delegation) {
+                            return (
+                              <>
+                                <div className="text-yieldi-brown text-xl font-normal">
+                                  {`$ ${Formatter.format(
+                                    satoshiToBtc(delegation.stakingValueSat) *
+                                      (asset?.price || 0),
+                                  )}`}
+                                </div>
+                                <div className="text-yieldi-brown-light text-sm font-normal">
+                                  {`${satoshiToBtc(
+                                    delegation.stakingValueSat,
+                                  )} BTC`}
+                                </div>
+                              </>
+                            );
+                          } else {
+                            // If no delegation found, display zero values
+                            return (
+                              <>
+                                <div className="text-yieldi-brown text-xl font-normal">
+                                  $0.00
+                                </div>
+                                <div className="text-yieldi-brown-light text-sm font-normal">
+                                  0.0 BTC
+                                </div>
+                              </>
+                            );
+                          }
+                        })()}
                       </Table.Cell>
                       <Table.Cell className="px-6 py-4 whitespace-nowrap">
                         <div className="text-yieldi-brown text-xl font-normal">
-                          $0.00
+                          {`$ ${Formatter.format(provider.totalDelegations * (asset?.price || 0))}`}
                         </div>
                         <div className="text-yieldi-brown-light text-sm font-normal">
                           {provider.totalDelegations} BTC

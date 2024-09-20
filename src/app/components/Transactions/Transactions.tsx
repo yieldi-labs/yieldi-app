@@ -25,6 +25,7 @@ import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegati
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { Formatter } from "@/utils/numberFormatter";
 import { signPsbtTransaction } from "@/utils/psbt";
 import { trim } from "@/utils/trim";
 
@@ -168,7 +169,7 @@ const DelegationRow: React.FC<{
         </Table.Cell>
         <Table.Cell className="p-4">
           <div className="text-yieldi-brown text-m font-medium leading-normal">
-            {`$${maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4)}`}
+            {`$${Formatter.format(maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4))}`}
             <br />
             {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
           </div>

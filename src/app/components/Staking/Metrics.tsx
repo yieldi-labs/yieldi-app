@@ -81,7 +81,7 @@ const MetricsGrid: React.FC<{
           PRICE
         </p>
         <p className="text-yieldi-brown text-xl font-medium leading-normal">
-          $ {Formatter.format(asset?.price || 0)} USD
+          $ {Formatter.format(asset?.price || 0)}
         </p>
       </div>
     </div>
