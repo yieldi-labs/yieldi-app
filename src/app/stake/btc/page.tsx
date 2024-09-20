@@ -6,12 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
-import { getStats } from "@/app/api/getStats";
 import BackButton from "@/app/components/BackButton";
 import AssetDetailsSection from "@/app/components/Staking/AssetDetailsSection";
 import MyStakeCard from "@/app/components/Staking/MyStakeCard";
 import Transactions from "@/app/components/Transactions/Transactions";
-import { assets } from "@/app/config/StakedAssets";
+import { useAssets } from "@/app/context/AssetContext";
+import { useData } from "@/app/context/DataContext";
 import { useFinalityProviders } from "@/app/context/FinalityProvidersContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { useGetDelegations } from "@/app/hooks/useGetDelegations";
@@ -25,7 +25,6 @@ const StakedAssetDetails: React.FC = () => {
   const assetSymbol = pathParts.length > 2 ? pathParts[2] : null;
   const router = useRouter();
   const [btcHeight, setBtcHeight] = useState<number | undefined>(undefined);
-  const [remainingBlocks, setRemainingBlocks] = useState<number>(0);
   // This state variable will force a re-render when its value changes
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -36,9 +35,16 @@ const StakedAssetDetails: React.FC = () => {
     isConnected,
     btcWalletBalanceSat,
   } = useWallet();
+  const assets = useAssets().assets;
   const asset = assets.find(
     (asset) => asset.assetSymbol.toLowerCase() === assetSymbol,
   );
+
+  const { statsData } = useData();
+
+  const confirmedTvl = statsData?.totalTVLSat
+    ? `${maxDecimals(satoshiToBtc(statsData.activeTVLSat), 8)}`
+    : "0";
 
   // Fetch global params and stats
   const { data: paramWithContext } = useQuery({
@@ -58,37 +64,18 @@ const StakedAssetDetails: React.FC = () => {
     enabled: !!btcWallet,
   });
 
-  const activationHeight =
-    paramWithContext?.nextBlockParams?.currentVersion?.activationHeight;
-
-  // Update remainingBlocks based on activationHeight and current Bitcoin height
   useEffect(() => {
-    if (btcWallet && activationHeight && btcHeight !== undefined) {
+    if (btcWallet) {
       Promise.all([btcWallet.getBTCTipHeight(), btcWallet.getNetwork()]).then(
         ([height]) => {
           setBtcHeight(height);
-          setRemainingBlocks(activationHeight - height);
         },
       );
     }
-  }, [activationHeight, btcHeight, btcWallet, remainingBlocks]);
+  }, [btcHeight, btcWallet]);
 
   const { delegations } = useGetDelegations(address, publicKeyNoCoord);
-  const { data } = useQuery({
-    queryKey: ["API_STATS"],
-    queryFn: async () => getStats(),
-    refetchInterval: 60000,
-  });
-  const confirmedTvl = data?.totalTVLSat
-    ? `${maxDecimals(satoshiToBtc(data.activeTVLSat), 8)}`
-    : "0";
-  const stakingCap = maxDecimals(
-    satoshiToBtc(
-      paramWithContext?.nextBlockParams?.currentVersion?.maxStakingAmountSat ||
-        0,
-    ),
-    8,
-  );
+
   const { finalityProviders } = useFinalityProviders();
   const finalityProvidersKV: Record<string, string> = finalityProviders?.reduce(
     (acc, fp) => ({ ...acc, [fp?.btcPk]: fp?.description?.moniker }),
@@ -96,7 +83,7 @@ const StakedAssetDetails: React.FC = () => {
   );
 
   const handleOnClick = () => {
-    router.push(`/stake/${assetSymbol}`);
+    router.push(`/stake/${assetSymbol}/providers`);
   };
 
   // Function to trigger a refresh of the transactions table
@@ -113,8 +100,6 @@ const StakedAssetDetails: React.FC = () => {
         asset={asset}
         isConnected={isConnected}
         confirmedTvl={confirmedTvl}
-        stakingCap={stakingCap}
-        remainingBlocks={remainingBlocks}
         onStakeClick={handleOnClick}
       />
 

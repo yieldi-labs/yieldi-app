@@ -6,6 +6,7 @@ export const assets: StakeAsset[] = [
   {
     assetName: "Native Bitcoin",
     assetSymbol: "BTC",
+    assetPriceSymbol: "bitcoin",
     amount: 0.0001,
     price: 10000,
     totalBalance: 0.0001,
@@ -14,6 +15,7 @@ export const assets: StakeAsset[] = [
   {
     assetName: "Native ETH",
     assetSymbol: "ETH",
+    assetPriceSymbol: "ethereum",
     amount: 0.0001,
     price: 10000,
     totalBalance: 0.0001,
@@ -22,6 +24,7 @@ export const assets: StakeAsset[] = [
   {
     assetName: "Staked Coinbase ETH",
     assetSymbol: "cbETH",
+    assetPriceSymbol: "coinbase-wrapped-staked-eth",
     amount: 0.0001,
     price: 10000,
     totalBalance: 0.0001,

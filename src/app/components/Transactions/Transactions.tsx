@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
+import { twMerge } from "tailwind-merge";
 import { useLocalStorage } from "usehooks-ts";
 
 import { getGlobalParams } from "@/app/api/getGlobalParams";
@@ -19,9 +20,12 @@ import { getErrorMessage, getErrorTitle } from "@/utils/errors";
 import { durationTillNow } from "@/utils/formatTime";
 import { getState, getStateTooltip } from "@/utils/getState";
 import { getCurrentGlobalParamsVersion } from "@/utils/globalParams";
+import { calculateDelegationsDiff } from "@/utils/local_storage/calculateDelegationsDiff";
+import { getDelegationsLocalStorageKey } from "@/utils/local_storage/getDelegationsLocalStorageKey";
 import { getIntermediateDelegationsLocalStorageKey } from "@/utils/local_storage/getIntermediateDelegationsLocalStorageKey";
 import { toLocalStorageIntermediateDelegation } from "@/utils/local_storage/toLocalStorageIntermediateDelegation";
 import { maxDecimals } from "@/utils/maxDecimals";
+import { Formatter } from "@/utils/numberFormatter";
 import { signPsbtTransaction } from "@/utils/psbt";
 import { trim } from "@/utils/trim";
 
@@ -50,7 +54,6 @@ const DelegationRow: React.FC<{
   onUnbond,
   onWithdraw,
   intermediateState,
-  globalParamsVersion,
 }) => {
   const { stakingValueSat, stakingTx, stakingTxHashHex, state, isOverflow } =
     delegation;
@@ -89,7 +92,7 @@ const DelegationRow: React.FC<{
           </button>
         </div>
       );
-    } else {
+    } else if (state === DelegationState.UNBONDING) {
       return (
         <button
           className="opacity-50 flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-yieldi-beige text-sm font-medium"
@@ -100,6 +103,8 @@ const DelegationRow: React.FC<{
           Unbond
         </button>
       );
+    } else {
+      return <></>;
     }
   };
 
@@ -119,9 +124,19 @@ const DelegationRow: React.FC<{
   const renderStateTooltip = () => {
     // overflow should be shown only on active state
     if (isOverflow && isActive) {
-      return getStateTooltip(DelegationState.OVERFLOW, globalParamsVersion);
+      return getStateTooltip(DelegationState.OVERFLOW);
     } else {
-      return getStateTooltip(intermediateState || state, globalParamsVersion);
+      return getStateTooltip(intermediateState || state);
+    }
+  };
+
+  const getStateBgColor = () => {
+    if (state === DelegationState.ACTIVE) {
+      return "bg-yieldi-green";
+    } else if (state === DelegationState.WITHDRAWN) {
+      return "bg-yieldi-gray-200";
+    } else {
+      return "bg-yieldi-yellow";
     }
   };
 
@@ -153,27 +168,29 @@ const DelegationRow: React.FC<{
           </a>
         </Table.Cell>
         <Table.Cell className="p-4">
-          <div className="text-yieldi-brown text-m font-medium leading-normal">
-            {`$${maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4)}`}
+          <div className="text-xl font-gt-america text-body font-normal">
+            {`$${Formatter.format(maxDecimals(satoshiToBtc(stakingValueSat) * (asset?.price || 1), 4))}`}
             <br />
-            {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
+            <span className="font-gt-america text-sm font-normal text-yieldi-brown-light">
+              {`${maxDecimals(satoshiToBtc(stakingValueSat), 5)} ${asset?.assetSymbol}`}
+            </span>
           </div>
         </Table.Cell>
         <Table.Cell className="text-yieldi-brown text-lg font-normal p-4">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
           <span
-            className={` flex justify-center items-center rounded-full ${state === "active" ? "bg-yieldi-green text-black" : "bg-yieldi-red text-white"}`}
+            className={twMerge(
+              "flex items-center justify-center w-[86px] h-[33px] px-2.5 py-3 gap-2.5 rounded-full text-primary font-medium text-[10px] font-gt-america-mono leading-3",
+              getStateBgColor(),
+            )}
           >
-            <div className="flex justify-center items-center">
-              <p>{renderState()}</p>
-              <span
-                className="cursor-pointer text-xs"
-                data-tooltip-id={`tooltip-${stakingTxHashHex}`}
-                data-tooltip-content={renderStateTooltip()}
-                data-tooltip-place="top"
-              >
-                <AiOutlineInfoCircle />
-              </span>
+            <div
+              className="flex justify-center items-center cursor-pointer align-middle"
+              data-tooltip-id={`tooltip-${stakingTxHashHex}`}
+              data-tooltip-content={renderStateTooltip()}
+              data-tooltip-place="top"
+            >
+              <p className="uppercase">{renderState()}</p>
               <span>
                 <Tooltip id={`tooltip-${stakingTxHashHex}`} />
               </span>
@@ -273,6 +290,14 @@ const Transactions: React.FC<{
 
   const delegationsAPI = delegations.delegations;
 
+  // Local storage state for delegations
+  const delegationsLocalStorageKey =
+    getDelegationsLocalStorageKey(publicKeyNoCoord);
+
+  const [delegationsLocalStorage, setDelegationsLocalStorage] = useLocalStorage<
+    Delegation[]
+  >(delegationsLocalStorageKey, []);
+
   const intermediateDelegationsLocalStorageKey =
     getIntermediateDelegationsLocalStorageKey(publicKeyNoCoord);
 
@@ -295,6 +320,32 @@ const Transactions: React.FC<{
       ...delegations,
     ]);
   };
+
+  // Clean up the local storage delegations
+  useEffect(() => {
+    if (!delegations?.delegations) {
+      return;
+    }
+
+    const updateDelegationsLocalStorage = async () => {
+      const { areDelegationsDifferent, delegations: newDelegations } =
+        await calculateDelegationsDiff(
+          delegations.delegations,
+          delegationsLocalStorage,
+        );
+      if (areDelegationsDifferent) {
+        setDelegationsLocalStorage(newDelegations);
+      }
+    };
+
+    updateDelegationsLocalStorage();
+  }, [delegations, setDelegationsLocalStorage, delegationsLocalStorage]);
+
+  // combine delegations from the API and local storage, prioritizing API data
+  const combinedDelegationsData = delegationsAPI
+    ? [...delegationsLocalStorage, ...delegationsAPI]
+    : // if no API data, fallback to using only local storage delegations
+      delegationsLocalStorage;
 
   const { showDialog } = useDialog();
 
@@ -423,9 +474,6 @@ const Transactions: React.FC<{
                 AMOUNT
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
-                WITHDRAWAL BALANCE
-              </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 STATUS
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
@@ -434,7 +482,7 @@ const Transactions: React.FC<{
             </Table.Row>
           </Table.Header>
           <Table.Body className="space-y-1.5 bg-white border-b">
-            {delegations?.delegations?.map((delegation: any) => {
+            {combinedDelegationsData?.map((delegation: any) => {
               const finalityProviderMoniker =
                 finalityProvidersKV[delegation.finalityProviderPkHex];
               const intermediateDelegation =
@@ -443,23 +491,31 @@ const Transactions: React.FC<{
                     item.stakingTxHashHex === delegation.stakingTxHashHex,
                 );
               return (
-                <DelegationRow
-                  key={delegation.stakingTxHashHex}
-                  delegation={delegation}
-                  finalityProviderMoniker={finalityProviderMoniker}
-                  asset={asset}
-                  screenType="table"
-                  onUnbond={() =>
-                    handleModal(delegation.stakingTxHashHex, MODE_UNBOND)
-                  }
-                  onWithdraw={() =>
-                    handleModal(delegation.stakingTxHashHex, MODE_WITHDRAW)
-                  }
-                  intermediateState={intermediateDelegation?.state}
-                  globalParamsVersion={
-                    paramWithContext?.nextBlockParams?.currentVersion
-                  }
-                />
+                <>
+                  <DelegationRow
+                    key={delegation.stakingTxHashHex}
+                    delegation={delegation}
+                    finalityProviderMoniker={finalityProviderMoniker}
+                    asset={asset}
+                    screenType="table"
+                    onUnbond={() =>
+                      handleModal(delegation.stakingTxHashHex, MODE_UNBOND)
+                    }
+                    onWithdraw={() =>
+                      handleModal(delegation.stakingTxHashHex, MODE_WITHDRAW)
+                    }
+                    intermediateState={intermediateDelegation?.state}
+                    globalParamsVersion={
+                      paramWithContext?.nextBlockParams?.currentVersion
+                    }
+                  />
+                  <Table.Row
+                    key={
+                      delegation.startTimestamp + delegation.stakingTxHashHex
+                    }
+                    className="w-full h-[6px] border-none shadow-none"
+                  ></Table.Row>
+                </>
               );
             })}
           </Table.Body>

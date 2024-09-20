@@ -1,7 +1,5 @@
 import { DelegationState } from "@/app/types/delegations";
 
-import { blocksToDisplayTime } from "./blocksToDisplayTime";
-
 // Convert state to human readable format
 export const getState = (state: string) => {
   switch (state) {
@@ -32,32 +30,29 @@ export const getState = (state: string) => {
 };
 
 // Create state tooltips for the additional information
-export const getStateTooltip = (
-  state: string,
-  params?: { confirmationDepth: number; unbondingTime: number },
-) => {
+export const getStateTooltip = (state: string) => {
   switch (state) {
     case DelegationState.ACTIVE:
-      return "Stake is active";
+      return "When the position is active.";
     case DelegationState.UNBONDING_REQUESTED:
-      return "Unbonding requested";
+      return "When the unbonding tx is awaiting confirmation.";
     case DelegationState.UNBONDING:
-      return `Unbonding process of ${blocksToDisplayTime(params?.unbondingTime)} has started`;
+      return "When the unbonding tx is awaiting confirmation.";
     case DelegationState.UNBONDED:
-      return "Stake has been unbonded";
+      return "When the unbonding tx is confirmed, the stake amount is now eligible to be withdrawn.";
     case DelegationState.WITHDRAWN:
-      return "Stake has been withdrawn";
+      return "When the stake amount is fully withdrawn and the position is no longer active.";
     case DelegationState.PENDING:
-      return `Stake that is pending ${params?.confirmationDepth || 10} Bitcoin confirmations will only be visible from this device`;
+      return "When the position is awaiting confirmation before becoming active";
     case DelegationState.OVERFLOW:
-      return "Stake is over the staking cap";
+      return "When the stake cap is reached";
     case DelegationState.EXPIRED:
-      return "Stake timelock has expired";
+      return "When the stake time lock has expired";
     // Intermediate local storage states
     case DelegationState.INTERMEDIATE_UNBONDING:
-      return "Stake is requesting unbonding";
+      return "When the unbonding tx is awaiting confirmation.";
     case DelegationState.INTERMEDIATE_WITHDRAWAL:
-      return "Withdrawal transaction pending confirmation on Bitcoin";
+      return "When the withdraw tx is awaiting confirmation.";
     default:
       return "Unknown";
   }

@@ -45,7 +45,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
         <div className="flex items-center text-black shrink-0">
           <Brand />
           <div className="hidden md:flex">
-            <div className="border-yieldi-gray-200 border-x">
+            {/* <div className="border-yieldi-gray-200 border-x">
               <span
                 className={`flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
                   pathName === "/dashboard"
@@ -55,8 +55,8 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
               >
                 <Link href="/dashboard">DASHBOARD</Link>
               </span>
-            </div>
-            <div className="border-yieldi-gray-200 border-r">
+            </div> */}
+            <div className="border-yieldi-gray-200 border-x">
               <span
                 className={`flex h-[56px] px-[30px] py-[10px] flex-col justify-center items-center gap-[10px] ${
                   pathName.includes("/stake")

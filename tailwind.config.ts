@@ -17,6 +17,7 @@ const config: Config = {
         "yieldi-green": "#A1FD59",
         "yieldi-red": "#FF6656",
         "yieldi-dark-gray": "#494949",
+        "yieldi-yellow": "#FFD737",
       },
       spacing: {
         "1": "0.25rem", // 4px
@@ -28,6 +29,7 @@ const config: Config = {
         "14": "3.5rem", // 56px
       },
       fontSize: {
+        xxs: "0.625rem", // 10px
         xs: "0.75rem", // 12px
         sm: "0.875rem", // 14px
         base: "1rem", // 16px
