@@ -18,7 +18,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="w-full bg-yieldi-beige border-y border-yieldi-gray-200 flex flex-col items-start justify-start text-left text-xl text-yieldi-brown font-gt-america">
+    <div className="h-screen w-full bg-yieldi-beige border-y border-yieldi-gray-200 flex flex-col items-start justify-start text-left text-xl text-yieldi-brown font-gt-america">
       <div className="self-stretch border-b border-yieldi-gray-200 flex flex-col items-start justify-start py-[30px] px-2.5 gap-4">
         {/* <Link
           href="/dashboard"
@@ -29,7 +29,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose }) => {
         </Link> */}
         <Link
           href="/stake"
-          className="w-[370px] flex items-center text-xl font-medium"
+          className="w-full flex items-center text-xl font-medium"
           onClick={handleLinkClick}
         >
           STAKE
@@ -43,16 +43,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose }) => {
           <span className="text-xs opacity-40">COMING SOON</span>
         </div>
       </div>
-      <div className="self-stretch flex flex-col items-start justify-start py-[30px] px-2.5 gap-4 text-sm">
-        <Link
-          href="/links"
-          className="w-[370px] flex items-center text-sm font-light"
-          onClick={handleLinkClick}
-        >
-          LINKS
-        </Link>
-        <div className="h-[38px] flex flex-row items-end justify-start gap-6">
-          <SocialIcons onClose={onClose} />
+      <div className="border-b border-yieldi-gray-200 w-full">
+        <div className="self-stretch flex flex-col items-start justify-start py-[30px] px-2.5 gap-4 text-sm">
+          <div className="w-full flex items-center text-sm font-light">
+            LINKS
+          </div>
+          <div className="h-[38px] flex flex-row items-end justify-start gap-6">
+            <SocialIcons onClose={onClose} />
+          </div>
         </div>
       </div>
     </div>
