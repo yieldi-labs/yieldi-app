@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { FaWallet } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import { twMerge } from "tailwind-merge";
 
@@ -14,7 +13,7 @@ import {
 } from "@/utils/wallet/list";
 import { WalletProvider } from "@/utils/wallet/wallet_provider";
 
-import { GeneralModal } from "./GeneralModal";
+import SimpleDialog from "../SimpleDialog";
 
 interface ConnectModalProps {
   open: boolean;
@@ -118,81 +117,72 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     );
   };
 
-  return (
-    <GeneralModal open={open} onClose={onClose}>
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-bold">Connect wallet</h3>
-        <button
-          className="btn btn-circle btn-ghost btn-sm"
-          onClick={() => onClose(false)}
+  const walletContent = walletList.map(
+    ({
+      provider,
+      name,
+      linkToDocs,
+      icon,
+      isQRWallet,
+      supportedNetworks,
+    }: IntegratedWallet) => {
+      if (name === BROWSER_INJECTED_WALLET_NAME) {
+        return buildInjectableWallet(isInjectable, name);
+      }
+      const walletAvailable = isQRWallet || !!window[provider as any];
+
+      // If the wallet is integrated but does not support the current network, do not display it
+      if (
+        !supportedNetworks ||
+        !supportedNetworks.includes(getNetworkConfig().network)
+      ) {
+        return null;
+      }
+
+      return (
+        <a
+          key={name}
+          className={twMerge(
+            "relative flex cursor-pointer items-center gap-2 bg-base-100 p-2 transition-all hover:text-primary hover:border-primary hover:bg-slate-200",
+            !walletAvailable ? "opacity-50" : "",
+          )}
+          onClick={() => walletAvailable && handleConnect(name)}
+          href={!walletAvailable ? linkToDocs : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <IoMdClose size={24} />
-        </button>
-      </div>
-      <div className="flex flex-col justify-center gap-4">
-        <div className="my-4 flex flex-col gap-4">
-          <h3 className="text-center font-semibold">Choose wallet</h3>
-          <div className="grid max-h-80 grid-cols-1 gap-4 overflow-y-auto">
-            {walletList.map(
-              ({
-                provider,
-                name,
-                linkToDocs,
-                icon,
-                isQRWallet,
-                supportedNetworks,
-              }: IntegratedWallet) => {
-                if (name === BROWSER_INJECTED_WALLET_NAME) {
-                  return buildInjectableWallet(isInjectable, name);
-                }
-                const walletAvailable = isQRWallet || !!window[provider as any];
-
-                // If the wallet is integrated but does not support the current network, do not display it
-                if (
-                  !supportedNetworks ||
-                  !supportedNetworks.includes(getNetworkConfig().network)
-                ) {
-                  return null;
-                }
-
-                return (
-                  <a
-                    key={name}
-                    className={twMerge(
-                      "relative flex cursor-pointer items-center gap-2 rounded-xl border-2 bg-base-100 p-2 transition-all hover:text-primary hover:border-primary hover:bg-slate-200",
-                      !walletAvailable ? "opacity-50" : "",
-                    )}
-                    onClick={() => walletAvailable && handleConnect(name)}
-                    href={!walletAvailable ? linkToDocs : undefined}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="flex flex-1 items-center gap-2">
-                      <div className="flex size-10 items-center justify-center rounded-full border bg-white p-2">
-                        <Image src={icon} alt={name} width={26} height={26} />
-                      </div>
-                      <p>{name}</p>
-                      {isQRWallet ? (
-                        <div>
-                          <span
-                            className="cursor-pointer text-xs"
-                            data-tooltip-id={name}
-                            data-tooltip-content="QR codes used for connection/signing"
-                            data-tooltip-place="top"
-                          >
-                            <AiOutlineInfoCircle />
-                          </span>
-                          <Tooltip id={name} />
-                        </div>
-                      ) : null}
-                    </div>
-                  </a>
-                );
-              },
-            )}
+          <div className="flex flex-1 items-center gap-2">
+            <div className="flex size-10 items-center justify-center bg-white p-2">
+              <Image src={icon} alt={name} width={26} height={26} />
+            </div>
+            <p>{name}</p>
+            {isQRWallet ? (
+              <div>
+                <span
+                  className="cursor-pointer text-xs"
+                  data-tooltip-id={name}
+                  data-tooltip-content="QR codes used for connection/signing"
+                  data-tooltip-place="top"
+                >
+                  <AiOutlineInfoCircle />
+                </span>
+                <Tooltip id={name} />
+              </div>
+            ) : null}
           </div>
-        </div>
-      </div>
-    </GeneralModal>
+        </a>
+      );
+    },
+  );
+
+  return (
+    <SimpleDialog
+      isOpen={open}
+      onClose={() => {
+        onClose(false);
+      }}
+      title="Connect Wallet"
+      content={walletContent}
+    />
   );
 };

@@ -1,26 +1,26 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import React from "react";
+import React, { ReactNode } from "react";
 
 interface SimpleDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  message: string;
-  buttonTitle: string;
-  onButtonClick: () => void;
+  content: string | ReactNode;
+  buttonTitle: string | null;
+  onButtonClick: () => void | null;
 }
 
-const SimpleDialog: React.FC<SimpleDialogProps> = ({
+const SimpleDialog: React.FC<Partial<SimpleDialogProps>> = ({
   isOpen,
   onClose,
   title,
-  message,
+  content,
   buttonTitle,
   onButtonClick,
 }) => {
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
         <Dialog.Content
@@ -35,15 +35,17 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({
               <Cross2Icon width={36} height={36} />
             </Dialog.Close>
           </div>
-          <div className="mb-6 p-4">{message}</div>
-          <div className="flex justify-center px-2 pb-3">
-            <button
-              className="w-full py-4 px-2 bg-yieldi-green font-medium text-sm cursor-pointer border border-yieldi-gray-200 uppercase"
-              onClick={onButtonClick}
-            >
-              {buttonTitle}
-            </button>
-          </div>
+          <div className="mb-6 p-4">{content}</div>
+          {buttonTitle ? (
+            <div className="flex justify-center px-2 pb-3">
+              <button
+                className="w-full py-4 px-2 bg-yieldi-green font-medium text-sm cursor-pointer border border-yieldi-gray-200 uppercase"
+                onClick={onButtonClick}
+              >
+                {buttonTitle}
+              </button>
+            </div>
+          ) : null}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
