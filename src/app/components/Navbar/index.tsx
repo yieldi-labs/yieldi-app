@@ -40,7 +40,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="fixed top-0 w-full z-40 border-b border-yieldi-gray-200 flex flex-col">
+    <header className="fixed top-0 w-full z-40 border-b border-yieldi-gray-200 flex flex-col ">
       <nav className="flex items-center justify-between text-white bg-yieldi-beige h-[55px] flex-1">
         <div className="flex items-center text-black shrink-0">
           <Brand />
@@ -78,7 +78,7 @@ const Navbar: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
           onClick={toggleMenu}
         >
           <Image
-            src="/menu.svg"
+            src={`${isMenuOpen ? "/close.svg" : "/menu.svg"}`}
             alt="menu"
             width={0}
             height={0}
