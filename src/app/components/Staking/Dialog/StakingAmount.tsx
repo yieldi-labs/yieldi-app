@@ -1,3 +1,4 @@
+import { UTXO } from "btc-staking-ts";
 import React, { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -6,7 +7,6 @@ import { btcToSatoshi, satoshiToBtc } from "@/utils/btcConversions";
 import { maxDecimals } from "@/utils/maxDecimals";
 
 import { validateDecimalPoints } from "./validation/validation";
-import { UTXO } from "btc-staking-ts";
 
 interface StakingAmountProps {
   minStakingAmountSat: number;
@@ -87,7 +87,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         {
           valid: availableUtxos != undefined && 1 >= availableUtxos?.length,
           message: "Not enough usable balance. Please wait for the next block.",
-        }
+        },
       ];
 
       const firstInvalid = validations.find((validation) => !validation.valid);
