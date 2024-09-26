@@ -1,3 +1,4 @@
+import { UTXO } from "btc-staking-ts";
 import React, { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -13,6 +14,7 @@ interface StakingAmountProps {
   btcWalletBalanceSat: number;
   onStakingAmountSatChange: (inputAmountSat: number) => void;
   reset: number;
+  availableUtxos: UTXO[] | undefined;
 }
 
 export const StakingAmount: React.FC<StakingAmountProps> = ({
@@ -21,6 +23,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   btcWalletBalanceSat,
   onStakingAmountSatChange,
   reset,
+  availableUtxos,
 }) => {
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
@@ -80,6 +83,10 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
         {
           valid: validateDecimalPoints(amount),
           message: `${errorLabel} must have no more than 8 decimal points.`,
+        },
+        {
+          valid: availableUtxos != undefined && 1 >= availableUtxos?.length,
+          message: "Not enough usable balance. Please wait for the next block.",
         },
       ];
 
@@ -149,7 +156,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
   return (
     <div className="mb-2 mx-2 p-3 border border-yieldi-gray-200 bg-white">
       <div className="flex justify-between mb-3">
-        <span className="text-sm">AMOUNT</span>
+        <span className="text-sm">AMOUNT {availableUtxos?.length}</span>
         <span className="text-sm font-light">
           Balance: {satoshiToBtc(btcWalletBalanceSat)} {coinSymbol}
         </span>

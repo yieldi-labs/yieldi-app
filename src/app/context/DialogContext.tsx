@@ -52,7 +52,7 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({
           isOpen={isOpen}
           onClose={hideDialog}
           title={dialogContentRef.current.title}
-          message={dialogContentRef.current.message}
+          content={dialogContentRef.current.message}
           buttonTitle={dialogContentRef.current.buttonTitle}
           onButtonClick={handleButtonClick}
         />

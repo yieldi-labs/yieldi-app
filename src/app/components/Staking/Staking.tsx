@@ -541,6 +541,7 @@ export const Staking: React.FC<StakingProps> = ({
             btcWalletBalanceSat={btcWalletBalanceSat}
             onStakingAmountSatChange={handleStakingAmountSatChange}
             reset={resetFormInputs}
+            availableUtxos={availableUTXOs}
           />
 
           <StakingTime
@@ -563,7 +564,7 @@ export const Staking: React.FC<StakingProps> = ({
             <button
               className={twMerge(
                 "w-full py-4 px-2 font-gt-america-mono text-sm font-medium cursor-pointer border border-yieldi-gray-200",
-                signing ? "bg-gray-300" : "bg-yieldi-green",
+                signing || !previewReady ? "bg-gray-300" : "bg-yieldi-green",
               )}
               onClick={() => {
                 handleSign();

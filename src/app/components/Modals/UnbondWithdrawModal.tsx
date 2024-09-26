@@ -1,11 +1,9 @@
-import { IoMdClose } from "react-icons/io";
-
 import { getNetworkConfig } from "@/app/config/network";
 import { blocksToDisplayTime } from "@/utils/blocksToDisplayTime";
 import { satoshiToBtc } from "@/utils/btcConversions";
 import { maxDecimals } from "@/utils/maxDecimals";
 
-import { GeneralModal } from "./GeneralModal";
+import SimpleDialog from "../SimpleDialog";
 
 export const MODE_UNBOND = "unbond";
 export const MODE_WITHDRAW = "withdraw";
@@ -58,39 +56,39 @@ export const UnbondWithdrawModal: React.FC<PreviewModalProps> = ({
   const title = mode === MODE_UNBOND ? unbondTitle : withdrawTitle;
   const content = mode === MODE_UNBOND ? unbondContent : withdrawContent;
 
-  return (
-    <GeneralModal open={open} onClose={onClose} small>
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-bold">{title}</h3>
+  const unbondWithdrawModalContent = (
+    <div className="flex flex-col gap-4">
+      <p className="text-left dark:text-neutral-content">{content}</p>
+      <div className="flex gap-4">
         <button
-          className="btn btn-circle btn-ghost btn-sm"
-          onClick={() => onClose(false)}
+          className="btn btn-outline flex-1"
+          onClick={() => {
+            onClose(false);
+          }}
         >
-          <IoMdClose size={24} />
+          Cancel
+        </button>
+        <button
+          className="btn-primary btn flex-1"
+          onClick={() => {
+            onClose(false);
+            onProceed();
+          }}
+        >
+          Proceed
         </button>
       </div>
-      <div className="flex flex-col gap-4">
-        <p className="text-left dark:text-neutral-content">{content}</p>
-        <div className="flex gap-4">
-          <button
-            className="btn btn-outline flex-1"
-            onClick={() => {
-              onClose(false);
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            className="btn-primary btn flex-1"
-            onClick={() => {
-              onClose(false);
-              onProceed();
-            }}
-          >
-            Proceed
-          </button>
-        </div>
-      </div>
-    </GeneralModal>
+    </div>
+  );
+
+  return (
+    <SimpleDialog
+      isOpen={open}
+      onClose={() => {
+        onClose(false);
+      }}
+      title={title}
+      content={unbondWithdrawModalContent}
+    />
   );
 };
