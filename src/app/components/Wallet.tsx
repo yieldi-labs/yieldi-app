@@ -1,60 +1,54 @@
 "use client";
 
-import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
-import { DropdownMenu, Button } from "@radix-ui/themes";
-import * as bitcoin from "bitcoinjs-lib";
-import { NextPage } from "next";
-import { useEffect } from "react";
+import { Button } from "@radix-ui/themes";
+import React from "react";
 
+import { useEthereumWallet } from "@/app/context/EthereumWalletContext";
 import { useWallet } from "@/app/context/WalletContext";
-import { truncateMiddle } from "@/utils/strings";
+
 export interface WalletProps {
   setConnectModalOpen: (open: boolean) => void;
 }
 
-const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
-  const { address, btcWallet, disconnectWallet, isConnected } = useWallet();
-
-  useEffect(() => {
-    if (isConnected && btcWallet) {
-      bitcoin.initEccLib(ecc);
-    }
-  }, [isConnected, btcWallet]);
+const Wallet: React.FC<WalletProps> = ({ setConnectModalOpen }) => {
+  const {
+    address: btcAddress,
+    isConnected: isBtcConnected,
+    disconnectWallet,
+  } = useWallet();
+  const { ethAddress, isEthConnected, connectEthWallet, disconnectEthWallet } =
+    useEthereumWallet();
 
   return (
-    <>
-      <DropdownMenu.Root modal={false}>
-        <div className="md:justify-end flex border-x border-yieldi-gray-200 flex-1 md:flex-none">
-          {isConnected && btcWallet ? (
-            <>
-              <DropdownMenu.Trigger>
-                <Button className="cursor-pointer md:w-[166px] h-[56px] bg-yieldi-dark-gray text-white rounded-none w-full font-gt-america-mono">
-                  <span>{truncateMiddle(address, 5)}</span>
-                </Button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content className="z-50">
-                <DropdownMenu.Sub>
-                  <DropdownMenu.Item
-                    className="cursor-pointer"
-                    onClick={disconnectWallet}
-                  >
-                    Disconnect
-                  </DropdownMenu.Item>
-                </DropdownMenu.Sub>
-              </DropdownMenu.Content>
-            </>
-          ) : (
-            <Button
-              variant="soft"
-              className="cursor-pointer md:w-[166px] h-[56px] rounded-none bg-yieldi-green text-black w-full uppercase font-gt-america-mono"
-              onClick={() => setConnectModalOpen(true)}
-            >
-              Connect Wallet
-            </Button>
-          )}
-        </div>
-      </DropdownMenu.Root>
-    </>
+    <div className="wallet-container">
+      {/* Bitcoin Wallet Section */}
+      <div className="btc-wallet">
+        <h3>Bitcoin Wallet</h3>
+        {isBtcConnected ? (
+          <>
+            <div>Address: {btcAddress}</div>
+            <Button onClick={disconnectWallet}>Disconnect BTC Wallet</Button>
+          </>
+        ) : (
+          <Button onClick={() => setConnectModalOpen(true)}>
+            Connect BTC Wallet
+          </Button>
+        )}
+      </div>
+
+      {/* Ethereum Wallet Section */}
+      <div className="eth-wallet">
+        <h3>Ethereum Wallet</h3>
+        {isEthConnected ? (
+          <>
+            <div>Address: {ethAddress}</div>
+            <Button onClick={disconnectEthWallet}>Disconnect ETH Wallet</Button>
+          </>
+        ) : (
+          <Button onClick={connectEthWallet}>Connect ETH Wallet</Button>
+        )}
+      </div>
+    </div>
   );
 };
 
