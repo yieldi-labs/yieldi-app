@@ -7,6 +7,7 @@ export interface Delegation {
   stakingTx: StakingTx;
   unbondingTx: UnbondingTx | undefined;
   isOverflow: boolean;
+  providerType: "babylon" | "thorchain";
 }
 
 export interface StakingTx {

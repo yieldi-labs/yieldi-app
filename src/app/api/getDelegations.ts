@@ -24,6 +24,7 @@ interface DelegationAPI {
   staking_tx: StakingTxAPI;
   unbonding_tx?: UnbondingTxAPI;
   is_overflow: boolean;
+  provider_type: "babylon" | "thorchain"; // New field
 }
 
 interface StakingTxAPI {
@@ -47,13 +48,8 @@ export const getDelegations = async (
     throw new Error("No public key provided");
   }
 
-  // const limit = 100;
-  // const reverse = false;
-
   const params = {
     pagination_key: encode(key),
-    // "pagination_reverse": reverse,
-    // "pagination_limit": limit,
     staker_btc_pk: encode(publicKeyNoCoord),
   };
 
@@ -87,6 +83,7 @@ export const getDelegations = async (
             outputIndex: apiDelegation.unbonding_tx.output_index,
           }
         : undefined,
+      providerType: apiDelegation.provider_type, // New field
     }),
   );
 
