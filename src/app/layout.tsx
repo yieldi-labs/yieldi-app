@@ -1,6 +1,8 @@
 import "@/app/globals.css";
 import "react-responsive-modal/styles.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import { Theme } from "@radix-ui/themes";
+import { headers } from "next/headers";
 import { StrictMode } from "react";
 
 import Main from "./components/Main";
@@ -11,10 +13,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookie = headers().get("cookie");
   return (
     <html lang="en">
       <StrictMode>
-        <Providers>
+        <Providers cookie={cookie}>
           <body>
             <Theme
               accentColor="yellow"
