@@ -8,6 +8,8 @@ import { useEffect } from "react";
 
 import { useWallet } from "@/app/context/WalletContext";
 import { truncateMiddle } from "@/utils/strings";
+
+import { ConnectButton } from "./connectButton";
 export interface WalletProps {
   setConnectModalOpen: (open: boolean) => void;
 }
@@ -52,6 +54,7 @@ const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
               Connect Wallet
             </Button>
           )}
+          <ConnectButton />
         </div>
       </DropdownMenu.Root>
     </>

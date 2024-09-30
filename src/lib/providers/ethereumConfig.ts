@@ -4,13 +4,14 @@ import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { http, createStorage, cookieStorage } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
 
-const projectId = process.env.REACT_APP_RAINBOW_PROJECT_ID || "";
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECTID;
 
 const supportedChains: Chain[] = [mainnet, sepolia];
 
 export const config = getDefaultConfig({
   appName: "Yieldi",
-  projectId,
+
+  projectId: projectId || "",
   chains: supportedChains as any,
   storage: createStorage({
     storage: cookieStorage,
@@ -19,4 +20,5 @@ export const config = getDefaultConfig({
     (object, chain) => ({ ...object, [chain.id]: http() }),
     {}
   ),
+  ssr: true,
 });

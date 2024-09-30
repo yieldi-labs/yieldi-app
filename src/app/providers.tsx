@@ -1,7 +1,7 @@
 /// providers consolidating all providers
 "use client";
 
-import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { cookieToInitialState, WagmiProvider } from "wagmi";
@@ -32,10 +32,11 @@ function Providers({ children, cookie }: Props) {
       <WagmiProvider config={config} initialState={initialState}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider
-            theme={darkTheme({
+            modalSize="compact"
+            theme={lightTheme({
               accentColor: "#0E76FD",
-              accentColorForeground: "white",
-              borderRadius: "large",
+              accentColorForeground: "gray",
+              borderRadius: "none",
               fontStack: "system",
               overlayBlur: "small",
             })}
