@@ -148,7 +148,7 @@ const DelegationRow: React.FC<{
       >
         <Table.Cell className="p-4">
           <p className="text-yieldi-brown text-xl font-medium leading-normal">
-            {durationTillNow(startTimestamp, currentTime, ["days", "hours", "minutes"])}
+            {durationTillNow(startTimestamp, currentTime, ["days", "hours"])}
           </p>
           <p className="text-yieldi-brown text-xs font-medium leading-normal">
             {startTimestamp}
