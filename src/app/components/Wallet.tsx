@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 import { useWallet } from "@/app/context/WalletContext";
 import { truncateMiddle } from "@/utils/strings";
+
 export interface WalletProps {
   setConnectModalOpen: (open: boolean) => void;
 }
