@@ -7,6 +7,7 @@ export const toLocalStorageDelegation = (
   stakingValueSat: number,
   stakingTxHex: string,
   timelock: number,
+  providerType: "babylon" | "thorchain",
 ): Delegation => ({
   stakingTxHashHex: stakingTxHashHex,
   stakerPkHex: stakerPkHex,
@@ -22,4 +23,5 @@ export const toLocalStorageDelegation = (
   },
   isOverflow: false,
   unbondingTx: undefined,
+  providerType: providerType,
 });

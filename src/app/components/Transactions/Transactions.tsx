@@ -55,17 +55,31 @@ const DelegationRow: React.FC<{
   onWithdraw,
   intermediateState,
 }) => {
-  const { stakingValueSat, stakingTx, stakingTxHashHex, state, isOverflow } =
-    delegation;
+  const {
+    stakingValueSat,
+    stakingTx,
+    stakingTxHashHex,
+    state,
+    isOverflow,
+    providerType,
+  } = delegation;
   const { startTimestamp } = stakingTx;
   const currentTime = Date.now();
   const { mempoolApiUrl } = getNetworkConfig();
 
+  /**
+   * This function generates the action button based on the state of the delegation.
+   * It also disables the button if the delegation is in an intermediate state (local storage).
+   */
   const generateActionButton = () => {
-    // This function generates the unbond or withdraw button
-    // based on the state of the delegation
-    // It also disables the button if the delegation
-    // is in an intermediate state (local storage)
+    if (providerType === "thorchain") {
+      <button
+        className="flex justify-center items-center w-[152px] h-[38px] px-[21px] py-[10px] gap-[10px] shrink-0 rounded bg-yieldi-brown text-white text-sm font-medium"
+        onClick={() => onWithdraw()}
+      >
+        Withdraw
+      </button>;
+    }
 
     if (state === DelegationState.ACTIVE) {
       return (
@@ -156,7 +170,7 @@ const DelegationRow: React.FC<{
         </Table.Cell>
         <Table.Cell className="p-4">
           <div className="text-yieldi-brown text-xl font-medium leading-normal">
-            {finalityProviderMoniker}{" "}
+            {finalityProviderMoniker} ({providerType})
           </div>
           <a
             href={`${mempoolApiUrl}/tx/${stakingTxHashHex}`}
@@ -176,7 +190,6 @@ const DelegationRow: React.FC<{
             </span>
           </div>
         </Table.Cell>
-        <Table.Cell className="text-yieldi-brown text-lg font-normal p-4">{`$0.00 PENDING`}</Table.Cell>
         <Table.Cell className="text-sm font-normal">
           <span
             className={twMerge(
@@ -316,6 +329,7 @@ const Transactions: React.FC<{
         delegation.stakingTx.txHex,
         delegation.stakingTx.timelock,
         newState,
+        "babylon", //TODO: Remove hardcoded provider type
       ),
       ...delegations,
     ]);
@@ -472,9 +486,6 @@ const Transactions: React.FC<{
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 AMOUNT
-              </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
-                STATUS
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="p-4 uppercase tracking-wider self-stretch text-yieldi-brown-light text-xs font-light">
                 ACTIONS

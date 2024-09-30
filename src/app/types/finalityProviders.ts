@@ -6,6 +6,7 @@ export interface FinalityProvider {
   totalTVLSat: number;
   activeDelegations: number;
   totalDelegations: number;
+  providerType: "babylon" | "thorchain";
 }
 
 export interface Description {
@@ -15,6 +16,7 @@ export interface Description {
   securityContact: string;
   details: string;
 }
+
 export interface FinalityProvidersContextType {
   finalityProviders: FinalityProvider[];
   setFinalityProviders: React.Dispatch<

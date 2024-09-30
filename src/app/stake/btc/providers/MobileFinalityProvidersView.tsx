@@ -17,7 +17,9 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
       <div className="grid grid-cols-5 text-left">
         <Card variant="ghost" className="col-span-3 rounded-none p-6">
           <h3 className="text-yieldi-brown text-xl font-medium mb-1 truncate">
-            {provider.description.moniker || "Unknown"}
+            {provider.providerType === "thorchain"
+              ? provider.description.moniker
+              : provider.description.moniker || "Unknown"}
           </h3>
           <span className="text-yieldi-brown-light text-xs font-mono">
             {provider.btcPk.slice(0, 5)}...{provider.btcPk.slice(-5)}
@@ -41,10 +43,12 @@ const MobileFinalityProviderCard: React.FC<MobileFinalityProviderCardProps> = ({
           <p className="text-yieldi-brown-light text-xs uppercase">
             Commission
           </p>
-          <p className=" text-yieldi-brown text-lg font-medium">
-            {provider.commission
-              ? `${(Number(provider.commission) * 100).toFixed(0)}%`
-              : "-"}
+          <p className="text-yieldi-brown text-lg font-medium">
+            {provider.providerType === "thorchain"
+              ? "N/A"
+              : provider.commission
+                ? `${(Number(provider.commission) * 100).toFixed(0)}%`
+                : "-"}
           </p>
         </div>
       </div>

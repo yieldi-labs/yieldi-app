@@ -108,6 +108,7 @@ export const StakingAmount: React.FC<StakingAmountProps> = ({
       coinSymbol,
       errorLabel,
       generalErrorMessage,
+      availableUtxos,
     ],
   );
 

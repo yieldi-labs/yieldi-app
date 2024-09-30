@@ -271,20 +271,13 @@ export const Staking: React.FC<StakingProps> = ({
       if (!availableUTXOs || availableUTXOs.length === 0)
         throw new Error("No available balance");
 
-      const { currentVersion: globalParamsVersion } = paramWithCtx;
       // Sign the staking transaction
-      const { stakingTxHex, stakingTerm } = await signStakingTx(
-        btcWallet,
-        globalParamsVersion,
-        stakingAmountSat,
-        stakingTimeBlocks,
-        finalityProvider.btcPk,
-        btcWalletNetwork,
-        address,
-        publicKeyNoCoord,
-        feeRate,
-        availableUTXOs,
-      );
+      if (finalityProvider.providerType === "thorchain") {
+        await handleThorchainStake();
+      } else {
+        await handleBabylonStake();
+      }
+
       // UI
       showDialog({
         title: "Success",
@@ -295,8 +288,6 @@ export const Staking: React.FC<StakingProps> = ({
           router.back();
         },
       });
-      handleLocalStorageDelegations(stakingTxHex, stakingTerm);
-      setSigning(false);
     } catch (error: Error | any) {
       showDialog({
         title: getErrorTitle(ErrorState.STAKING),
@@ -310,10 +301,37 @@ export const Staking: React.FC<StakingProps> = ({
     }
   };
 
+  const handleBabylonStake = async () => {
+    const { currentVersion: globalParamsVersion } = paramWithCtx!;
+    const { stakingTxHex, stakingTerm } = await signStakingTx(
+      btcWallet!,
+      globalParamsVersion!,
+      stakingAmountSat,
+      stakingTimeBlocks,
+      finalityProvider!.btcPk,
+      btcWalletNetwork!,
+      address!,
+      publicKeyNoCoord,
+      feeRate,
+      availableUTXOs!,
+    );
+    handleLocalStorageDelegations(stakingTxHex, stakingTerm, "babylon");
+  };
+
+  const handleThorchainStake = async () => {
+    // TODO: Implement Thorchain staking logic
+    // This will involve interacting with Thorchain's API or smart contracts
+    // For example:
+    // const result = await thorchainStake(stakingAmountSat, address);
+    // handleLocalStorageDelegations(result.txId, result.lockPeriod);
+    throw new Error("Thorchain staking not yet implemented");
+  };
+
   // Save the delegation to local storage
   const handleLocalStorageDelegations = (
     signedTxHex: string,
     stakingTerm: number,
+    providerType: "babylon" | "thorchain",
   ) => {
     setDelegationsLocalStorage((delegations) => [
       toLocalStorageDelegation(
@@ -323,6 +341,7 @@ export const Staking: React.FC<StakingProps> = ({
         stakingAmountSat,
         signedTxHex,
         stakingTerm,
+        providerType,
       ),
       ...delegations,
     ]);
@@ -571,7 +590,11 @@ export const Staking: React.FC<StakingProps> = ({
               }}
               disabled={!previewReady || signing}
             >
-              {signing ? "Signing Transaction" : "DELEGATE STAKE"}
+              {signing
+                ? "Signing Transaction"
+                : finalityProvider?.providerType === "thorchain"
+                  ? "DEPOSIT TO SAVERS"
+                  : "DELEGATE STAKE"}
             </button>
           </div>
 
@@ -609,7 +632,9 @@ export const Staking: React.FC<StakingProps> = ({
           >
             <div className="flex justify-between items-center mb-4 border-b border-yieldi-gray-200">
               <Dialog.Title className="text-2xl font-bold text-yieldi-brown p-2 font-gt-america-ext">
-                Deposit Stake
+                {finalityProvider?.providerType === "thorchain"
+                  ? "Deposit to Savers"
+                  : "Deposit Stake"}
               </Dialog.Title>
               <Dialog.Close className="text-yieldi-brown border-x border-yieldi-gray-200 p-2">
                 <Cross2Icon width={36} height={36} />
