@@ -1,25 +1,26 @@
 "use client";
 
-import { Button } from "@radix-ui/themes";
-import React from "react";
+import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
+import { DropdownMenu, Button } from "@radix-ui/themes";
+import * as bitcoin from "bitcoinjs-lib";
+import { NextPage } from "next";
+import { useEffect } from "react";
 
-import { useEthereumWallet } from "@/app/context/EthereumWalletContext";
 import { useWallet } from "@/app/context/WalletContext";
 import { truncateMiddle } from "@/utils/strings";
 
-import { ConnectButton } from "./connectButton";
 export interface WalletProps {
   setConnectModalOpen: (open: boolean) => void;
 }
 
-const Wallet: React.FC<WalletProps> = ({ setConnectModalOpen }) => {
-  const {
-    address: btcAddress,
-    isConnected: isBtcConnected,
-    disconnectWallet,
-  } = useWallet();
-  const { ethAddress, isEthConnected, connectEthWallet, disconnectEthWallet } =
-    useEthereumWallet();
+const Wallet: NextPage<WalletProps> = ({ setConnectModalOpen }) => {
+  const { address, btcWallet, disconnectWallet, isConnected } = useWallet();
+
+  useEffect(() => {
+    if (isConnected && btcWallet) {
+      bitcoin.initEccLib(ecc);
+    }
+  }, [isConnected, btcWallet]);
 
   return (
     <>
@@ -52,7 +53,6 @@ const Wallet: React.FC<WalletProps> = ({ setConnectModalOpen }) => {
               Connect Wallet
             </Button>
           )}
-          <ConnectButton />
         </div>
       </DropdownMenu.Root>
     </>

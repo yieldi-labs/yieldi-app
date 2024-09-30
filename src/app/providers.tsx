@@ -6,14 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { cookieToInitialState, WagmiProvider } from "wagmi";
 
-import { wagmiClient } from "@/app/components/wagmi";
 import { assets as initialAssets } from "@/app/config/StakedAssets";
 import { config } from "@/lib/providers/ethereumConfig";
 
 import { AssetsProvider } from "./context/AssetContext";
 import { DataProvider } from "./context/DataContext";
 import { DialogProvider } from "./context/DialogContext";
-import { EthereumWalletProvider } from "./context/EthereumWalletContext";
 import { FinalityProvidersProvider } from "./context/FinalityProvidersContext";
 import { StakeProvider } from "./context/StakeContext";
 import { WalletProvider } from "./context/WalletContext";
