@@ -18,7 +18,7 @@ export const config = getDefaultConfig({
   }),
   transports: supportedChains.reduce(
     (object, chain) => ({ ...object, [chain.id]: http() }),
-    {}
+    {},
   ),
   ssr: true,
 });
